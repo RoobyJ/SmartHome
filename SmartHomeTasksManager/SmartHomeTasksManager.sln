@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHomeTasksManager", "SmartHomeTasksManager\SmartHomeTasksManager.csproj", "{8745BD53-E1DF-4D48-9091-08881EF78B78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHomeTasksManager.Core", "src\SmartHomeTasksManager.Core\SmartHomeTasksManager.Core.csproj", "{12DCC874-44D6-401A-8FE7-9B86BD62F378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHomeTasksManager.Worker", "src\SmartHomeTasksManager.Worker\SmartHomeTasksManager.Worker.csproj", "{5AED48BD-A7C9-4C86-A69D-588F09D49088}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHomeTasksManager.Infrastructure", "src\SmartHomeTasksManager.Infrastructure\SmartHomeTasksManager.Infrastructure.csproj", "{68E8222B-1461-49BE-A7A1-C54C0504C913}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +12,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8745BD53-E1DF-4D48-9091-08881EF78B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8745BD53-E1DF-4D48-9091-08881EF78B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8745BD53-E1DF-4D48-9091-08881EF78B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8745BD53-E1DF-4D48-9091-08881EF78B78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12DCC874-44D6-401A-8FE7-9B86BD62F378}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12DCC874-44D6-401A-8FE7-9B86BD62F378}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12DCC874-44D6-401A-8FE7-9B86BD62F378}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12DCC874-44D6-401A-8FE7-9B86BD62F378}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AED48BD-A7C9-4C86-A69D-588F09D49088}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AED48BD-A7C9-4C86-A69D-588F09D49088}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AED48BD-A7C9-4C86-A69D-588F09D49088}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AED48BD-A7C9-4C86-A69D-588F09D49088}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68E8222B-1461-49BE-A7A1-C54C0504C913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68E8222B-1461-49BE-A7A1-C54C0504C913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68E8222B-1461-49BE-A7A1-C54C0504C913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68E8222B-1461-49BE-A7A1-C54C0504C913}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
