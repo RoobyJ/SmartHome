@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>SmartHome.TasksManager.Heater</RootNamespace>
+  </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SmartHome.TasksManager.Core\SmartHome.TasksManager.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" />
+    </ItemGroup>
+
+</Project>
