@@ -10,27 +10,34 @@ namespace SmartHome.TasksManager.Heater.Helpers;
 
 public class WhenToStartHeatingCalculation
 {
-
-  public List<GarageStartHeatTime> CalculateForMultipleGarages(List<GarageTemperatureDto> listOfGarageTemperatureDtos,  List<GarageHeatingTime> listOfGarageEndHeatTimes)
+  public List<GarageStartHeatTime> CalculateForMultipleGarages(List<GarageTemperatureDto> listOfGarageTemperatureDtos,
+    List<GarageHeatingTime> listOfGarageEndHeatTimes)
   {
     List<GarageStartHeatTime> listOfGarageStartHeatTimes = new();
 
-    for (int i = 0; i < listOfGarageTemperatureDtos.Count; i++ )
+    for (int i = 0; i < listOfGarageEndHeatTimes.Count; i++)
     {
-      var startHeatTime = TimeToStartHeating(listOfGarageEndHeatTimes[i].HeatTime, listOfGarageTemperatureDtos[i].Temperature);
-      if (startHeatTime == null) continue;
-      listOfGarageStartHeatTimes.Add(new GarageStartHeatTime() {Id = i + 1, StartHeatTime = startHeatTime});
+      var heatTime = listOfGarageEndHeatTimes[i].HeatTime;
+      if (heatTime != null)
+      {
+        var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay,
+          listOfGarageTemperatureDtos[i].Temperature);
+        if (startHeatTime == null) continue;
+        var startHeatingDate = heatTime.Value.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds ? heatTime.Value.AddDays(-1) + startHeatTime : heatTime + startHeatTime;
+        listOfGarageStartHeatTimes.Add(new GarageStartHeatTime() { Id = i + 1, StartHeatTime = startHeatingDate });
+      }
     }
-    
+
     return listOfGarageStartHeatTimes;
   }
-  
-  private double CalculateOnHeatTime(float temp) {
+
+  private double CalculateOnHeatTime(float temp)
+  {
     // linear formula 
     var result = temp - 14.1061;
-    result = result / (-0.161569);
-    if (result < 0) result *= -1;
-    
+    result = result / (0.161569);
+    if (result < 0) return 0;
+
     return result; // the result is in minutes
   }
 

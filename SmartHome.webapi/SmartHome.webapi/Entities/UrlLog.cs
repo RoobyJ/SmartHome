@@ -14,9 +14,9 @@ public partial class UrlLog
 
     public string Url { get; set; } = null!;
 
-    public DateOnly Datetime { get; set; }
+    public DateTime Date { get; set; }
 
     public int StatusCode { get; set; }
 
-    public string RequestId { get; set; } = null!;
+    public int RequestId { get; set; }
 }

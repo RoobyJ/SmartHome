@@ -12,7 +12,6 @@ public partial class OutsideTemperature
     [Key]
     public int Id { get; set; }
 
-    [Column(TypeName = "timestamp without time zone")]
     public DateTime Date { get; set; }
 
     public int Temperature { get; set; }

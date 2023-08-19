@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.TasksManager.Core.Entities;
-using SmartHome.webapi.Entities;
 
 namespace SmartHome.TasksManager.Heater.Entities;
 

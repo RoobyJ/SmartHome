@@ -4,6 +4,7 @@ using SmartHome.webapi.Entities;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.webapi.Context;
 using System.Text.Json;
+using HeatRequest = SmartHome.webapi.Entities.HeatRequest;
 
 namespace SmartHome.webapi.Controllers;
 
@@ -11,25 +12,23 @@ namespace SmartHome.webapi.Controllers;
 public class GarageController : ApiControllerBase
 {
     private readonly ILogger<GarageController> _logger;
+    private readonly SmartHomeDbContext _context;
     
     private static readonly HttpClient Client = new HttpClient();
 
-    public GarageController(ILogger<GarageController> logger)
+    public GarageController(ILogger<GarageController> logger, SmartHomeDbContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
     [HttpPost("heatTimeRequest/save")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> SaveHeatTimeRequest(int id, HeatRequestDto request)
     {
-        await using (var context = new SmartHomeDBContext())
-        {
-            await context.Database.EnsureCreatedAsync();
-
-            context.Add(request);
-            await context.SaveChangesAsync();
-        }
+        
+        _context.Add<HeatRequest>(new HeatRequest() {HeatRequest1 = request.Time, GarageId = id});
+        await _context.SaveChangesAsync();
 
         return this.NoContent();
     }
@@ -39,9 +38,8 @@ public class GarageController : ApiControllerBase
     [Produces("application/json")]
     public async Task<ActionResult<IEnumerable<HeatRequestDto>>> GetHeatTimeRequests(int id)
     {
-        await using var context = new SmartHomeDBContext();
-        var list = await context.HeatRequests.Where(item => item.GarageId == id).ToListAsync();
-
+        var list = await _context.HeatRequests.Where(item => item.GarageId == id).ToListAsync();
+        // TODO: Filters to implement
         if (!list.Any()) throw new Exception("Nie ma niczego w bazie");
 
         return this.Ok(list);
@@ -52,8 +50,7 @@ public class GarageController : ApiControllerBase
     [Produces("application/json")]
     public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id)
     {
-        await using var context = new SmartHomeDBContext();
-        var listWithTemperatures = await context.OutsideTemperatures.Where(item => item.GarageId == id).ToListAsync();
+        var listWithTemperatures = await _context.OutsideTemperatures.Where(item => item.GarageId == id).ToListAsync();
 
         if (!listWithTemperatures.Any()) throw new Exception("Nie ma danych o temperaturze w bazie danych");
 
@@ -106,9 +103,8 @@ public class GarageController : ApiControllerBase
         };
 
         var content = new FormUrlEncodedContent(values);
-
-        await using var context = new SmartHomeDBContext();
-        var garage = await context.Garages.Where(item => item.Id == id).SingleOrDefaultAsync();
+        
+        var garage = await _context.Garages.Where(item => item.Id == id).SingleOrDefaultAsync();
 
         if (garage == null) throw new Exception("Nie ma danych o temperaturze w bazie danych");
         
@@ -119,6 +115,7 @@ public class GarageController : ApiControllerBase
         return this.Ok(responseString);
     }
 
+    #region private
     private static class JsonFile
     {
         public static async Task<T?> ReadAsync<T>(string filePath)
@@ -133,5 +130,6 @@ public class GarageController : ApiControllerBase
             await System.IO.File.WriteAllTextAsync(filePath, json);
         }
     }
+    #endregion
 }
 

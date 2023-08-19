@@ -1,0 +1,36 @@
+// https://next.vuetifyjs.com/features/sass-variables/
+
+@use 'vuetify/settings' with (
+    $body-font-family: (
+        'Poppins',
+        sans-serif,
+    ),
+    $font-size-root: 0.875rem,
+    $input-font-size: 1rem,
+    $field-font-size: 1rem,
+    $button-height: 40px,
+    $text-on-shades: (
+        // when the bg-white class is used, then override the default text color
+        'white': #002343,
+    ),
+    $typography: (
+        'h4': (
+            'size': 2rem,
+            'weight': 600,
+            'line-height': 2.5rem,
+        ),
+        'button': (
+            'size': 1rem,
+            'letter-spacing': 0.17px,
+        ),
+    )
+);
+
+// Fix for monospace Font.
+code,
+kbd,
+pre,
+samp,
+var {
+    font-family: 'Roboto Mono', monospace !important;
+}

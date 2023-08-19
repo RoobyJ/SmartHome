@@ -10,7 +10,9 @@ namespace SmartHome.TasksManager.Heater.Entities;
 [Table("Garages", Schema = "Heater")]
 public partial class Garage : BaseEntity
 {
-  public string Ip { get; set; } = null!;
+  public string Name { get; set; } = null!;
+
+    public string Ip { get; set; } = null!;
 
     [InverseProperty("Garage")]
     public virtual ICollection<HeatRequest> HeatRequests { get; set; } = new List<HeatRequest>();

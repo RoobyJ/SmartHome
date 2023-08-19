@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using SmartHome.webapi.Context;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First()); });
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");  //Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<SmartHomeDbContext>(
+        options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 

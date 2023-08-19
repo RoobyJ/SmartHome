@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.webapi.Entities;
-using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace SmartHome.webapi.Context;
 
-public partial class SmartHomeDBContext : DbContext
+public partial class SmartHomeDbContext : DbContext
 {
-    public SmartHomeDBContext()
+    public SmartHomeDbContext()
     {
     }
 
-    public SmartHomeDBContext(DbContextOptions<SmartHomeDBContext> options)
+    public SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> options)
         : base(options)
     {
     }
@@ -27,25 +25,17 @@ public partial class SmartHomeDBContext : DbContext
     public virtual DbSet<OutsideTemperature> OutsideTemperatures { get; set; }
 
     public virtual DbSet<UrlLog> UrlLogs { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Garage>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Garages_pkey");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<HeatRequest>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("HeatRequests_pkey");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
 
             entity.HasOne(d => d.Garage).WithMany(p => p.HeatRequests)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -54,27 +44,21 @@ public partial class SmartHomeDBContext : DbContext
 
         modelBuilder.Entity<HeatingLog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("HeatingHistory_pkey");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.HasKey(e => e.Id).HasName("HeatingLogs_pkey");
         });
 
         modelBuilder.Entity<OutsideTemperature>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("OutsideTemperatures_pkey");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-
             entity.HasOne(d => d.Garage).WithMany(p => p.OutsideTemperatures)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("OutsideTemperatures_garageId_fkey");
+                .HasConstraintName("GarageId");
         });
 
         modelBuilder.Entity<UrlLog>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("UrlLogs_pkey");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
         OnModelCreatingPartial(modelBuilder);

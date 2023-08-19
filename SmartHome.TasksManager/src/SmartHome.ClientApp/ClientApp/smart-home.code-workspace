@@ -1,0 +1,18 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "SmartHome"
+        }
+    ],
+    "settings": {
+        "i18n-ally.localesPaths": [
+            "src/plugins/i18n/locales"
+        ],
+        "i18n-ally.displayLanguage": "en-US",
+        "i18n-ally.sourceLanguage": "en-US",
+        "i18n-ally.keystyle": "nested",
+        "i18n-ally.regex.key": "(Core|Common|Organizations|Profile|Users|Applications|System)(\\.[a-zA-Z]+[a-zA-Z0-9]*)+",
+        "typescript.tsdk": "node_modules/typescript/lib"
+    }
+}

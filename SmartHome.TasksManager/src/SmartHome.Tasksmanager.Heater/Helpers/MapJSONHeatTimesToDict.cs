@@ -7,9 +7,9 @@ namespace SmartHome.TasksManager.Heater.Helpers;
 
 public class MapJSONHeatTimesToDict
 {
-  public static List<GarageHeatingTime> GetHeatTimeFromCyclicHeatDays(GaragesJsonObject cyclicGaragesHeatTimes)
+  public static List<GarageHeatingTimespan> GetHeatTimeFromCyclicHeatDays(GaragesJsonObject cyclicGaragesHeatTimes)
   {
-    List<GarageHeatingTime> listOfHeatTimes = new();
+    List<GarageHeatingTimespan> listOfHeatTimes = new();
     var dayOfWeek = DateTime.Today.DayOfWeek.ToString();
     
     for (int i = 0; i < cyclicGaragesHeatTimes.Garages.Length; i++)
@@ -17,43 +17,43 @@ public class MapJSONHeatTimesToDict
       switch (dayOfWeek)
       {
         case "Monday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Monday
           });
           break;
         case "Tuesday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Tuesday
           });
           break;
         case "Wednesday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Wednesday
           });
           break;
         case "Thursday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Thursday
           });
           break;
         case "Friday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Friday
           });
           break;
         case "Saturday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Saturday
           });
           break;
         case "Sunday":
-          listOfHeatTimes.Add(new GarageHeatingTime()
+          listOfHeatTimes.Add(new GarageHeatingTimespan()
           {
             Id = i + 1, HeatTime = cyclicGaragesHeatTimes.Garages[i].Sunday
           });

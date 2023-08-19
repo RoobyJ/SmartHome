@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using SmartHome.TasksManager.Core.Entities;
 
-namespace SmartHome.webapi.Entities;
+namespace SmartHome.TasksManager.Core.Entities;
 
 [Table("UrlLogs", Schema = "Heater")]
-public partial class UrlLog
+public partial class UrlLog : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
+  public string Url { get; set; } = null!;
 
-    public string Url { get; set; } = null!;
-
-    public DateOnly Datetime { get; set; }
+    [Column(TypeName = "timestamp without time zone")]
+    public DateTime Date { get; set; }
 
     public int StatusCode { get; set; }
 

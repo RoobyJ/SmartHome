@@ -12,8 +12,7 @@ public partial class HeatingLog
     [Key]
     public int Id { get; set; }
 
-    [Column(TypeName = "timestamp without time zone")]
     public DateTime Date { get; set; }
 
-    public long? HeatingTime { get; set; }
+    public string? Info { get; set; }
 }
