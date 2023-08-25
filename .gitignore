@@ -157,3 +157,5 @@ SmartHome.TasksManager/.vscode/tasks.json
 SmartHome.TasksManager/SharedProject1/Class1.cs
 SmartHome.TasksManager/SharedProject1/SharedProject1.projitems
 SmartHome.TasksManager/SharedProject1/SharedProject1.shproj
+src/src/SmartHome.Worker/appsettings.json
+src/src/SmartHome.API/appsettings.json
