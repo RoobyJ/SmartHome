@@ -24,7 +24,7 @@ public class HeatingService : IHeatingService
   private readonly StartHeatingTimeCalculator _startHeatingTimeCalculator;
   private readonly HeatingSettings _settings;
   private static readonly HttpClient Client = new();
-  private List<GarageHeaterStatus> _garagesHeatersStatuses = new List<GarageHeaterStatus>();
+  private List<GarageHeaterStatus> _garagesHeatersStatuses = new();
 
   public HeatingService(ILoggerAdapter<HeatingService> logger, HeatingSettings settings,
     IServiceLocator serviceScopeFactoryLocator, StartHeatingTimeCalculator startHeatingTimeCalculator)
@@ -54,14 +54,14 @@ public class HeatingService : IHeatingService
 
       var closestHeatTimes = FindClosestHeatTime(garages);
 
-      
-      this.CheckIfShouldBeOff(closestHeatTimes, garages); // TODO: poprawic
-      
+
+      this.CheckIfShouldBeOff(closestHeatTimes, garages);
+
       var listOfGarageTemperatures = await this.GetListOfGarageTemperatures(garages);
-      //
-      // var listOfStartHeatTimes = new WhenToStartHeatingCalculation().CalculateForMultipleGarages(listOfGarageTemperatures, todaysHeatTimes);
-      //
-      // this.SetOnHeaters(listOfStartHeatTimes, garages, repository);
+      
+      var listOfStartHeatTimes = this._startHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
+      
+      this.SetOnHeaters(listOfStartHeatTimes, garages);
       await Task.Delay(1000);
     }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -131,19 +131,23 @@ public class HeatingService : IHeatingService
         return DateTime.Now.Date + customHeatRequest.HeatRequest1.TimeOfDay;
     }
     else if (cyclicHeatRequest != null && (customHeatRequest.HeatRequest1.Day.Equals(DateTime.Now.AddDays(1).Day) ||
-                                           cyclicHeatRequest[todayDay == 6 ? 0: todayDay + 1] != null))
+                                           cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1] != null))
     {
       // Check for tomorrow
-      if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
-          cyclicHeatRequest[todayDay == 6 ? 0: todayDay + 1].Value.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
+      if (!(customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
+          !(cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value.TotalSeconds >
+            DateTime.Now.TimeOfDay.TotalSeconds))
       {
-        if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds > cyclicHeatRequest[todayDay == 6 ? 0: todayDay + 1].Value.TotalSeconds)
-        {
-          return customHeatRequest.HeatRequest1;
-        }
-
-        return DateTime.Now.Date + cyclicHeatRequest[todayDay == 6 ? 0: todayDay + 1].Value;
+        return null;
       }
+
+      if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds >
+          cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value.TotalSeconds)
+      {
+        return customHeatRequest.HeatRequest1;
+      }
+
+      return DateTime.Now.Date + cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value;
     }
 
     return null;
@@ -166,27 +170,44 @@ public class HeatingService : IHeatingService
 
   private void CheckIfShouldBeOff(List<GarageHeatingTime> todaysHeatTimes, List<Garage> garages)
   {
-    for (int i = 0; i < todaysHeatTimes.Count; i++)
+    var scope = _serviceScopeFactoryLocator.CreateScope();
+    var heatingLogRepository = scope.ServiceProvider.GetService<IHeatingLogRepository>();
+
+    foreach (var heatTime in todaysHeatTimes)
     {
-      if (!todaysHeatTimes[i].HeatTime.HasValue)
+      var garage = garages.Find(i => i.Id == heatTime.Id);
+      var garageHeaterStatus = this._garagesHeatersStatuses.Find(i => i.Id == heatTime.Id);
+
+      if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
       {
-        ChangeHeaterStatus("false", garages[i].Ip);
-        _logger.LogInformation($"Setted heater OFF in garage {garages[i].Id} running at: {DateTimeOffset.Now}");
-        //repository.Add(new HeatingLog() { Date = DateTime.UtcNow, Info = $"Ended heating garage {garages[i].Id}" });
+        ChangeHeaterStatus("false", garage.Ip);
+        _logger.LogInformation($"Setted heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
+        heatingLogRepository.AddAsync(new HeatingLog()
+        {
+          Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}"
+        });
         continue;
       }
 
-      if (DateTime.Now.TimeOfDay.TotalSeconds > todaysHeatTimes[i].HeatTime.Value.TimeOfDay.TotalSeconds)
+      if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime.Value.TimeOfDay.TotalSeconds &&
+          garageHeaterStatus.HeatingStatus)
       {
-        ChangeHeaterStatus("false", garages[i].Ip);
-        _logger.LogInformation($"Setted heater OFF in garage {garages[i].Id} running at: {DateTimeOffset.Now}");
-        //repository.Add(new HeatingLog() { Date = DateTime.UtcNow, Info = $"Ended heating garage {garages[i].Id}" });
+        ChangeHeaterStatus("false", garage.Ip);
+        _logger.LogInformation($"Setted heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
+        heatingLogRepository.AddAsync(new HeatingLog()
+        {
+          Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}"
+        });
       }
     }
   }
 
-  private void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, IRepository repository)
+  // TODO: rework this method
+  private void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages)
   {
+    var scope = _serviceScopeFactoryLocator.CreateScope();
+    var heatingLogRepository = scope.ServiceProvider.GetService<IHeatingLogRepository>();
+
     foreach (var garageStartHeatTime in startHeatTimes)
     {
       if (!garageStartHeatTime.StartHeatTime.HasValue) continue;
@@ -199,7 +220,10 @@ public class HeatingService : IHeatingService
           ChangeHeaterStatus("true", ip);
           _logger.LogInformation(
             $"Setted heater ON in garage {garageStartHeatTime.Id} running at: {DateTimeOffset.Now}");
-          //repository.Add(new HeatingLog() { Date = DateTime.UtcNow, Info = $"Starting heating garage {garageStartHeatTime.Id}" });
+          heatingLogRepository.AddAsync(new HeatingLog()
+          {
+            Date = DateTime.UtcNow, Info = $"Starting heating garage {garageStartHeatTime.Id}"
+          });
         }
       }
     }
