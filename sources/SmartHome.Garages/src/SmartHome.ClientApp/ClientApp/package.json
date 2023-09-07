@@ -22,7 +22,6 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
   },
   "dependencies": {
-    "@cmpl/core": "^0.0.4",
     "@fontsource/poppins": "^5.0.3",
     "@intlify/unplugin-vue-i18n": "^0.11.0",
     "@mdi/font": "^7.2.96",

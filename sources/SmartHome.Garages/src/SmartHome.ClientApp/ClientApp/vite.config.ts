@@ -108,7 +108,6 @@ export default defineConfig(({ command, mode }): UserConfig => {
                             'vuetify/labs/components',
                             'vuetify/labs/date',
                         ],
-                        'cmpl-core': ['@cmpl/core'],
                         materialdesignicons: ['@mdi/font/css/materialdesignicons.css'],
                     },
                     plugins: [
