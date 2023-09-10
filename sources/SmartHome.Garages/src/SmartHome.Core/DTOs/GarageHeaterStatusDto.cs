@@ -1,4 +1,4 @@
-﻿namespace SmartHome.Core.Dtos;
+﻿namespace SmartHome.Core.DTOs;
 
 public class GarageHeaterStatusDto
 {

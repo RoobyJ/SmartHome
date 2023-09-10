@@ -1,17 +1,18 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
 
 namespace SmartHome.Infrastructure.Data;
 
-internal class HeatingRequestRepository : EfRepository<HeatRequest>, IHeatingRequestRepository
+
+internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>, IOutsideTemperatureRepository
 {
-  public HeatingRequestRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public OutsideTemperaturesRepository(SmartHomeDbContext dbContext) : base(dbContext)
   {
   }
 
-  public IQueryable<HeatRequest> Get(HeatingRequestQueryOptions queryOptions)
+  public IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions)
   {
     var query = this.GetAll();
 

@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SmartHome.Core.Entities;
 
 namespace SmartHome.Core.Common.Repositories;
@@ -10,6 +12,8 @@ public class CyclicHeatingRequestQueryOptions
 
 public interface ICyclicHeatingRequestRepository : IRepository
 {
-  IQueryable<CyclicHeatRequest> Get(GarageQueryOptions queryOptions);
+  IQueryable<CyclicHeatRequest> Get(CyclicHeatingRequestQueryOptions queryOptions);
+  
+  Task AddAsync(CyclicHeatRequest entity, CancellationToken cancellationToken = default);
   
 }

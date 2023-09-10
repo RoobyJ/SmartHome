@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SmartHome.Core.Dtos;
+using SmartHome.Core.DTOs;
 using SmartHome.Core.Models;
 using SmartHome.Heater.Models;
 
