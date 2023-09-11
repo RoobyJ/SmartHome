@@ -59,7 +59,7 @@ public class GarageService
     var repository = GetRepository<IOutsideTemperatureRepository>();
 
     var temperatures = await repository.Get(new OutsideTemperatureQueryOptions() { AsNoTracking = true })
-      .Where(i => i.GarageId == id).ToListAsync(cancellationToken);
+      .Where(i => i.GarageId == id).Take(100).ToListAsync(cancellationToken);
 
     return temperatures;
   }
@@ -73,23 +73,32 @@ public class GarageService
     return garage;
   }
 
-  public async Task CreateOrUpdateCyclicRequests(int id, CyclicHeatRequests requests, CancellationToken cancellationToken)
+  public async Task CreateOrUpdateCyclicRequests(int id, CyclicHeatRequestsDto requestsDto, CancellationToken cancellationToken)
   {
     var repository = GetRepository<ICyclicHeatingRequestRepository>();
 
     var newCyclicRequests = new CyclicHeatRequest()
     {
       GarageId = id,
-      Monday = requests.Monday,
-      Tuesday = requests.Tuesday,
-      Wednesday = requests.Wednesday,
-      Thursday = requests.Thursday,
-      Friday = requests.Friday,
-      Saturday = requests.Saturday,
-      Sunday = requests.Sunday
+      Monday = requestsDto.Monday,
+      Tuesday = requestsDto.Tuesday,
+      Wednesday = requestsDto.Wednesday,
+      Thursday = requestsDto.Thursday,
+      Friday = requestsDto.Friday,
+      Saturday = requestsDto.Saturday,
+      Sunday = requestsDto.Sunday
     };
     
     await repository.AddAsync(newCyclicRequests, cancellationToken);
+  }
+  
+  public async Task< CyclicHeatRequest> GetCyclicHeatRequests(int id, CancellationToken cancellationToken)
+  {
+    var repository = GetRepository<ICyclicHeatingRequestRepository>();
+
+    var garageCyclicHeatRequests = await repository.Get(new CyclicHeatingRequestQueryOptions() { AsNoTracking = true }).FirstAsync(i => i.Id == id, cancellationToken);
+
+    return garageCyclicHeatRequests;
   }
 
   #region private methods

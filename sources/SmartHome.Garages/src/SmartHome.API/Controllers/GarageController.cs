@@ -62,29 +62,27 @@ public class GarageController : ApiControllerBase
     return this.Ok();
   }
 
-  // [HttpGet("CyclicHeatTimes")]
-  // [ProducesResponseType(StatusCodes.Status200OK)]
-  // [Produces("application/json")]
-  // public async Task<ActionResult<CyclicHeatDays>> GetCyclicHeatTimes(int id)
-  // {
-  //     if (id < 1) throw new Exception("Nie ma takiego garażu");
-  //     
-  //     var data = await JsonFile.ReadAsync<GaragesJsonObject>(@"../../CyclicHeatDays.json");
-  //
-  //     if (data == null) throw new Exception("Nie ma danych w bazie danych");
-  //     
-  //     if (data.Garages.Count < id) throw new Exception("Nie ma takiego garażu");
-  //
-  //     return this.Ok(data.Garages[id]);
-  // }
-  //
+  [HttpGet("CyclicHeatTimes")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public async Task<ActionResult<GarageCyclicHeatRequestsDto>> GetCyclicHeatTimes(int id)
+  {
+      if (id < 1) throw new Exception("Nie ma takiego garażu");
+
+      var garageCyclicHeatRequests = await _garageService.GetCyclicHeatRequests(id);
+  
+      if (garageCyclicHeatRequests == null) throw new Exception("Nie ma danych w bazie danych");
+
+      return this.Ok(garageCyclicHeatRequests);
+  }
+  
   [HttpPut("CyclicHeatTimes/save")]
   [ProducesResponseType(StatusCodes.Status200OK)]
-  public async Task<ActionResult> UpdateCyclicHeatTimes(int id, CyclicHeatRequests request)
+  public async Task<ActionResult> UpdateCyclicHeatTimes(int id, CyclicHeatRequestsDto requestDto)
   {
-    if (request == null) throw new Exception("Brak danych do zapisania");
+    if (requestDto == null) throw new Exception("Brak danych do zapisania");
     if (id < 1) throw new Exception("Such garage doesnt exists");
-    await _garageService.CreateOrUpdateCyclicHeatRequests(id, request);
+    await _garageService.CreateOrUpdateCyclicHeatRequests(id, requestDto);
 
     return this.NoContent();
   }
@@ -105,23 +103,4 @@ public class GarageController : ApiControllerBase
 
     return this.Ok();
   }
-
-  #region private
-
-  private static class JsonFile
-  {
-    public static async Task<T?> ReadAsync<T>(string filePath)
-    {
-      await using var stream = System.IO.File.OpenRead(filePath);
-      return await JsonSerializer.DeserializeAsync<T>(stream);
-    }
-
-    public static async Task SaveAsync<T>(string filePath, T data)
-    {
-      var json = JsonSerializer.Serialize(data);
-      await System.IO.File.WriteAllTextAsync(filePath, json);
-    }
-  }
-
-  #endregion
 }
