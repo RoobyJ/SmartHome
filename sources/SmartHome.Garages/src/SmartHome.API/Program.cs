@@ -9,9 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First()); });
 
-var connectionString =
-  builder.Configuration
-    .GetConnectionString("DefaultConnection"); //Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext(builder.Configuration);
 
 builder.Services.AddRepositories();
 
