@@ -13,7 +13,7 @@ internal class HeatingRequestRepository : EfRepository<HeatRequest>, IHeatingReq
 
   public IQueryable<HeatRequest> Get(HeatingRequestQueryOptions queryOptions)
   {
-    var query = this.GetAll();
+    var query = GetAll();
 
     if (queryOptions.AsNoTracking)
     {

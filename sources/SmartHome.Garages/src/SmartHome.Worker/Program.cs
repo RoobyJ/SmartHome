@@ -35,7 +35,7 @@ public class Program
         var workerSettings = new WorkerSettings();
         hostContext.Configuration.Bind(nameof(WorkerSettings), workerSettings);
         services.AddSingleton(workerSettings);
-        
+
         var heatingSettings = new HeatingSettings();
         hostContext.Configuration.Bind(nameof(HeatingSettings), heatingSettings);
         services.AddSingleton(heatingSettings);

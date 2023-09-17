@@ -4,14 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SmartHome.Core.Common;
 
-
 namespace SmartHome.Core.Entities;
 
 [Table("CyclicHeatRequests", Schema = "Garages")]
-public partial class CyclicHeatRequest : IEntity
+public class CyclicHeatRequest : IEntity
 {
-  [Key] public int Id { get; set; }
-
   public int GarageId { get; set; }
 
   public TimeSpan? Monday { get; set; }
@@ -32,17 +29,19 @@ public partial class CyclicHeatRequest : IEntity
   [InverseProperty("CyclicHeatRequests")]
   public virtual Garage Garage { get; set; } = null!;
 
+  [Key] public int Id { get; set; }
+
   public List<TimeSpan?> ToList()
   {
     List<TimeSpan?> listOfHeatTimes = new()
     {
-      this.Sunday,
-      this.Monday,
-      this.Tuesday,
-      this.Wednesday,
-      this.Thursday,
-      this.Friday,
-      this.Saturday
+      Sunday,
+      Monday,
+      Tuesday,
+      Wednesday,
+      Thursday,
+      Friday,
+      Saturday
     };
 
     return listOfHeatTimes;

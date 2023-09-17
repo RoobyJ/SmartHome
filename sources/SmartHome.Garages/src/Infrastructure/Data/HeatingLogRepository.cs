@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
@@ -16,7 +13,7 @@ internal class HeatingLogRepository : EfRepository<HeatingLog>, IHeatingLogRepos
 
   public IQueryable<HeatingLog> Get(GarageQueryOptions queryOptions)
   {
-    var query = this.GetAll();
+    var query = GetAll();
 
     if (queryOptions.AsNoTracking)
     {

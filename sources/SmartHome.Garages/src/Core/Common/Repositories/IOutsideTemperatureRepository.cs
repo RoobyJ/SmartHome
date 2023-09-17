@@ -11,5 +11,4 @@ public class OutsideTemperatureQueryOptions
 public interface IOutsideTemperatureRepository : IRepository
 {
   IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions);
-  
 }

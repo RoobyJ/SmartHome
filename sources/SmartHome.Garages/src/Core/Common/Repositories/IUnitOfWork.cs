@@ -1,10 +1,9 @@
 using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SmartHome.Core.Common.Repositories;
-
-using System.Data;
 
 public interface IUnitOfWork
 {

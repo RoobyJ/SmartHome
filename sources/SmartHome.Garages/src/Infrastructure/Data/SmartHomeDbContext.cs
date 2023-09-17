@@ -38,20 +38,23 @@ internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
   public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
     CancellationToken cancellationToken = default)
   {
-    this._dbContextTransaction = await this.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
-    return this._dbContextTransaction;
+    _dbContextTransaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+    return _dbContextTransaction;
   }
 
   public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
   {
-    if (this._dbContextTransaction == null) return;
+    if (_dbContextTransaction == null)
+    {
+      return;
+    }
 
-    await this._dbContextTransaction.CommitAsync(cancellationToken);
+    await _dbContextTransaction.CommitAsync(cancellationToken);
   }
 
   public virtual Task<int> SaveChangesAsync()
   {
-    return this.SaveChangesAsync(new CancellationToken());
+    return SaveChangesAsync(new CancellationToken());
   }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)

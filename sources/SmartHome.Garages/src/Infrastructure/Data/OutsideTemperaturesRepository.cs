@@ -5,7 +5,6 @@ using SmartHome.Core.Entities;
 
 namespace SmartHome.Infrastructure.Data;
 
-
 internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>, IOutsideTemperatureRepository
 {
   public OutsideTemperaturesRepository(SmartHomeDbContext dbContext) : base(dbContext)
@@ -14,7 +13,7 @@ internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>,
 
   public IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions)
   {
-    var query = this.GetAll();
+    var query = GetAll();
 
     if (queryOptions.AsNoTracking)
     {

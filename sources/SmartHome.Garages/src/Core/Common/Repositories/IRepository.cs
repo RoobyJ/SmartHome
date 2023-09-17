@@ -12,10 +12,10 @@ public interface IRepository
 public interface IRepository<TEntity> : IRepository where TEntity : IEntity
 {
   IQueryable<TEntity> GetAll();
-  
+
   Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-  
+
   Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
-  
+
   Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
 }

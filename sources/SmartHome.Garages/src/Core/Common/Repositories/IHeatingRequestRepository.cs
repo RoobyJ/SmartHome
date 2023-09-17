@@ -13,6 +13,6 @@ public class HeatingRequestQueryOptions
 public interface IHeatingRequestRepository : IRepository
 {
   IQueryable<HeatRequest> Get(HeatingRequestQueryOptions queryOptions);
-  
+
   Task AddAsync(HeatRequest entity, CancellationToken cancellationToken = default);
 }

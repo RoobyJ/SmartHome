@@ -18,7 +18,7 @@ public class GarageClient
     return JsonConvert.DeserializeObject<TemperatureDto>(contentString);
   }
 
-  public static async void ChangeHeaterStatus(string onOff, string ip)
+  public static async Task ChangeHeaterStatus(string onOff, string ip)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 

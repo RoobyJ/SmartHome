@@ -13,7 +13,6 @@ public class CyclicHeatingRequestQueryOptions
 public interface ICyclicHeatingRequestRepository : IRepository
 {
   IQueryable<CyclicHeatRequest> Get(CyclicHeatingRequestQueryOptions queryOptions);
-  
+
   Task AddAsync(CyclicHeatRequest entity, CancellationToken cancellationToken = default);
-  
 }
