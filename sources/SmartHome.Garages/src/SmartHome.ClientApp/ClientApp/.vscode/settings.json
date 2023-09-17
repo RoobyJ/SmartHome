@@ -1,0 +1,50 @@
+{
+    "cSpell.language": "en,pl",
+    "cSpell.words": [
+        "beforeall",
+        "bootstrapper",
+<<<<<<< HEAD:src/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+<<<<<<< Updated upstream:src/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+        "CMPL",
+        "codefusion",
+        "composables",
+        "Gitea",
+=======
+        "btns",
+        "codefusion",
+        "composables",
+        "iconsets",
+>>>>>>> Stashed changes:sources/SmartHome.Garages/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+=======
+        "composables",
+>>>>>>> develop:sources/SmartHome.Garages/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+        "materialdesignicons",
+        "metas",
+        "mgmt",
+<<<<<<< Updated upstream:src/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+        "CMPL",
+        "codefusion",
+        "Gitea",
+=======
+        "btns",
+        "codefusion",
+        "composables",
+        "iconsets",
+>>>>>>> Stashed changes:sources/SmartHome.Garages/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
+        "persistedstate",
+        "pinia",
+        "signin",
+        "signout",
+        "userinfo",
+        "Vetur",
+        "VITE",
+        "vuetify"
+    ],
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        ".vscode",
+        "dist"
+    ],
+    "files.eol": "\n"
+}
