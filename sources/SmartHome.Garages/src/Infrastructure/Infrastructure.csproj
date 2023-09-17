@@ -18,8 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartHome.Core\SmartHome.Core.csproj" />
-    <ProjectReference Include="..\SmartHome.Heater\SmartHome.Heater.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
 </Project>

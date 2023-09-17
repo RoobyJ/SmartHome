@@ -21,7 +21,7 @@ public class StartHeatingTimeCalculator
         var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay,
           listOfGarageTemperatureDtos[i].Temperature);
         if (startHeatTime == null) continue;
-        var startHeatingDate = heatTime.Value.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds ? heatTime.Value.AddDays(-1) + startHeatTime : heatTime + startHeatTime;
+        var startHeatingDate = heatTime.Value.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds ? heatTime.Value.AddDays(-1) + startHeatTime : heatTime.Value.Date + startHeatTime;
         listOfGarageStartHeatTimes.Add(new GarageStartHeatTime() { Id = i + 1, StartHeatTime = startHeatingDate });
       }
     }

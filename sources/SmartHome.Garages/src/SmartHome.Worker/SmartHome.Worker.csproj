@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartHome.Core\SmartHome.Core.csproj" />
-    <ProjectReference Include="..\SmartHome.Infrastructure\SmartHome.Infrastructure.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 </Project>
