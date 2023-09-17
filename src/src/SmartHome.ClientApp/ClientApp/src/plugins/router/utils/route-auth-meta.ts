@@ -1,3 +1,4 @@
+import type { OrganizationPermission, PermissionLevel, SystemPermission } from '@/modules/core/services/api/api.models';
 import { useAccountStore } from '@/modules/core/store/account-store';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -8,12 +9,22 @@ export interface AuthCheckResult {
     noAccessReason?: NoAccessReason;
 }
 
+export interface PermissionRequirement<T> {
+    permission: T;
+    minLevel: PermissionLevel;
+}
+
 export class RouteAuthMeta {
     public get requireUserDetails(): boolean {
         return !this.allowAnonymous;
     }
 
-    constructor(private readonly allowAnonymous: boolean, private readonly onlyAnonymous: boolean) {}
+    constructor(
+        private readonly allowAnonymous: boolean,
+        private readonly onlyAnonymous: boolean,
+        private readonly requiredOrganizationPermissions: PermissionRequirement<OrganizationPermission>[] | null,
+        private readonly requiredSystemPermissions: PermissionRequirement<SystemPermission>[] | null
+    ) {}
 
     public checkAccess(route: RouteLocationNormalized): AuthCheckResult {
         const { isLoggedIn: isAuthenticated } = useAccountStore();

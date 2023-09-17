@@ -1,13 +1,14 @@
 <template>
-    <v-container fluid>
+    <v-container fluid class="pa-0 pa-md-4">
         <v-container fluid class="pb-2">
-            <v-row dense>
-                <v-col cols="12" class="text-h4 dashboard-title">
+            <v-row dense justify="space-between">
+                <v-col class="text-h4 dashboard-title">
                     <v-avatar v-if="icon != null" size="40" rounded color="readonly-light">
                         <v-icon size="20" :icon="icon" />
                     </v-avatar>
-                    {{ t(title) }}
+                    <span class="ml-2" style="vertical-align: middle">{{ t(title) }}</span>
                 </v-col>
+                <v-col id="page-dashboard-actions" cols="auto" />
             </v-row>
         </v-container>
 
@@ -33,5 +34,6 @@ const icon = computed(() => route.meta.icon);
 .dashboard-title {
     // important is required to override text-h4
     font-size: 32px !important;
+    white-space: nowrap;
 }
 </style>

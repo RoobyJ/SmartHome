@@ -3,12 +3,20 @@
     "cSpell.words": [
         "beforeall",
         "bootstrapper",
+<<<<<<< Updated upstream:src/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
         "CMPL",
         "codefusion",
         "composables",
         "Gitea",
+=======
+        "btns",
+        "codefusion",
+        "composables",
+        "iconsets",
+>>>>>>> Stashed changes:sources/SmartHome.Garages/src/SmartHome.ClientApp/ClientApp/.vscode/settings.json
         "materialdesignicons",
         "metas",
+        "mgmt",
         "persistedstate",
         "pinia",
         "signin",

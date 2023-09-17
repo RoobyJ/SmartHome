@@ -12,7 +12,7 @@ export class RouteMetaBuilder {
         return {
             title: this.title,
             icon: this.icon,
-            authGuard: new RouteAuthMeta(this.allowAnonymousFlag, this.onlyAnonymousFlag),
+            authGuard: new RouteAuthMeta(this.allowAnonymousFlag, this.onlyAnonymousFlag, null, null),
             useDashboardLayout: this.useDashboardLayoutFlag,
         };
     }

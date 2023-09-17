@@ -4,8 +4,11 @@ import { useI18n } from 'vue-i18n';
 import { useDate } from 'vuetify/labs/date';
 
 import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import MainMenu from './modules/core/components/main-menu.vue';
+import ApiErrorDialog from './modules/core/components/api-error-dialog.vue';
+import TopBar from './modules/core/components/top-bar.vue';
 import { useRouterStore } from './modules/core/store/router-store';
 import PagePanelBase from './modules/shared/components/page-panel-base.vue';
 
@@ -24,14 +27,14 @@ const { t } = useI18n();
 const date = useDate();
 const currentYear = date.getYear(new Date());
 
-// const mainMenuVisible = ref(false);
+const mainMenuVisible = ref(false);
 </script>
 
 <template>
     <v-app theme="cmpl">
-        <!-- <main-menu v-if="useDashboardLayout" v-model="mainMenuVisible" /> -->
+        <main-menu v-if="useDashboardLayout" v-model="mainMenuVisible" />
 
-        <!-- <top-bar v-if="useDashboardLayout" @toggle-main-menu="mainMenuVisible = !mainMenuVisible" /> -->
+        <top-bar v-if="useDashboardLayout" @toggle-main-menu="mainMenuVisible = !mainMenuVisible" />
 
         <v-main>
             <page-panel-base v-if="initializing">
@@ -45,11 +48,13 @@ const currentYear = date.getYear(new Date());
             <router-view v-else v-slot="{ Component, route }">
                 <component :is="Component" :key="route.path" />
             </router-view>
+
+            <api-error-dialog />
         </v-main>
 
-        <v-footer v-if="useDashboardLayout" app elevation="5" color="drawer">
+        <v-footer v-if="useDashboardLayout" app class="px-5 px-md-8" color="drawer">
             <span class="text-truncate mr-2">
-                &copy; 2010 - {{ currentYear }} CMPL. {{ t('Core.AllRightsReserved') }}.
+                &copy; 2023 - {{ currentYear }} Jureczko Enterteiment. {{ t('Core.AllRightsReserved') }}.
             </span>
             <span class="text-no-wrap ml-auto">{{ version }}</span>
         </v-footer>

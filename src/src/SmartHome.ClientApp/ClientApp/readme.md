@@ -1,4 +1,4 @@
-# SmartHome
+# CMPL Identity Manager
 
 ## Quick start
 
@@ -42,7 +42,7 @@ Instead of `Vetur` the [Volar](https://marketplace.visualstudio.com/items?itemNa
 
 If you have other projects that still uses `Vetur` then you can enable `Volar` only for this workspace. Proceed with the following steps to configure your IDE:
 
-1. Open this project from the workspace file (`smart-home.code-workspace`)
+1. Open this project from the workspace file (`identity-manager.code-workspace`)
 2. If you have `Vetur` installed, then in the extensions panel disable this extension by clicking the `Disable (Workspace)` button
 
     - it will disable this extension only for this workspace

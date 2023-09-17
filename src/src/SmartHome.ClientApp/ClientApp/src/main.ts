@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './app.vue';
-import cmplCore from './plugins/cmpl-core';
+import { initializeComponents } from './modules/core/core.components';
 import i18n from './plugins/i18n';
 import pinia from './plugins/pinia';
 import router from './plugins/router';
@@ -11,7 +11,8 @@ app.use(i18n);
 app.use(router);
 app.use(pinia);
 app.use(vuetify);
-app.use(cmplCore);
+
+initializeComponents(app);
 
 router
     .isReady()

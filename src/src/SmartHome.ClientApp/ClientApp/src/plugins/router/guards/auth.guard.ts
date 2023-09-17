@@ -1,4 +1,4 @@
-import { accountClient } from '@/modules/core/services/api/account-client';
+import { AccountClient } from '@/modules/core/services/api-clients/account-client';
 import type { NavigationGuardWithThis } from 'vue-router';
 import { View } from '../view-definitions';
 
@@ -16,7 +16,7 @@ const guard: NavigationGuardWithThis<undefined> = async (to, from, next) => {
     }
 
     if (!authCheckResult.hasAccess && authCheckResult.noAccessReason === 'onlyAnonymous') {
-        next({ name: View.testView });
+        next({ name: View.profileView });
         return;
     }
 
@@ -26,7 +26,7 @@ const guard: NavigationGuardWithThis<undefined> = async (to, from, next) => {
     }
 
     // no user session active, go to login page
-    await accountClient.login();
+    AccountClient.login();
     next();
 };
 

@@ -1,4 +1,4 @@
-﻿namespace SmartHome.webapi.Models;
+﻿namespace SmartHome.webapi.Models.Dto;
 
 public class HeatRequestDto
 {

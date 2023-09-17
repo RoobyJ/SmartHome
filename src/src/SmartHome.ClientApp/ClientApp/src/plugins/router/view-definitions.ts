@@ -1,4 +1,11 @@
 export enum View {
-    testView = 'TestView',
-    test2View = 'Test2View',
+    profileView = 'ProfileView',
+    organizationView = 'OrganizationView',
+    organizationUsersView = 'OrganizationUsersView',
+    organizationAppsView = 'OrganizationAppsView',
+    organizationAcceptInvitationView = 'OrganizationAcceptInvitationView',
+    systemView = 'SystemView',
+    systemOrgsView = 'SystemOrgsView',
+    systemUsersView = 'SystemUsersView',
+    systemAppsView = 'SystemAppsView',
 }

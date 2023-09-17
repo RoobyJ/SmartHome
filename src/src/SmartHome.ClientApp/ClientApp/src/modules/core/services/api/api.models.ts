@@ -1,8 +1,10 @@
-export interface IdTokenClaims {
-    sub: string;
-    email: string;
-    name: string;
-    givenName: string;
-    familyName: string;
-    picture: string | null;
+export interface HeatRequestDto {
+    time: Date;
+}
+
+export interface OutsideTemperatureDto {
+    id: number;
+    date: Date;
+    temperature: number;
+    garageId: number;
 }

@@ -1,0 +1,43 @@
+@use 'vuetify/_settings';
+
+.v-card.v-card--in-dialog {
+    .v-card-title {
+        padding: 2rem 2rem 0.5rem !important;
+
+        &.center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    .v-card-text {
+        padding: 0.5rem 2rem 1rem !important;
+    }
+
+    .v-card-actions {
+        padding: 1rem 2rem 2rem !important;
+        justify-content: flex-end;
+
+        .v-btn {
+            &.v-btn-primary,
+            &.v-btn-secondary {
+                padding: 0 18px;
+            }
+        }
+    }
+
+    @media #{map-get(settings.$display-breakpoints, 'sm-and-up')} {
+        .v-card-title {
+            padding: 4rem 4rem 0.5rem !important;
+        }
+
+        .v-card-text {
+            padding: 0.5rem 4rem 1rem !important;
+        }
+
+        .v-card-actions {
+            padding: 2rem 4rem 3rem !important;
+        }
+    }
+}

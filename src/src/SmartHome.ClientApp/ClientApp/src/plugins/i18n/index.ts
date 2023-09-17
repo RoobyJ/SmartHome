@@ -51,4 +51,15 @@ export function setI18nLanguage(locale: string) {
     window?.document?.querySelector('html')?.setAttribute('lang', locale);
 }
 
+export function getCurrentLocaleInVuetifyFormat() {
+    switch (i18n.global.locale.value) {
+        case LocaleCode.enUs:
+            return 'en';
+        case LocaleCode.plPL:
+            return 'pl';
+    }
+
+    return 'pl';
+}
+
 export default setupI18n();

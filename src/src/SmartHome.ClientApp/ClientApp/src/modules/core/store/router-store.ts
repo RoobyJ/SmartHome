@@ -1,7 +1,7 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-export const useRouterStore = defineStore('router', () => {
+export const useRouterStore = defineStore('router-store', () => {
     const initializing = ref<boolean>(true);
     const initialized = computed(() => !initializing.value);
 

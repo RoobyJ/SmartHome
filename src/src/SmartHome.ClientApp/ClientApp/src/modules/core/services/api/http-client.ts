@@ -2,19 +2,19 @@ import i18n from '@/plugins/i18n';
 import { StringUtils } from '@cmpl/core';
 import ky from 'ky';
 import type { KyInstance } from 'node_modules/ky/distribution/types/ky';
-// import { useAccountStore } from '../../store/account-store';
-import { BadRequestError, ForbiddenError, InternalServerError, NotFoundError, UnauthorizedError } from './error.models';
+import {
+    BadRequestError,
+    ForbiddenError,
+    InternalServerError,
+    NotFoundError,
+    UnauthorizedError,
+} from '../errors/error.models';
 
 export const httpClient: KyInstance = ky.create({
     redirect: 'follow',
     hooks: {
         beforeRequest: [
             request => {
-                // const organizationIdContext = useAccountStore().organizationContext?.id;
-                // if (StringUtils.isNotEmpty(organizationIdContext)) {
-                //     request.headers.set('Organization-Id-Context', organizationIdContext);
-                // }
-
                 if (StringUtils.isNotEmpty(i18n.global.locale.value)) {
                     request.headers.set('Accept-Language', i18n.global.locale.value);
                 }

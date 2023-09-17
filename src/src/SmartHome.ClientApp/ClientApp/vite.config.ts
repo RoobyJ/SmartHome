@@ -66,13 +66,7 @@ export default defineConfig(({ command, mode }): UserConfig => {
                     changeOrigin: true,
                     secure: false,
                     rewrite: path => path.replace(/^\/api/, '/api'),
-                },
-                '/account': {
-                    target: 'https://localhost:3021',
-                    changeOrigin: true,
-                    secure: false,
-                    rewrite: path => path.replace(/^\/account/, '/account'),
-                },
+                }
             },
         },
         // Resolver
