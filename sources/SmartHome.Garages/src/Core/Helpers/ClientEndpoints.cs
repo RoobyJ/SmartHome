@@ -18,12 +18,12 @@ public static class ClientEndpoints
     {
       return GetBase(ip) + "/temperature";
     }
-    
+
     public static string Heater(string ip)
     {
       return GetBase(ip) + "/heater";
     }
-    
+
     public static string HeaterStatus(string ip)
     {
       return GetBase(ip) + "/heater-status";

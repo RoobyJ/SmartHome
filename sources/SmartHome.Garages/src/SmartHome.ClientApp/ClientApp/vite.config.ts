@@ -1,25 +1,25 @@
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath, URL } from 'node:url';
+import {dirname, resolve} from 'node:path';
+import {fileURLToPath, URL} from 'node:url';
 
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import vue from '@vitejs/plugin-vue';
-import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig, type UserConfig } from 'vite';
-import { checker } from 'vite-plugin-checker';
+import {visualizer} from 'rollup-plugin-visualizer';
+import {defineConfig, type UserConfig} from 'vite';
+import {checker} from 'vite-plugin-checker';
 import mkcert from 'vite-plugin-mkcert';
-import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
+import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify';
 
 /**
  * Vite Configure
  *
  * @see {@link https://vitejs.dev/config/}
  */
-export default defineConfig(({ command, mode }): UserConfig => {
+export default defineConfig(({command, mode}): UserConfig => {
     const config: UserConfig = {
         // https://vitejs.dev/config/shared-options.html#base
         base: '/',
         // https://vitejs.dev/config/shared-options.html#define
-        define: { 'process.env': {} },
+        define: {'process.env': {}},
         plugins: [
             // Vue3
             vue({
@@ -38,7 +38,7 @@ export default defineConfig(({ command, mode }): UserConfig => {
             // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#vite-plugin-vuetify
             vuetify({
                 autoImport: true,
-                styles: { configFile: 'src/styles/settings.scss' },
+                styles: {configFile: 'src/styles/settings.scss'},
             }),
             // vite-plugin-checker
             // https://github.com/fi3ework/vite-plugin-checker
@@ -114,10 +114,10 @@ export default defineConfig(({ command, mode }): UserConfig => {
                         mode === 'analyze'
                             ? // rollup-plugin-visualizer
                               // https://github.com/btd/rollup-plugin-visualizer
-                              visualizer({
-                                  open: true,
-                                  filename: 'dist/stats.html',
-                              })
+                            visualizer({
+                                open: true,
+                                filename: 'dist/stats.html',
+                            })
                             : undefined,
                     ],
                 },

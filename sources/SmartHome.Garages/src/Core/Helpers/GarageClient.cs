@@ -2,7 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SmartHome.Core.Dtos;
+using SmartHome.Core.DTos;
+using SmartHome.Core.DTOs;
 
 namespace SmartHome.Core.Helpers;
 
@@ -17,7 +18,7 @@ public class GarageClient
     return JsonConvert.DeserializeObject<TemperatureDto>(contentString);
   }
 
-  public static async void ChangeHeaterStatus(string onOff, string ip)
+  public static async Task ChangeHeaterStatus(string onOff, string ip)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 

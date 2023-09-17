@@ -5,27 +5,27 @@ using TheCloudNativeWebApp.Bff.Authentication.OpenIdConnect;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-       .AddSecurityBff(options =>
-       {
-           var customHostName = builder.Configuration.GetValue<string?>("ReplaceHostWithUri");
-           if (!string.IsNullOrWhiteSpace(customHostName))
-           {
-               options.SetCustomHostName(new Uri(customHostName));
-           }
+  .AddSecurityBff(options =>
+  {
+    var customHostName = builder.Configuration.GetValue<string?>("ReplaceHostWithUri");
+    if (!string.IsNullOrWhiteSpace(customHostName))
+    {
+      options.SetCustomHostName(new Uri(customHostName));
+    }
 
-           options.SessionCookieName = "datacarweb.session";
+    options.SessionCookieName = "datacarweb.session";
 
-           var idpOptions = builder.Configuration.GetSection("OpenIDConnect").Get<OpenIdConnectConfig>()!;
-           options.RegisterIdentityProvider<IdentityProvider, OpenIdConnectConfig>(idpOptions);
-           options.LoadYarpFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-       })
-       .AddHttpContextAccessor();
+    var idpOptions = builder.Configuration.GetSection("OpenIDConnect").Get<OpenIdConnectConfig>()!;
+    options.RegisterIdentityProvider<IdentityProvider, OpenIdConnectConfig>(idpOptions);
+    options.LoadYarpFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+  })
+  .AddHttpContextAccessor();
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHsts();
+  app.UseHsts();
 }
 
 app.UseHttpsRedirection();

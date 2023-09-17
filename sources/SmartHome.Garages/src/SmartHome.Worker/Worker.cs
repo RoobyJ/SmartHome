@@ -23,14 +23,14 @@ public class Worker : BackgroundService
     WorkerSettings settings)
   {
     _logger = logger;
-    _heatingService = heatingService; 
+    _heatingService = heatingService;
     _settings = settings;
   }
 
   protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
     _logger.LogInformation("SmartHome.Worker service starting at: {time}", DateTimeOffset.Now);
-    
+
     while (!stoppingToken.IsCancellationRequested)
     {
       var timer = new PeriodicTimer(TimeSpan.FromSeconds(_settings.DelaySeconds));

@@ -13,6 +13,6 @@ public class HeatingLogQueryOptions
 public interface IHeatingLogRepository : IRepository
 {
   IQueryable<HeatingLog> Get(GarageQueryOptions queryOptions);
-  
+
   Task AddAsync(HeatingLog entity, CancellationToken cancellationToken = default);
 }

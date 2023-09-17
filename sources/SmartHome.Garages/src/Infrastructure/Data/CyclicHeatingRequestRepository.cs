@@ -11,9 +11,9 @@ internal class CyclicHeatingRequestRepository : EfRepository<CyclicHeatRequest>,
   {
   }
 
-  public IQueryable<CyclicHeatRequest> Get(GarageQueryOptions queryOptions)
+  public IQueryable<CyclicHeatRequest> Get(CyclicHeatingRequestQueryOptions queryOptions)
   {
-    var query = this.GetAll();
+    var query = GetAll();
 
     if (queryOptions.AsNoTracking)
     {

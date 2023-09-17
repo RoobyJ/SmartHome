@@ -5,13 +5,13 @@ using SmartHome.Core.Entities;
 
 namespace SmartHome.Infrastructure.Data;
 
-internal class HeatingLogRepository : EfRepository<HeatingLog>, IHeatingLogRepository
+internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>, IOutsideTemperatureRepository
 {
-  public HeatingLogRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public OutsideTemperaturesRepository(SmartHomeDbContext dbContext) : base(dbContext)
   {
   }
 
-  public IQueryable<HeatingLog> Get(GarageQueryOptions queryOptions)
+  public IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions)
   {
     var query = GetAll();
 

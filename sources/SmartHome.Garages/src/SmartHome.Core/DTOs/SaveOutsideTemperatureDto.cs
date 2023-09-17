@@ -1,4 +1,4 @@
-﻿namespace SmartHome.webapi.Models;
+﻿namespace SmartHome.Core.DTOs;
 
 public class SaveOutsideTemperatureDto
 {
