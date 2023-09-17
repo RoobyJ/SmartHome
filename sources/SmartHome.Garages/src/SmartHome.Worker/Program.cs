@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
 using SmartHome.Core.Services;
 using SmartHome.Heater.Settings;
@@ -24,6 +25,7 @@ public class Program
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IHeatingService, HeatingService>();
         services.AddSingleton<IServiceLocator, ServiceScopeFactoryLocator>();
+        services.AddTransient<StartHeatingTimeCalculator>();
 
         // Infrastructure.ContainerSetup
         services.AddDbContext(hostContext.Configuration);

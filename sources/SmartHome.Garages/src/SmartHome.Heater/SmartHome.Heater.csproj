@@ -6,7 +6,7 @@
   </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SmartHome.Core\SmartHome.Core.csproj" />
+      <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

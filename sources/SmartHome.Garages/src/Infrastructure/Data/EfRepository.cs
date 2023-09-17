@@ -26,7 +26,7 @@ internal class EfRepository<T>: EfRepository, IRepository<T> where T : class, IE
     _dbContext = dbContext;
   }
   
-  protected DbSet<T> DbSet => this._dbContext.Set<T>();
+  private DbSet<T> DbSet => this._dbContext.Set<T>();
 
   public virtual IQueryable<T> GetAll()
   {
