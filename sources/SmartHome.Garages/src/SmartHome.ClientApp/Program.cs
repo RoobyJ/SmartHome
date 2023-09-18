@@ -34,7 +34,6 @@ app.UseHttpsRedirection();
 // app.UseHttpLogging();
 
 app.UseRouting();
-app.UseSecurityBff();
 
 // serve static files as a fallback, so if route has not matched any configured reverse proxy path
 // then emit static files (SPA app) and fallback to index.html

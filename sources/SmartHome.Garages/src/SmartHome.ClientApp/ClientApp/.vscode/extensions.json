@@ -1,15 +1,8 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "lokalise.i18n-ally",
-    "lukas-tr.materialdesignicons-intellisense",
     "Vue.volar",
     "Vue.vscode-typescript-vue-plugin",
-    "streetsidesoftware.code-spell-checker-polish",
-    "streetsidesoftware.code-spell-checker"
-  ],
-  "unwantedRecommendations": [
-    "octref.vetur"
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }

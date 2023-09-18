@@ -1,89 +1,52 @@
-# CMPL Identity Manager
+# Smart Home
 
-## Quick start
+This template should help get you started developing with Vue 3 in Vite.
 
-### Gitea package registry
+## Recommended IDE Setup
 
-The described steps are needed to be done only once on your PC.
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-The `@cmpl/...` packages are hosted on the private gitea registry, so the access needs to be set up correctly, before installing and updating the packages.
+## Type Support for `.vue` Imports in TS
 
-Node needs to trust the certificates to https://hal.codefusion.pl registry, so you need to set up the `NODE_EXTRA_CA_CERTS` environment variable.
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
 
-1. Go to editor of the environment variables for your local user
-2. Add `NODE_EXTRA_CA_CERTS` variable with value pointing to the certificate file
-    - the file is located on this repository in the `repo/certs/hal.codefusion.pl.pem`
-    - example value: `c:/repo/certs/hal.codefusion.pl.pem`
-3. Save the changes. Restart any cmd/terminal/vscode instance to make the changes available in the terminals.
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
-The next steps is to configure the access token, that is required to access the registry.
+1. Disable the built-in TypeScript Extension
+    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
-1. Go to [gitea user settings](https://hal.codefusion.pl/user/settings/applications)
-2. Create new access token
-    - provide some descriptive name
-    - select scopes: `write:package` and `read:package`
-3. Store the token in a safe place (do not commit it to the repository)
-4. Set the token in your local user config so it will be always available on your PC and not committed to the repo (replace the TOKEN with your token)
-    - `npm config set --location user //hal.codefusion.pl/api/packages/w009/npm/:_authToken=TOKEN`
+## Customize configuration
 
-### Local dev server
+See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-```bash
-# install the packages
-npm install --legacy-peer-deps
+## Project Setup
 
-# start dev server
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
 npm run dev
 ```
 
-## VSCode IDE Setup
+### Type-Check, Compile and Minify for Production
 
-Instead of `Vetur` the [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar) extension should be used.
+```sh
+npm run build
+```
 
-If you have other projects that still uses `Vetur` then you can enable `Volar` only for this workspace. Proceed with the following steps to configure your IDE:
+### Run Unit Tests with [Vitest](https://vitest.dev/)
 
-1. Open this project from the workspace file (`identity-manager.code-workspace`)
-2. If you have `Vetur` installed, then in the extensions panel disable this extension by clicking the `Disable (Workspace)` button
+```sh
+npm run test:unit
+```
 
-    - it will disable this extension only for this workspace
+### Lint with [ESLint](https://eslint.org/)
 
-3. Install the [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar) extension.
-4. Install the [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) extension.
-5. Disable the `Volar` extension by clicking the `Disable` button.
-6. Enable the `Volar` extension by clicking the `Enable (Workspace)` button
-
-After the above steps the [Volar Takeover Mode](https://vuejs.org/guide/typescript/overview.html#volar-takeover-mode) should be enabled for better performance.
-
-1. Open command palette with `Ctrl + Shift + P`
-2. Type `built` and select `Extensions: Show Built-in Extensions`
-3. Type `typescript` in the extension search box (do not remove `@builtin` prefix)
-4. Click the little gear icon of `TypeScript and JavaScript Language Features`, and select `Disable (Workspace)`
-5. Reload the workspace. Takeover mode will be enabled when you open a Vue or TS file
-    - to verify: open any typescript file. On the bottom right corner there should be information which typescript version is used with a value `(takeover)`. For example: `5.0.4 (takeover)`
-
-## Commands
-
-To run a command type `npm run <Command>`.
-
-| Command       | Description                                        |
-| ------------- | -------------------------------------------------- |
-| dev           | Start dev-server.                                  |
-| clean         | Clear dev-server cache.                            |
-| build         | Build for production with type checking.           |
-| build:analyze | Execute Bundle Analyzer.                           |
-| build:clean   | Clear production build files.                      |
-| build-only    | Build for production without type checking.        |
-| preview       | Run the program generated by the production build. |
-| lint          | Run ESLint and prettier.                           |
-| test          | Run vitest                                         |
-| test:unit     | Run Unit test                                      |
-| type-check    | Check vue markup.                                  |
-
-## Features
-
--   [SFCs (Signle File Components)](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) that uses the `<script setup>` syntax
--   [Vite](https://vitejs.dev/guide/) as a build tool and for dev server
-    -   when the dev server is running, it is checked in real time by [vite-plugin-checker](https://github.com/fi3ework/vite-plugin-checker)
--   [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) for code linting and formatting
--   [Pinia](https://pinia.vuejs.org/core-concepts/) library is used for state management
--   [Composition API](https://vuejs.org/guide/extras/composition-api-faq.html)
+```sh
+npm run lint
+```
