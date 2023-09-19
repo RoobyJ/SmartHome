@@ -13,7 +13,7 @@ builder.Services
       options.SetCustomHostName(new Uri(customHostName));
     }
 
-    options.SessionCookieName = "datacarweb.session";
+    options.SessionCookieName = "smarthome.session";
 
     var idpOptions = builder.Configuration.GetSection("OpenIDConnect").Get<OpenIdConnectConfig>()!;
     options.RegisterIdentityProvider<IdentityProvider, OpenIdConnectConfig>(idpOptions);
@@ -34,6 +34,7 @@ app.UseHttpsRedirection();
 // app.UseHttpLogging();
 
 app.UseRouting();
+app.UseSecurityBff();
 
 // serve static files as a fallback, so if route has not matched any configured reverse proxy path
 // then emit static files (SPA app) and fallback to index.html
