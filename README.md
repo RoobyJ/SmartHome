@@ -33,3 +33,7 @@ Any advise for common problems or issues.
 ```
 command to run if program contains helper info
 ```
+
+## Contributing
+
+See anything strange in my code or you have an idea how something to improve? Just make me an issue or do it self and make a pull request :)
