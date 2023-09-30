@@ -13,7 +13,7 @@ builder.Services
       options.SetCustomHostName(new Uri(customHostName));
     }
 
-    options.SessionCookieName = "datacarweb.session";
+    options.SessionCookieName = "smarthome.session";
 
     var idpOptions = builder.Configuration.GetSection("OpenIDConnect").Get<OpenIdConnectConfig>()!;
     options.RegisterIdentityProvider<IdentityProvider, OpenIdConnectConfig>(idpOptions);

@@ -3,6 +3,7 @@ using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
+using SmartHome.webapi.Mappers;
 
 namespace SmartHome.webapi.Controllers;
 
@@ -34,10 +35,18 @@ public class GarageController : ApiControllerBase
   [HttpGet("garages")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<IEnumerable<HeatRequestDto>>> GetGarages()
+  public async Task<ActionResult<ICollection<GarageDetailsDto>>> GetGarages(int id)
   {
     var garages = await _garageService.GetGarages();
-    return Ok(garages);
+    var result = new List<GarageDetailsDto>();
+    
+    foreach (var garage in garages)
+    {
+      var response = await GarageClient.GetHeaterStatus(garage.Ip);
+      result.Add(GarageConverters.GarageToGarageDetailsDto(garage, response));
+    }
+    
+    return Ok(result);
   }
 
   [HttpGet("heatTimeRequest")]

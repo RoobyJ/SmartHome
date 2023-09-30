@@ -20,6 +20,9 @@ public static class ServiceCollectionSetupExtensions
   public static void AddRepositories(this IServiceCollection services)
   {
     services.AddScoped<IGarageRepository, GarageRepository>();
+    services.AddScoped<IHeatingLogRepository, HeatingLogRepository>();
+    services.AddScoped<IHeatingRequestRepository, HeatingRequestRepository>();
+    services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
   }
 
   public static void AddUrlCheckingServices(this IServiceCollection services)
