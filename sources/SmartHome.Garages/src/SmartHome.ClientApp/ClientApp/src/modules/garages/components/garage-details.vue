@@ -1,0 +1,1 @@
+<template>garage details</template>
