@@ -4,6 +4,6 @@ namespace SmartHome.Core.DTOs;
 
 public class SaveHeatRequestDto
 {
-    public DateTime TimeToHeat { get; set; }
+    public DateTime EndHeatTime { get; set; }
     public int Cyclic { get; set; }
 }

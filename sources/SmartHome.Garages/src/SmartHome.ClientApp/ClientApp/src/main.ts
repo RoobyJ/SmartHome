@@ -1,19 +1,17 @@
-import { createApp } from 'vue';
-import App from './app.vue';
-import cmplCore from './plugins/cmpl-core';
-import i18n from './plugins/i18n';
-import pinia from './plugins/pinia';
-import router from './plugins/router';
-import vuetify from './plugins/vuetify';
+import './assets/main.css'
 
-const app = createApp(App);
-app.use(i18n);
-app.use(router);
-app.use(pinia);
-app.use(vuetify);
-app.use(cmplCore);
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { registerPlugins } from './plugins'
 
-router
-    .isReady()
-    .then(() => app.mount('#app'))
-    .catch(e => console.error(e));
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+
+registerPlugins(app)
+
+app.mount('#app')
