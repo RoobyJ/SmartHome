@@ -1,14 +1,24 @@
 <template>
-<v-container>
-    <v-list>
-        <v-list-item>
-            <garage-details></garage-details>
-        </v-list-item>
+  <v-container>
+    <v-list v-for="garage in garages" :key="garage.id">
+      <v-list-item>
+        <garage-details :garage-name="garage.name" :heater-status="garage.heaterStatus" />
+      </v-list-item>
     </v-list>
-</v-container>
+  </v-container>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import GarageDetails from '../components/garage-details.vue'
-// todo get list of all garages with details and display it
+import { GaragesClient } from '@/modules/core/services/api-clients/garages-client'
+import type { GarageDetailsDto } from '@/modules/core/services/api/api.models'
+
+const garages = ref<GarageDetailsDto[] | null>(null)
+
+onMounted(async () => {
+  const response = await GaragesClient.getApplications()
+  if (response.isSuccess) garages.value = response.data
+})
 </script>
+@/modules/core/services/xdcopy
