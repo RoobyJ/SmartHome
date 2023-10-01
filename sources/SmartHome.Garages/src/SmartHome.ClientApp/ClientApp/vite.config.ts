@@ -46,7 +46,7 @@ export default defineConfig({
   server: {
     https: true,
     port: 5002,
-    open: false,
+    open: true,
     strictPort: true,
     proxy: {
       '/api': {

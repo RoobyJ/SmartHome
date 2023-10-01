@@ -1,20 +1,19 @@
 <template>
-  <v-container>
+  <div>
     <div>{{ garageName }}</div>
-    <div>{{ heaterStatus }}<v-icon :color="heaterStatus ? 'green' : 'red'">mdi:circle</v-icon></div>
-  </v-container>
+    <div>Heater status: <v-icon :color="heaterStatus ? 'green' : 'red'">mdi-circle</v-icon></div>
+  </div>
 </template>
 
 <script setup lang="ts">
-
 defineProps({
-    garageName: {
-        type: String,
-        required: true,
-    },
-    heaterStatus: {
-        type: Boolean,
-        required: true,
-    },
-});
+  garageName: {
+    type: String,
+    required: true
+  },
+  heaterStatus: {
+    type: Boolean,
+    required: true
+  }
+})
 </script>

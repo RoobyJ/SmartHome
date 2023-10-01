@@ -1,0 +1,3 @@
+<template>
+    garage page
+</template>

@@ -11,10 +11,10 @@ export class GaragesClient {
     /** Gets application for the current organization */
     public static async getApplications(): Promise<ApiResponse<GarageDetailsDto[]>> {
         const url = GaragesClient.urlBase + '/garages';
-        const request = httpClient.get(url).json<ApiResponse<GarageDetailsDto[]>>();
+        const request = httpClient.get(url).json<GarageDetailsDto[]>();
         const apiResponse = await createApiResponse(request);
 
-        if (apiResponse.isSuccess) return apiResponse.data;
+        if (apiResponse.isSuccess) return apiResponse;
 
         const { processError } = useErrorStore();
         await processError(apiResponse.error);
