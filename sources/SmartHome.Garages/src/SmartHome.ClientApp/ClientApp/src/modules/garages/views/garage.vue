@@ -1,1 +1,0 @@
-<template>garage</template>

@@ -45,6 +45,16 @@ export default defineConfig({
   },
   server: {
     https: true,
-    port: 3000,
+    port: 5002,
+    open: true,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'https://localhost:5001',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/api/, '/api'),
+      },
+    },
   },
 })

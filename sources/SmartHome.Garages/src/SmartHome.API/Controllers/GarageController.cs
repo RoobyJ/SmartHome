@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Helpers;
@@ -7,7 +8,7 @@ using SmartHome.webapi.Mappers;
 
 namespace SmartHome.webapi.Controllers;
 
-[Route("garage/{id:int}")]
+[Route("api")]
 public class GarageController : ApiControllerBase
 {
   private readonly IGarageService _garageService;
@@ -19,7 +20,7 @@ public class GarageController : ApiControllerBase
     _garageService = garageService;
   }
 
-  [HttpPost("heatTimeRequest/save")]
+  [HttpPost("{id:int}/heatTimeRequest/save")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> SaveHeatTimeRequest(int id, HeatRequestDto request)
   {
@@ -35,21 +36,13 @@ public class GarageController : ApiControllerBase
   [HttpGet("garages")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<ICollection<GarageDetailsDto>>> GetGarages(int id)
+  public async Task<ActionResult<ICollection<GarageDetailsDto>>> GetGarages(CancellationToken cancellationToken)
   {
-    var garages = await _garageService.GetGarages();
-    var result = new List<GarageDetailsDto>();
-    
-    foreach (var garage in garages)
-    {
-      var response = await GarageClient.GetHeaterStatus(garage.Ip);
-      result.Add(GarageConverters.GarageToGarageDetailsDto(garage, response));
-    }
-    
-    return Ok(result);
+    var garages = await _garageService.GetGarages(cancellationToken);
+    return Ok(garages);
   }
 
-  [HttpGet("heatTimeRequest")]
+  [HttpGet("{id:int}/heatTimeRequest")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<IEnumerable<HeatRequestDto>>> GetHeatTimeRequests(int id)
@@ -69,7 +62,7 @@ public class GarageController : ApiControllerBase
     return Ok(heatTimeRequests);
   }
 
-  [HttpGet("Temperatures")]
+  [HttpGet("{id:int}/Temperatures")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id)
@@ -89,7 +82,7 @@ public class GarageController : ApiControllerBase
     return Ok();
   }
 
-  [HttpGet("CyclicHeatTimes")]
+  [HttpGet("{id:int}/CyclicHeatTimes")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<GarageCyclicHeatRequestsDto>> GetCyclicHeatTimes(int id)
@@ -109,7 +102,7 @@ public class GarageController : ApiControllerBase
     return Ok(garageCyclicHeatRequests);
   }
 
-  [HttpPut("CyclicHeatTimes/save")]
+  [HttpPut("{id:int}/CyclicHeatTimes/save")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   public async Task<ActionResult> UpdateCyclicHeatTimes(int id, CyclicHeatRequestsDto requestDto)
   {
@@ -128,7 +121,7 @@ public class GarageController : ApiControllerBase
     return NoContent();
   }
 
-  [HttpPatch("Heater")]
+  [HttpPatch("{id:int}/Heater")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult<string>> SetHeatingOn(int id)
   {

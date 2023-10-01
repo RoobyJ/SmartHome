@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/modules/home/views/home-page.vue'
 import GarageListView from '@/modules/garages/views/garage-list.vue'
+import GaragePageView from '@/modules/garages/views/garage-page.vue'
 import { View } from './view-definitions';
 
 const router = createRouter({
@@ -14,8 +15,16 @@ const router = createRouter({
     {
       path: '/garages',
       name: View.garageListView,
-      component: GarageListView
-    }
+      component: GarageListView,
+      children: [
+        {
+          path: ':garageId/garage',
+          name: View.garageView,
+          component: GaragePageView
+        }
+      ]
+    },
+    
   ]
 })
 

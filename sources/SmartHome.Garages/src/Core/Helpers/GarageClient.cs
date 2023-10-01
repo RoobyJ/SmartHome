@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -29,6 +30,7 @@ public class GarageClient
   public static async Task<GarageHeaterStatusDto> GetHeaterStatus(string ip)
   {
     var response = await Client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip));
+    Console.Write(response);
     var contentString = await response.Content.ReadAsStringAsync();
     return JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
   }

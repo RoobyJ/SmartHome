@@ -1,3 +1,5 @@
+using SmartHome.Core.Interfaces;
+using SmartHome.Core.Services;
 using SmartHome.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen(c => { c.ResolveConflictingActions(apiDescription
 builder.Services.AddDbContext(builder.Configuration);
 
 builder.Services.AddRepositories();
+
+builder.Services.AddScoped<IGarageService, GarageService>();
 
 var app = builder.Build();
 
@@ -39,5 +43,6 @@ if (!app.Environment.IsDevelopment())
 {
   app.UseHttpsRedirection();
 }
+
 
 app.Run();
