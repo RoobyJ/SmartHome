@@ -8,11 +8,8 @@ namespace SmartHome.Core.Interfaces;
 
 public interface IGarageService
 {
-  public Task SaveHeatTimeRequest(int id, HeatRequestDto heatRequest);
-  public Task<List<HeatRequest>> GetHeatTimeRequests(int id);
-  public Task<ICollection<GarageDetailsDto>> GetGarages(CancellationToken cancellationToken);
-  public Task<List<OutsideTemperature>> GetTemperatures(int id);
-  public Task<Garage> GetGarageById(int id);
-  public Task CreateOrUpdateCyclicHeatRequests(int id, CyclicHeatRequestsDto requestsDto);
-  public Task<CyclicHeatRequest> GetCyclicHeatRequests(int id);
+  public Task<ICollection<GarageDetailsDto>> GetGarages(CancellationToken ct);
+  public Task<List<OutsideTemperature>> GetTemperatures(int id, CancellationToken ct);
+  public Task<Garage> GetGarageById(int id, CancellationToken ct);
+  
 }

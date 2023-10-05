@@ -23,7 +23,7 @@ const garages = ref<GarageDetailsDto[] | null>(null)
 const router  = useRouter();
 
 async function openGarage(id: number): Promise<any> {
-  await router.push({ name: View.garageView, params: { garageId: id }  });
+  await router.push({ name: View.garagePageView, params: { garageId: id } });
 }
 
 onMounted(async () => {

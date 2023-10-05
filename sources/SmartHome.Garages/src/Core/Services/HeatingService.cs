@@ -72,12 +72,12 @@ public class HeatingService : IHeatingService
   private List<GarageHeatingTime> FindClosestHeatTime(List<Garage> garages)
   {
     using var scope = _serviceScopeFactoryLocator.CreateScope();
-    var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatingRequestRepository>();
-    var heatingRepository = scope.ServiceProvider.GetService<IHeatingRequestRepository>();
+    var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatingRequestRepository<CyclicHeatRequest>>();
+    var heatingRepository = scope.ServiceProvider.GetService<IHeatRequestRepository<HeatRequest>>();
     List<GarageHeatingTime> garagesClosestHeatingTimes = new();
     foreach (var garage in garages)
     {
-      var customHeatRequest = heatingRepository.Get(new HeatingRequestQueryOptions { AsNoTracking = true })
+      var customHeatRequest = heatingRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
         .Where(item => item.Id == garage.Id).MinBy(item => Math.Abs((item.HeatRequest1 - DateTime.Now).Ticks));
 
       var cyclicHeatRequest =

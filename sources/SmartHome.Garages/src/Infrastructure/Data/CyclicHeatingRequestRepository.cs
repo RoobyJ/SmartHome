@@ -5,7 +5,7 @@ using SmartHome.Core.Entities;
 
 namespace SmartHome.Infrastructure.Data;
 
-internal class CyclicHeatingRequestRepository : EfRepository<CyclicHeatRequest>, ICyclicHeatingRequestRepository
+internal class CyclicHeatingRequestRepository : EfRepository<CyclicHeatRequest>, ICyclicHeatingRequestRepository<CyclicHeatRequest>
 {
   public CyclicHeatingRequestRepository(SmartHomeDbContext dbContext) : base(dbContext)
   {

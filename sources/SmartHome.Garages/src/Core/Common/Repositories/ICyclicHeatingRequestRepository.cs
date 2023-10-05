@@ -10,9 +10,11 @@ public class CyclicHeatingRequestQueryOptions
   public bool AsNoTracking { get; set; }
 }
 
-public interface ICyclicHeatingRequestRepository : IRepository
+public interface ICyclicHeatingRequestRepository<TEntity> : IRepository where TEntity : IEntity
 {
-  IQueryable<CyclicHeatRequest> Get(CyclicHeatingRequestQueryOptions queryOptions);
+  IQueryable<TEntity> Get(CyclicHeatingRequestQueryOptions queryOptions);
 
-  Task AddAsync(CyclicHeatRequest entity, CancellationToken cancellationToken = default);
+  Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+  
+  Task UpdateAsync(TEntity entity, CancellationToken ct = default);
 }

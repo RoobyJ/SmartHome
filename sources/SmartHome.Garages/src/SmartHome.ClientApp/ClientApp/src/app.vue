@@ -15,7 +15,9 @@ const version = import.meta.env.VITE_APP_VERSION ?? 'unknown version'
     <top-bar @toggle-main-menu="mainMenuVisible = !mainMenuVisible" />
 
     <v-main>
-      <RouterView />
+      <router-view v-slot="{ Component, route }">
+        <component :is="Component" :key="route.path" />
+      </router-view>
     </v-main>
 
     <v-footer app elevation="5" color="drawer">

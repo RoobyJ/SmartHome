@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartHome.Core.Common.Repositories;
+using SmartHome.Core.Entities;
 using SmartHome.Core.Interfaces;
 using SmartHome.Infrastructure.Data;
 using SmartHome.Infrastructure.Http;
@@ -21,7 +22,8 @@ public static class ServiceCollectionSetupExtensions
   {
     services.AddScoped<IGarageRepository, GarageRepository>();
     services.AddScoped<IHeatingLogRepository, HeatingLogRepository>();
-    services.AddScoped<IHeatingRequestRepository, HeatingRequestRepository>();
+    services.AddScoped<IHeatRequestRepository<HeatRequest>, HeatRequestRepository>();
+    services.AddScoped<ICyclicHeatingRequestRepository<CyclicHeatRequest>, CyclicHeatingRequestRepository>();
     services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
   }
 
