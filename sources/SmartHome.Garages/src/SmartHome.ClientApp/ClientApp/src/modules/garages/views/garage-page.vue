@@ -16,10 +16,11 @@
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client';
 import HeatTaskItem from '../components/heat-task-item.vue';
 import { onMounted, ref } from 'vue';
+import type { CyclicHeatRequestDto } from '@/modules/core/services/api/api.models';
 
-const items = ref<number>(1);
+const items = ref<CyclicHeatRequestDto | null>(null);
 const loadItems = async() => {
-    const response = GarageClient.getGarages();
+    const response = GarageClient.getCyclicHeatRequests();
 }
 
 const openAddTaskDialog = () => {

@@ -9,11 +9,7 @@
     <template #append>
       <v-menu>
         <template #activator="{ props }">
-          <v-btn class="mr-md-2" icon v-bind="props">
-            <v-avatar color="primary" size="small">
-                <v-icon>mdi-account</v-icon>
-            </v-avatar>
-          </v-btn>
+          <v-btn class="mr-md-2" icon="mdi-settings" v-bind="props" />
         </template>
 
         <v-card min-width="300">
