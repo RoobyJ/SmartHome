@@ -27,16 +27,16 @@ public class Worker : BackgroundService
     _settings = settings;
   }
 
-  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  protected override async Task ExecuteAsync(CancellationToken ct)
   {
     _logger.LogInformation("SmartHome.Worker service starting at: {time}", DateTimeOffset.Now);
 
-    while (!stoppingToken.IsCancellationRequested)
+    while (!ct.IsCancellationRequested)
     {
       var timer = new PeriodicTimer(TimeSpan.FromSeconds(_settings.DelaySeconds));
-      while (await timer.WaitForNextTickAsync(stoppingToken))
+      while (await timer.WaitForNextTickAsync(ct))
       {
-        await _heatingService.ExecuteAsync();
+        await _heatingService.ExecuteAsync(ct);
       }
     }
 

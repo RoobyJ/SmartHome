@@ -36,6 +36,16 @@ public class HeatRequestService : IHeatRequestService
       .ToListAsync(ct);
   }
 
+  public async Task UpdateHeatRequest(int id, HeatRequestDto request, CancellationToken ct)
+  {
+    var heatRequest = await this._heatRequestRepository.Get(new HeatRequestQueryOptions()).Where(i => i.GarageId == id)
+      .FirstAsync(ct);
+    //TODO: this method and the cyclic one must be corrected, its not working
+
+    await this._heatRequestRepository.UpdateAsync(heatRequest, ct);
+    await this._heatRequestRepository.UnitOfWork.SaveChangesAsync(ct);
+  }
+
   public async Task DeleteHeatTimeRequest(int garageId, int requestId, CancellationToken ct)
   {
     var request = await this._heatRequestRepository.Get(new HeatRequestQueryOptions())
@@ -80,9 +90,17 @@ public class HeatRequestService : IHeatRequestService
     await this._cyclicHeatingRequestRepository.UnitOfWork.SaveChangesAsync(ct);
   }
 
-  public async Task<CyclicHeatRequest> GetCyclicHeatRequests(int id, CancellationToken ct)
+  public async Task<ICollection<CyclicHeatRequest>> GetCyclicHeatRequests(int id, CancellationToken ct)
   {
     return await this._cyclicHeatingRequestRepository.Get(new CyclicHeatingRequestQueryOptions())
-      .Where(i => i.GarageId == id).FirstAsync(ct);
+      .Where(i => i.GarageId == id).ToListAsync(ct);
+  }
+  
+  public async Task DeleteCyclicHeatRequest(int id, int requestId, CancellationToken ct)
+  {
+    var request = await this._cyclicHeatingRequestRepository.Get(new CyclicHeatingRequestQueryOptions())
+      .Where(i => i.GarageId == id && i.Id == requestId).FirstAsync(ct);
+    await this._cyclicHeatingRequestRepository.DeleteAsync(request, ct);
+    await this._cyclicHeatingRequestRepository.UnitOfWork.SaveChangesAsync(ct);
   }
 }

@@ -27,7 +27,7 @@ async function openGarage(id: number): Promise<any> {
 }
 
 onMounted(async () => {
-  const response = await GaragesClient.getApplications()
+  const response = await GaragesClient.getGarages()
   if (response.isSuccess) garages.value = response.data
 })
 </script>

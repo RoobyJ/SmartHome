@@ -17,4 +17,6 @@ public interface ICyclicHeatingRequestRepository<TEntity> : IRepository where TE
   Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
   
   Task UpdateAsync(TEntity entity, CancellationToken ct = default);
+  
+  Task DeleteAsync(TEntity entity, CancellationToken ct = default);
 }

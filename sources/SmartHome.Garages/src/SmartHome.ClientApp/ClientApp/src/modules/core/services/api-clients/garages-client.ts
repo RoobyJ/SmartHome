@@ -9,7 +9,7 @@ export class GaragesClient {
     private static readonly urlBase = '/api';
 
     /** Gets application for the current organization */
-    public static async getApplications(): Promise<ApiResponse<GarageDetailsDto[]>> {
+    public static async getGarages(): Promise<ApiResponse<GarageDetailsDto[]>> {
         const url = GaragesClient.urlBase + '/garages';
         const request = httpClient.get(url).json<GarageDetailsDto[]>();
         const apiResponse = await createApiResponse(request);

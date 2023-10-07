@@ -1,10 +1,10 @@
-﻿using SmartHome.Core.Models;
+﻿using System.Collections.Generic;
+using SmartHome.Core.Entities;
+using SmartHome.Core.Models;
 
 namespace SmartHome.Core.Dtos;
 
 public class GarageCyclicHeatRequestsDto
 {
-  public int GarageId { get; set; }
-
-  public CyclicHeatRequests Requests { get; set; }
+  public CyclicHeatRequest Requests { get; set; }
 }

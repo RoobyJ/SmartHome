@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.DTOs;
@@ -28,7 +30,7 @@ public class HeatingService : IHeatingService
     _startHeatingTimeCalculator = startHeatingTimeCalculator;
   }
 
-  public async Task ExecuteAsync()
+  public async Task ExecuteAsync(CancellationToken ct)
   {
     _logger.LogInformation($"{nameof(HeatingService)} running at: {DateTimeOffset.Now}");
     try
@@ -44,7 +46,7 @@ public class HeatingService : IHeatingService
       await InitGarageHeatersStatuses(garages);
 
 
-      var closestHeatTimes = FindClosestHeatTime(garages);
+      var closestHeatTimes = await FindClosestHeatTime(garages, ct);
 
 
       CheckIfShouldBeOff(closestHeatTimes, garages);
@@ -69,7 +71,7 @@ public class HeatingService : IHeatingService
 
   #region private
 
-  private List<GarageHeatingTime> FindClosestHeatTime(List<Garage> garages)
+  private async Task<List<GarageHeatingTime>> FindClosestHeatTime(List<Garage> garages, CancellationToken ct)
   {
     using var scope = _serviceScopeFactoryLocator.CreateScope();
     var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatingRequestRepository<CyclicHeatRequest>>();
@@ -77,16 +79,31 @@ public class HeatingService : IHeatingService
     List<GarageHeatingTime> garagesClosestHeatingTimes = new();
     foreach (var garage in garages)
     {
-      var customHeatRequest = heatingRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
-        .Where(item => item.Id == garage.Id).MinBy(item => Math.Abs((item.HeatRequest1 - DateTime.Now).Ticks));
+      var customHeatRequests = await heatingRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
+        .Where(item => item.Id == garage.Id).ToListAsync(ct);
+      
+      var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.HeatRequest1 - DateTime.Now).Ticks));
 
-      var cyclicHeatRequest =
-        cyclicHeatingRepository
-          .Get(new CyclicHeatingRequestQueryOptions { AsNoTracking = true })
-          .FirstOrDefault(item => item.Id == garage.Id)
-          ?.ToList();
+      var cyclicHeatRequests =
+        await cyclicHeatingRepository
+          .Get(new CyclicHeatingRequestQueryOptions { AsNoTracking = true }).Where(item => item.Id == garage.Id)
+          .ToListAsync(ct);
 
-      var closestDateTime = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatRequest, customHeatRequest);
+
+      DateTime? closestDateTime = null;
+
+      foreach (var cyclicHeatRequest in cyclicHeatRequests)
+      {
+        var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatRequest.ToList(), customHeatRequest);
+        if (closestDateTime == null)
+        {
+          closestDateTime = result;
+          continue;
+        }
+
+        if (result.HasValue && closestDateTime.Value.Second > result.Value.Second) closestDateTime = result;
+      }
+        
       if (closestDateTime != null)
       {
         garagesClosestHeatingTimes.Add(new GarageHeatingTime { Id = garage.Id, HeatTime = closestDateTime });
