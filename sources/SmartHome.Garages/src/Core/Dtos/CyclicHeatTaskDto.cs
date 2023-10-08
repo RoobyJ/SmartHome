@@ -6,10 +6,9 @@ using SmartHome.Core.Models;
 
 namespace SmartHome.Core.Dtos;
 
-public class CyclicHeatRequestsDto
+public class CyclicHeatTaskDto
 {
 public int Id { get; set; }
-public int GarageId { get; set; }
-public TimeOnly Time { get; set; }
-public ICollection<DayOfWeek> DaysInWeekSelected { get; set; }
+public string Time { get; set; }
+public ICollection<int> DaysInWeekSelected { get; set; }
 }

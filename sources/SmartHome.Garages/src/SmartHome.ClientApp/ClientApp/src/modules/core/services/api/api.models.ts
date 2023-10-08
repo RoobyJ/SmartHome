@@ -4,13 +4,9 @@ export interface GarageDetailsDto {
     heaterStatus: boolean;
 }
 
-export interface CyclicHeatRequestDto {
+export interface CyclicHeatTaskDto {
+    id: number;
     garageId: number;
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
+    time: string;
+    daysInWeekSelected: number[];
 }

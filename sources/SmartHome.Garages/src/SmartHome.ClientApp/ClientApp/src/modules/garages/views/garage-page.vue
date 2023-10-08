@@ -1,36 +1,42 @@
 <template>
-  <v-container>
-    <div>
-      <div>Heat Tasks</div>
-      <v-btn variant="text" icon="mdi-plus" @click="openAddTaskDialog()" />
+  <div>
+    <div class="d-flex justify-space-between">
+      <div class="pl-4">Heat Tasks</div>
+      <v-btn
+        variant="text"
+        icon="mdi-plus"
+        class="d-flex align-start"
+        @click="openAddTaskDialog()"
+      />
     </div>
-    <div>
+    <v-divider  />
+    <div class="pt-2 mx-2">
       <v-row>
-        <v-col v-for="(item, index) in items" :key="index">
-          <heat-task-item />
+        <v-col cols="12" v-for="(item, index) in items" :key="index">
+          <heat-task-item :heat-task="item" :is-disabled="true" />
         </v-col>
       </v-row>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client'
 import HeatTaskItem from '../components/heat-task-item.vue'
 import { onMounted, ref } from 'vue'
-import type { CyclicHeatRequestDto } from '@/modules/core/services/api/api.models'
+import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const items = ref<CyclicHeatRequestDto[] | null>(null)
+const items = ref<CyclicHeatTaskDto[] | null>(null)
 const loadItems = async () => {
   const id = route.params.garageId
 
-  if (id == null) return
+  if (id == null || typeof id !== 'string') return
+
   const response = await GarageClient.getCyclicHeatRequests(id)
   if (response.isSuccess) items.value = response.data
-  console.log(items.value)
 }
 
 const openAddTaskDialog = () => {

@@ -8,7 +8,7 @@ using SmartHome.Core.Common;
 namespace SmartHome.Core.Entities;
 
 [Table("Garages", Schema = "Garages")]
-public partial class Garage: IEntity
+public sealed class Garage: IEntity
 {
     [Key]
     public int Id { get; set; }
@@ -20,11 +20,11 @@ public partial class Garage: IEntity
     public string Ip { get; set; }
 
     [InverseProperty("Garage")]
-    public virtual ICollection<CyclicHeatTask> CyclicHeatTasks { get; set; } = new List<CyclicHeatTask>();
+    public ICollection<CyclicHeatTask> CyclicHeatTasks { get; set; } = new List<CyclicHeatTask>();
 
     [InverseProperty("Garage")]
-    public virtual ICollection<HeatTask> HeatTasks { get; set; } = new List<HeatTask>();
+    public ICollection<HeatTask> HeatTasks { get; set; } = new List<HeatTask>();
 
     [InverseProperty("Garage")]
-    public virtual ICollection<OutsideTemperature> OutsideTemperatures { get; set; } = new List<OutsideTemperature>();
+    public ICollection<OutsideTemperature> OutsideTemperatures { get; set; } = new List<OutsideTemperature>();
 }

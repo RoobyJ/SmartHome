@@ -24,7 +24,7 @@ public class GarageClient
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
     var content = new FormUrlEncodedContent(values);
-    await Client.PutAsync(ClientEndpoints.Garage.Heater(ip), content);
+    await Client.PatchAsync(ClientEndpoints.Garage.Heater(ip), content);
   }
 
   public static async Task<GarageHeaterStatusDto> GetHeaterStatus(string ip)

@@ -8,7 +8,7 @@ using SmartHome.Core.Common;
 namespace SmartHome.Core.Entities;
 
 [Table("UrlLogs", Schema = "Garages")]
-public partial class UrlLog: IEntity
+public class UrlLog: IEntity
 {
     [Key]
     public int Id { get; set; }

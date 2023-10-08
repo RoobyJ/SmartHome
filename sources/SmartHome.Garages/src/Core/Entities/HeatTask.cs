@@ -8,16 +8,17 @@ using SmartHome.Core.Common;
 namespace SmartHome.Core.Entities;
 
 [Table("HeatTasks", Schema = "Garages")]
-public partial class HeatTask: IEntity
+public sealed class HeatTask: IEntity
 {
     [Key]
     public int Id { get; set; }
 
-    public DateTime HeatRequest { get; set; }
+    [Column("HeatTask")]
+    public DateTime HeatTask1 { get; set; }
 
     public int GarageId { get; set; }
 
     [ForeignKey("GarageId")]
     [InverseProperty("HeatTasks")]
-    public virtual Garage Garage { get; set; }
+    public Garage Garage { get; set; }
 }

@@ -11,8 +11,8 @@ public class TestingDataWhichIsCloser
 {
   public DateTime ExampleBase { get; init; }
   public DateTime ExpectedResult { get; set; }
-  public HeatTask CustomHeatRequest { get; init; }
-  public List<TimeSpan?> CyclicHeatTimes { get; set; }
+  public HeatTask CustomHeatTask { get; init; }
+  public CyclicHeatTask CyclicHeatTask { get; set; }
 }
 
 public class HeatingServiceTests
@@ -22,19 +22,20 @@ public class HeatingServiceTests
   {
     var exampleBase = DateTime.Now;
     var expectedResult = exampleBase.AddHours(1);
-    var cyclicHeatTimes = new List<TimeSpan?>
+    var cyclicHeatTask = new CyclicHeatTask
     {
-      exampleBase.AddHours(2).TimeOfDay, // sunday
-      exampleBase.AddHours(2).TimeOfDay, // monday
-      exampleBase.AddHours(2).TimeOfDay, // ...
-      exampleBase.AddHours(2).TimeOfDay,
-      exampleBase.AddHours(2).TimeOfDay,
-      exampleBase.AddHours(2).TimeOfDay,
-      exampleBase.AddHours(2).TimeOfDay // saturday
+      Id = 1,
+      Time = DateTime.Now.AddHours(1).TimeOfDay,
+      GarageId = 1,
+      CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
+      {
+        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskTimeId = 1, DayId = 0 },
+        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskTimeId = 1, DayId = 1 },
+      }
     };
 
-    var customHeatRequest = new HeatTask { Id = 1, HeatRequest = expectedResult, GarageId = 1 };
-    var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTimes, customHeatRequest
+    var customHeatRequest = new HeatTask { Id = 1, HeatTask1 = expectedResult, GarageId = 1 };
+    var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest
     );
 
     Assert.True(result.Equals(expectedResult));
@@ -46,7 +47,7 @@ public class HeatingServiceTests
     var testingData = GetTestingDataForFindingWhichIsCloser(1, 26);
 
 
-    var result = HeatingServiceHelper.CheckWhichIsCloser(testingData.CyclicHeatTimes, testingData.CustomHeatRequest
+    var result = HeatingServiceHelper.CheckWhichIsCloser(testingData.CyclicHeatTask, testingData.CustomHeatTask
     );
 
     Assert.False(result.Equals(testingData.ExpectedResult));
@@ -78,23 +79,24 @@ public class HeatingServiceTests
                          expectedResult[0].HeatTime.Value.TimeOfDay.TotalMinutes) < 10);
   }
 
-  private TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic, int extraHoursExpected)
+  private static TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic, int extraHoursExpected)
   {
     return new TestingDataWhichIsCloser
     {
       ExampleBase = DateTime.Now,
       ExpectedResult = DateTime.Now.AddHours(extraHoursExpected),
-      CustomHeatRequest =
-        new HeatTask { Id = 1, HeatRequest = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
-      CyclicHeatTimes = new List<TimeSpan?>
+      CustomHeatTask =
+        new HeatTask { Id = 1, HeatTask1 = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
+      CyclicHeatTask = new CyclicHeatTask
       {
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay, // sunday
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay, // monday
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay, // ...
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
-        DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay // saturday
+        Id = 1,
+        Time = DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
+        GarageId = 1,
+        CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
+        {
+          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskTimeId = 1, DayId = 0},
+          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskTimeId = 1, DayId = 1},
+        }
       }
     };
   }

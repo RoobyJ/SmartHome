@@ -24,7 +24,7 @@ public class HeatTaskService : IHeatTaskService
 
   public async Task SaveHeatTimeTask(int id, HeatRequestDto heatRequest, CancellationToken ct)
   {
-    var heatTimeRequest = new HeatTask() { GarageId = id, HeatRequest = heatRequest.Date };
+    var heatTimeRequest = new HeatTask() { GarageId = id, HeatTask1 = heatRequest.Date };
 
     await this._heatTaskRepository.AddAsync(heatTimeRequest, ct);
     await this._heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);

@@ -10,7 +10,7 @@ using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
-using SmartHome.webapi.Mappers;
+using SmartHome.Core.Mappers;
 
 namespace SmartHome.Core.Services;
 

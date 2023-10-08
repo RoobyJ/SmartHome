@@ -1,6 +1,6 @@
 import { useErrorStore } from '../../store/error-store';
 import type {
-    CyclicHeatRequestDto,
+    CyclicHeatTaskDto,
     GarageDetailsDto
 } from '../api/api.models';
 import { createApiResponse, type ApiResponse } from '../api/api.utils';
@@ -23,9 +23,9 @@ export class GarageClient {
     }
 
      /** Gets all heat request for garage */
-     public static async getCyclicHeatRequests(id: string): Promise<ApiResponse<CyclicHeatRequestDto[]>> {
+     public static async getCyclicHeatRequests(id: string): Promise<ApiResponse<CyclicHeatTaskDto[]>> {
         const url = this.urlBase + `/${id}/CyclicHeatTimes`;
-        const request = httpClient.get(url).json<CyclicHeatRequestDto[]>();
+        const request = httpClient.get(url).json<CyclicHeatTaskDto[]>();
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;

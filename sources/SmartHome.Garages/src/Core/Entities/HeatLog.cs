@@ -7,8 +7,8 @@ using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("HeatingLogs", Schema = "Garages")]
-public partial class HeatingLog: IEntity
+[Table("HeatLogs", Schema = "Garages")]
+public class HeatLog: IEntity
 {
     [Key]
     public int Id { get; set; }
