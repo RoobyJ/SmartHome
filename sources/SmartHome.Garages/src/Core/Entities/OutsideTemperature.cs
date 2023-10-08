@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
 [Table("OutsideTemperatures", Schema = "Garages")]
-public class OutsideTemperature : IEntity
+public sealed class OutsideTemperature: IEntity
 {
-  public DateTime Date { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-  public int Temperature { get; set; }
+    public DateTime Date { get; set; }
 
-  public int GarageId { get; set; }
+    public int Temperature { get; set; }
 
-  [ForeignKey("GarageId")]
-  [InverseProperty("OutsideTemperatures")]
-  public virtual Garage Garage { get; set; } = null!;
+    public int GarageId { get; set; }
 
-  [Key] public int Id { get; set; }
+    [ForeignKey("GarageId")]
+    [InverseProperty("OutsideTemperatures")]
+    public Garage Garage { get; set; }
 }

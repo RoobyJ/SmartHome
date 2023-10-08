@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import GarageDetails from '../components/garage-details.vue'
-import { GaragesClient } from '@/modules/core/services/api-clients/garages-client'
+import { GarageClient } from '@/modules/core/services/api-clients/garages-client'
 import type { GarageDetailsDto } from '@/modules/core/services/api/api.models'
 import { useRouter } from 'vue-router';
 import { View } from '@/router/view-definitions';
@@ -23,11 +23,11 @@ const garages = ref<GarageDetailsDto[] | null>(null)
 const router  = useRouter();
 
 async function openGarage(id: number): Promise<any> {
-  await router.push({ name: View.garageView, params: { garageId: id }  });
+  await router.push({ name: View.garagePageView, params: { garageId: id } });
 }
 
 onMounted(async () => {
-  const response = await GaragesClient.getApplications()
+  const response = await GarageClient.getGarages()
   if (response.isSuccess) garages.value = response.data
 })
 </script>

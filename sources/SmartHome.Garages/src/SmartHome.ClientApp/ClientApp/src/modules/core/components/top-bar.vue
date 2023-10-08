@@ -11,7 +11,7 @@
         <template #activator="{ props }">
           <v-btn class="mr-md-2" icon v-bind="props">
             <v-avatar color="primary" size="small">
-                <v-icon>mdi-account</v-icon>
+              <v-icon>mdi-account</v-icon>
             </v-avatar>
           </v-btn>
         </template>

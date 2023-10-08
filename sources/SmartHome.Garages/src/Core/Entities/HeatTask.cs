@@ -7,18 +7,18 @@ using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("UrlLogs", Schema = "Garages")]
-public class UrlLog: IEntity
+[Table("HeatTasks", Schema = "Garages")]
+public sealed class HeatTask: IEntity
 {
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    public string Url { get; set; }
+    [Column("HeatTask")]
+    public DateTime HeatTask1 { get; set; }
 
-    public DateTime Date { get; set; }
+    public int GarageId { get; set; }
 
-    public int StatusCode { get; set; }
-
-    public int RequestId { get; set; }
+    [ForeignKey("GarageId")]
+    [InverseProperty("HeatTasks")]
+    public Garage Garage { get; set; }
 }

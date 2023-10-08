@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.DTOs;
@@ -28,7 +30,7 @@ public class HeatingService : IHeatingService
     _startHeatingTimeCalculator = startHeatingTimeCalculator;
   }
 
-  public async Task ExecuteAsync()
+  public async Task ExecuteAsync(CancellationToken ct)
   {
     _logger.LogInformation($"{nameof(HeatingService)} running at: {DateTimeOffset.Now}");
     try
@@ -44,7 +46,7 @@ public class HeatingService : IHeatingService
       await InitGarageHeatersStatuses(garages);
 
 
-      var closestHeatTimes = FindClosestHeatTime(garages);
+      var closestHeatTimes = await FindClosestHeatTime(garages, ct);
 
 
       CheckIfShouldBeOff(closestHeatTimes, garages);
@@ -69,24 +71,40 @@ public class HeatingService : IHeatingService
 
   #region private
 
-  private List<GarageHeatingTime> FindClosestHeatTime(List<Garage> garages)
+  private async Task<List<GarageHeatingTime>> FindClosestHeatTime(List<Garage> garages, CancellationToken ct)
   {
     using var scope = _serviceScopeFactoryLocator.CreateScope();
-    var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatingRequestRepository>();
-    var heatingRepository = scope.ServiceProvider.GetService<IHeatingRequestRepository>();
+    var cyclicHeatRepository = scope.ServiceProvider.GetService<ICyclicHeatTaskRepository<CyclicHeatTask>>();
+    var heatRepository = scope.ServiceProvider.GetService<IHeatTaskRepository<HeatTask>>();
     List<GarageHeatingTime> garagesClosestHeatingTimes = new();
     foreach (var garage in garages)
     {
-      var customHeatRequest = heatingRepository.Get(new HeatingRequestQueryOptions { AsNoTracking = true })
-        .Where(item => item.Id == garage.Id).MinBy(item => Math.Abs((item.HeatRequest1 - DateTime.Now).Ticks));
+      var customHeatRequests = await heatRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
+        .Where(item => item.Id == garage.Id).ToListAsync(ct);
 
-      var cyclicHeatRequest =
-        cyclicHeatingRepository
-          .Get(new CyclicHeatingRequestQueryOptions { AsNoTracking = true })
-          .FirstOrDefault(item => item.Id == garage.Id)
-          ?.ToList();
+      var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.HeatTask1 - DateTime.Now).Ticks));
 
-      var closestDateTime = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatRequest, customHeatRequest);
+      var cyclicHeatTasks =
+        await cyclicHeatRepository
+          .Get(new CyclicHeatingTaskQueryOptions() { AsNoTracking = true, IncludeCyclicHeatTaskDays = true })
+          .Where(item => item.Id == garage.Id)
+          .ToListAsync(ct);
+
+
+      DateTime? closestDateTime = null;
+
+      foreach (var cyclicHeatTask in cyclicHeatTasks)
+      {
+        var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest);
+        if (closestDateTime == null)
+        {
+          closestDateTime = result;
+          continue;
+        }
+
+        if (result.HasValue && closestDateTime.Value.Second > result.Value.Second) closestDateTime = result;
+      }
+
       if (closestDateTime != null)
       {
         garagesClosestHeatingTimes.Add(new GarageHeatingTime { Id = garage.Id, HeatTime = closestDateTime });
@@ -123,19 +141,19 @@ public class HeatingService : IHeatingService
       {
         await GarageClient.ChangeHeaterStatus("false", garage.Ip);
         _logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-        await heatingLogRepository.AddAsync(new HeatingLog
+        await heatingLogRepository.AddAsync(new HeatLog
         {
           Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}"
         });
         continue;
       }
 
-      if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime.Value.TimeOfDay.TotalSeconds &&
+      if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime!.Value.TimeOfDay.TotalSeconds &&
           garageHeaterStatus.HeatingStatus)
       {
         await GarageClient.ChangeHeaterStatus("false", garage.Ip);
         _logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-        await heatingLogRepository.AddAsync(new HeatingLog
+        await heatingLogRepository.AddAsync(new HeatLog
         {
           Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}"
         });
@@ -165,7 +183,7 @@ public class HeatingService : IHeatingService
           await GarageClient.ChangeHeaterStatus("true", ip);
           _logger.LogInformation(
             $"Setted heater ON in garage {garageStartHeatTime.Id} running at: {DateTimeOffset.Now}");
-          await heatingLogRepository.AddAsync(new HeatingLog
+          await heatingLogRepository.AddAsync(new HeatLog
           {
             Date = DateTime.UtcNow, Info = $"Starting heating garage {garageStartHeatTime.Id}"
           });

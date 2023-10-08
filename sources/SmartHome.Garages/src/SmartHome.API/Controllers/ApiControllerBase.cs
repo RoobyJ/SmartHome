@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SmartHome.webapi.Controllers;
+namespace SmartHome.api.Controllers;
 
 [ApiController]
 public class ApiControllerBase : ControllerBase

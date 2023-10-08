@@ -1,66 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartHome.Core.Entities;
 
 namespace SmartHome.Core.Helpers;
 
-public class HeatingServiceHelper
+public abstract class HeatingServiceHelper
 {
-  public static DateTime? CheckWhichIsCloser(List<TimeSpan?> cyclicHeatRequest, HeatRequest customHeatRequest)
+  public static DateTime? CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
   {
     var todayDay = (int)DateTime.Today.DayOfWeek;
 
-    if (customHeatRequest.HeatRequest1.Date.Day.Equals(DateTime.Now.Day) && cyclicHeatRequest?[todayDay] != null)
+    if (customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day) &&
+        cyclicHeatTask.CyclicHeatTaskDaysInWeeks.FirstOrDefault(i => i.DayId == todayDay) != null)
     {
       // Check for today comparation
-      if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
-          cyclicHeatRequest[todayDay].Value.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
+      if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
+          cyclicHeatTask.Time.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
       {
-        if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds < cyclicHeatRequest[todayDay].Value.TotalSeconds)
+        if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
         {
-          return customHeatRequest.HeatRequest1;
+          return customHeatRequest.HeatTask1;
         }
 
-        return DateTime.Now.Date + cyclicHeatRequest[todayDay].Value;
+        return DateTime.Now.Date + cyclicHeatTask.Time;
       }
     }
-    else if (cyclicHeatRequest?[todayDay] != null && !customHeatRequest.HeatRequest1.Date.Day.Equals(DateTime.Now.Day)
+    else if (!customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day)
             )
     {
       // today
-      if (DateTime.Now.TimeOfDay.TotalSeconds < cyclicHeatRequest[todayDay].Value.TotalSeconds)
+      if (DateTime.Now.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
       {
-        return DateTime.Now.Date + cyclicHeatRequest[todayDay].Value;
+        return DateTime.Now.Date + cyclicHeatTask.Time;
       }
     }
-    else if (cyclicHeatRequest?[todayDay] == null && customHeatRequest.HeatRequest1.Date.Day.Equals(DateTime.Now.Day)
+    else if (customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day)
             )
     {
-      if (DateTime.Now.TimeOfDay.TotalSeconds < customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds)
+      if (DateTime.Now.TimeOfDay.TotalSeconds < customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds)
       {
-        return DateTime.Now.Date + customHeatRequest.HeatRequest1.TimeOfDay;
+        return DateTime.Now.Date + customHeatRequest.HeatTask1.TimeOfDay;
       }
     }
-    else if (cyclicHeatRequest != null && (customHeatRequest.HeatRequest1.Day.Equals(DateTime.Now.AddDays(1).Day) ||
-                                           cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1] != null))
+    else if ((customHeatRequest.HeatTask1.Day.Equals(DateTime.Now.AddDays(1).Day) ||
+              CheckIfNextDayIsHeatTask(cyclicHeatTask, todayDay)
+             ))
     {
       // Check for tomorrow
-      if (!(customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
-          !(cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value.TotalSeconds >
+      if (!(customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
+          !(cyclicHeatTask.Time.TotalSeconds >
             DateTime.Now.TimeOfDay.TotalSeconds))
       {
         return null;
       }
 
-      if (customHeatRequest.HeatRequest1.TimeOfDay.TotalSeconds >
-          cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value.TotalSeconds)
+      if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds >
+          cyclicHeatTask.Time.TotalSeconds)
       {
-        return customHeatRequest.HeatRequest1;
+        return customHeatRequest.HeatTask1;
       }
 
-      return DateTime.Now.Date + cyclicHeatRequest[todayDay == 6 ? 0 : todayDay + 1].Value;
+      return DateTime.Now.Date + cyclicHeatTask.Time;
     }
 
     return null;
   }
+
+  #region private methods
+
+  private static bool CheckIfNextDayIsHeatTask(CyclicHeatTask cyclicHeatTask, int todayDay)
+  {
+    return cyclicHeatTask.CyclicHeatTaskDaysInWeeks.FirstOrDefault(i =>
+      (todayDay == 6 ? i.DayId == 0 : i.DayId == todayDay + 1)) != null;
+  }
+
+  #endregion
 }

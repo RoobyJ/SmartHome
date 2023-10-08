@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace SmartHome.Core.Interfaces;
 
 public interface IHeatingService
 {
-  Task ExecuteAsync();
+  Task ExecuteAsync(CancellationToken ct);
 }

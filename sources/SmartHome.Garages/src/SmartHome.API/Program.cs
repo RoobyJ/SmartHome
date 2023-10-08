@@ -16,6 +16,7 @@ builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddRepositories();
 
 builder.Services.AddScoped<IGarageService, GarageService>();
+builder.Services.AddScoped<IHeatTaskService, HeatTaskService>();
 
 var app = builder.Build();
 
