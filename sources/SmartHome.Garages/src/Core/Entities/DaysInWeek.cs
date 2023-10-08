@@ -7,13 +7,15 @@ using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("HeatingLogs", Schema = "Garages")]
-public partial class HeatingLog: IEntity
+[Table("DaysInWeek", Schema = "Garages")]
+public sealed class DaysInWeek: IEntity
 {
     [Key]
     public int Id { get; set; }
 
-    public DateTime Date { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-    public string Info { get; set; }
+    [InverseProperty("Day")]
+    public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } = new List<CyclicHeatTaskDaysInWeek>();
 }

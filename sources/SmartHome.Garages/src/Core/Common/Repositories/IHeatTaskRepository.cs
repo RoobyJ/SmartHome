@@ -10,7 +10,7 @@ public class HeatRequestQueryOptions
   public bool AsNoTracking { get; set; }
 }
 
-public interface IHeatRequestRepository<TEntity> : IRepository where TEntity : IEntity
+public interface IHeatTaskRepository<TEntity> : IRepository where TEntity : IEntity
 {
   IQueryable<TEntity> Get(HeatRequestQueryOptions queryOptions);
 

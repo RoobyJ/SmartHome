@@ -7,13 +7,13 @@ using SmartHome.Core.Entities;
 
 namespace SmartHome.Infrastructure.Data;
 
-internal class HeatRequestRepository : EfRepository<HeatRequest>, IHeatRequestRepository<HeatRequest>
+internal class HeatTaskRepository : EfRepository<HeatTask>, IHeatTaskRepository<HeatTask>
 {
-  public HeatRequestRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public HeatTaskRepository(SmartHomeDbContext dbContext) : base(dbContext)
   {
   }
 
-  public IQueryable<HeatRequest> Get(HeatRequestQueryOptions queryOptions)
+  public IQueryable<HeatTask> Get(HeatRequestQueryOptions queryOptions)
   {
     var query = GetAll();
 
@@ -25,7 +25,7 @@ internal class HeatRequestRepository : EfRepository<HeatRequest>, IHeatRequestRe
     return query;
   }
 
-  public override async Task UpdateAsync(HeatRequest entity, CancellationToken ct = default)
+  public override async Task UpdateAsync(HeatTask entity, CancellationToken ct = default)
   {
     await base.UpdateAsync(entity, ct);
   }

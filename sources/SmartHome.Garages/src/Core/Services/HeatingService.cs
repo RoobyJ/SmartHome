@@ -74,8 +74,8 @@ public class HeatingService : IHeatingService
   private async Task<List<GarageHeatingTime>> FindClosestHeatTime(List<Garage> garages, CancellationToken ct)
   {
     using var scope = _serviceScopeFactoryLocator.CreateScope();
-    var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatingRequestRepository<CyclicHeatRequest>>();
-    var heatingRepository = scope.ServiceProvider.GetService<IHeatRequestRepository<HeatRequest>>();
+    var cyclicHeatingRepository = scope.ServiceProvider.GetService<ICyclicHeatTaskRepository<CyclicHeatRequest>>();
+    var heatingRepository = scope.ServiceProvider.GetService<IHeatTaskRepository<HeatRequest>>();
     List<GarageHeatingTime> garagesClosestHeatingTimes = new();
     foreach (var garage in garages)
     {

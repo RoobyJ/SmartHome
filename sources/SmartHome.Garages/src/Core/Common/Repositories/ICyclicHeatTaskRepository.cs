@@ -5,14 +5,15 @@ using SmartHome.Core.Entities;
 
 namespace SmartHome.Core.Common.Repositories;
 
-public class CyclicHeatingRequestQueryOptions
+public class CyclicHeatingTaskQueryOptions
 {
-  public bool AsNoTracking { get; set; }
+  public bool AsNoTracking { get; init; }
+  public bool IncludeCyclicHeatTaskDays { get; init; }
 }
 
-public interface ICyclicHeatingRequestRepository<TEntity> : IRepository where TEntity : IEntity
+public interface ICyclicHeatTaskRepository<TEntity> : IRepository where TEntity : IEntity
 {
-  IQueryable<TEntity> Get(CyclicHeatingRequestQueryOptions queryOptions);
+  IQueryable<TEntity> Get(CyclicHeatingTaskQueryOptions queryOptions);
 
   Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
   

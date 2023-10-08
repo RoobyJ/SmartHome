@@ -22,8 +22,8 @@ public static class ServiceCollectionSetupExtensions
   {
     services.AddScoped<IGarageRepository, GarageRepository>();
     services.AddScoped<IHeatingLogRepository, HeatingLogRepository>();
-    services.AddScoped<IHeatRequestRepository<HeatRequest>, HeatRequestRepository>();
-    services.AddScoped<ICyclicHeatingRequestRepository<CyclicHeatRequest>, CyclicHeatingRequestRepository>();
+    services.AddScoped<IHeatTaskRepository<HeatTask>, HeatTaskRepository>();
+    services.AddScoped<ICyclicHeatTaskRepository<CyclicHeatTask>, CyclicHeatTaskRepository>();
     services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
   }
 

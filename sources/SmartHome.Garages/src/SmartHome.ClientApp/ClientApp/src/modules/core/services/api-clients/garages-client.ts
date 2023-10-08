@@ -23,8 +23,8 @@ export class GarageClient {
     }
 
      /** Gets all heat request for garage */
-     public static async getCyclicHeatRequests(): Promise<ApiResponse<CyclicHeatRequestDto[]>> {
-        const url = this.urlBase + '/garages';
+     public static async getCyclicHeatRequests(id: string): Promise<ApiResponse<CyclicHeatRequestDto[]>> {
+        const url = this.urlBase + `/${id}/CyclicHeatTimes`;
         const request = httpClient.get(url).json<CyclicHeatRequestDto[]>();
         const apiResponse = await createApiResponse(request);
 

@@ -7,19 +7,17 @@ using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("OutsideTemperatures", Schema = "Garages")]
-public partial class OutsideTemperature: IEntity
+[Table("HeatTasks", Schema = "Garages")]
+public partial class HeatTask: IEntity
 {
     [Key]
     public int Id { get; set; }
 
-    public DateTime Date { get; set; }
-
-    public int Temperature { get; set; }
+    public DateTime HeatRequest { get; set; }
 
     public int GarageId { get; set; }
 
     [ForeignKey("GarageId")]
-    [InverseProperty("OutsideTemperatures")]
+    [InverseProperty("HeatTasks")]
     public virtual Garage Garage { get; set; }
 }
