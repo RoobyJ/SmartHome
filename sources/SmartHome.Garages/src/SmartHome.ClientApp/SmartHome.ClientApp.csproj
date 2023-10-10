@@ -14,9 +14,9 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <SpaBuildCommand Condition=" '$(SpaBuildCommand)' == '' ">build</SpaBuildCommand>
-    <SpaProxyServerUrl>https://localhost:3020</SpaProxyServerUrl>
+    <SpaProxyServerUrl>https://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <PackageId>DatacarWeb.ClientApp</PackageId>
+    <PackageId>SmartHome.ClientApp</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

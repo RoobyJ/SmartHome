@@ -45,12 +45,12 @@ export default defineConfig({
   },
   server: {
     https: true,
-    port: 5002,
+    port: 3000,
     open: true,
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'https://localhost:5001',
+        target: 'https://localhost:3001',
         changeOrigin: true,
         secure: false,
         rewrite: path => path.replace(/^\/api/, '/api'),
