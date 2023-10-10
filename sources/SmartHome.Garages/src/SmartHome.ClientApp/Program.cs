@@ -14,10 +14,6 @@ builder.Services
     }
 
     options.SessionCookieName = "smarthome.session";
-
-    var idpOptions = builder.Configuration.GetSection("OpenIDConnect").Get<OpenIdConnectConfig>()!;
-    options.RegisterIdentityProvider<IdentityProvider, OpenIdConnectConfig>(idpOptions);
-    options.LoadYarpFromConfig(builder.Configuration.GetSection("ReverseProxy"));
   })
   .AddHttpContextAccessor();
 
@@ -34,7 +30,6 @@ app.UseHttpsRedirection();
 // app.UseHttpLogging();
 
 app.UseRouting();
-app.UseSecurityBff();
 
 // serve static files as a fallback, so if route has not matched any configured reverse proxy path
 // then emit static files (SPA app) and fallback to index.html
