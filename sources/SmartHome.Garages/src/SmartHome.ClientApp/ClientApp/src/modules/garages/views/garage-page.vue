@@ -2,12 +2,7 @@
   <div>
     <div class="d-flex justify-space-between">
       <div class="pl-4">Heat Tasks</div>
-      <v-btn
-        variant="text"
-        icon="mdi-plus"
-        class="d-flex align-start"
-        @click="openAddTaskDialog()"
-      />
+      <add-heat-task-dialog />
     </div>
     <v-divider  />
     <div class="pt-2 mx-2">
@@ -25,6 +20,7 @@ import { GarageClient } from '@/modules/core/services/api-clients/garages-client
 import HeatTaskItem from '../components/heat-task-item.vue'
 import { onMounted, ref } from 'vue'
 import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
+import AddHeatTaskDialog from '../components/add-heat-task-dialog.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -37,10 +33,6 @@ const loadItems = async () => {
 
   const response = await GarageClient.getCyclicHeatRequests(id)
   if (response.isSuccess) items.value = response.data
-}
-
-const openAddTaskDialog = () => {
-  console.log('test')
 }
 
 onMounted(async () => {
