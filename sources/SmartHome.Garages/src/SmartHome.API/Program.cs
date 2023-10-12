@@ -45,5 +45,10 @@ if (!app.Environment.IsDevelopment())
   app.UseHttpsRedirection();
 }
 
+if (app.Environment.IsDevelopment())
+{
+  await app.MigrateDatabase();
+}
+
 
 app.Run();

@@ -82,7 +82,7 @@ public class HeatingService : IHeatingService
       var customHeatRequests = await heatRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
         .Where(item => item.Id == garage.Id).ToListAsync(ct);
 
-      var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.HeatTask1 - DateTime.Now).Ticks));
+      var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.Date - DateTime.Now).Ticks));
 
       var cyclicHeatTasks =
         await cyclicHeatRepository

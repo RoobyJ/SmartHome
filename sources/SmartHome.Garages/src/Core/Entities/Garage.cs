@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("Garages", Schema = "Garages")]
-public sealed class Garage: IEntity
+[Table("Garage", Schema = "Garages")]
+public sealed class Garage : IEntity
 {
     [Key]
     public int Id { get; set; }
