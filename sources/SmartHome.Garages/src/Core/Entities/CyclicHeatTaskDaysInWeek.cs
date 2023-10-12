@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
@@ -15,13 +12,13 @@ public sealed class CyclicHeatTaskDaysInWeek: IEntity
 
     public int DayId { get; set; }
 
-    public int CyclicHeatTaskTimeId { get; set; }
+    public int CyclicHeatTaskId { get; set; }
 
-    [ForeignKey("CyclicHeatTaskTimeId")]
+    [ForeignKey("CyclicHeatTaskId")]
     [InverseProperty("CyclicHeatTaskDaysInWeeks")]
-    public CyclicHeatTask CyclicHeatTaskTime { get; set; }
+    public CyclicHeatTask CyclicHeatTask { get; set; }
 
     [ForeignKey("DayId")]
     [InverseProperty("CyclicHeatTaskDaysInWeeks")]
-    public DaysInWeek Day { get; set; }
+    public DayInWeek Day { get; set; }
 }

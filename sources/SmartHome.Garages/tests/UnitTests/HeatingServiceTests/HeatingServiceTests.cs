@@ -29,12 +29,12 @@ public class HeatingServiceTests
       GarageId = 1,
       CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
       {
-        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskTimeId = 1, DayId = 0 },
-        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskTimeId = 1, DayId = 1 },
+        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 },
+        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 },
       }
     };
 
-    var customHeatRequest = new HeatTask { Id = 1, HeatTask1 = expectedResult, GarageId = 1 };
+    var customHeatRequest = new HeatTask { Id = 1, Date = expectedResult, GarageId = 1 };
     var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest
     );
 
@@ -86,7 +86,7 @@ public class HeatingServiceTests
       ExampleBase = DateTime.Now,
       ExpectedResult = DateTime.Now.AddHours(extraHoursExpected),
       CustomHeatTask =
-        new HeatTask { Id = 1, HeatTask1 = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
+        new HeatTask { Id = 1, Date = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
       CyclicHeatTask = new CyclicHeatTask
       {
         Id = 1,
@@ -94,8 +94,8 @@ public class HeatingServiceTests
         GarageId = 1,
         CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
         {
-          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskTimeId = 1, DayId = 0},
-          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskTimeId = 1, DayId = 1},
+          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskId = 1, DayId = 0},
+          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskId = 1, DayId = 1},
         }
       }
     };

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("CyclicHeatTasks", Schema = "Garages")]
-public sealed class CyclicHeatTask: IEntity
+[Table("CyclicHeatTask", Schema = "Garages")]
+public sealed class CyclicHeatTask : IEntity
 {
     [Key]
     public int Id { get; set; }
@@ -17,7 +16,7 @@ public sealed class CyclicHeatTask: IEntity
 
     public TimeSpan Time { get; set; }
 
-    [InverseProperty("CyclicHeatTaskTime")]
+    [InverseProperty("CyclicHeatTask")]
     public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } = new List<CyclicHeatTaskDaysInWeek>();
 
     [ForeignKey("GarageId")]
