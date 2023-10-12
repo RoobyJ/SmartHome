@@ -4,7 +4,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace SmartHome.Infrastructure.Migrations
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace SmartHome.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -149,6 +151,27 @@ namespace SmartHome.Infrastructure.Migrations
                         principalTable: "DayInWeek",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                schema: "Garages",
+                table: "DayInWeek",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Sunday" },
+                    { 2, "Monday" },
+                    { 3, "Tuesday" },
+                    { 4, "Wednesday" },
+                    { 5, "Thursday" },
+                    { 6, "Friday" },
+                    { 7, "Saturday" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Garages",
+                table: "Garage",
+                columns: new[] { "Id", "Ip", "Name" },
+                values: new object[] { 1, "192.168.1.24", "Garage Robert" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CyclicHeatTask_GarageId",

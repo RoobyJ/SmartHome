@@ -8,7 +8,7 @@ using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
 using SmartHome.Infrastructure.Persistence.Initializers;
 
-namespace SmartHome.Infrastructure.Data;
+namespace SmartHome.Infrastructure.Persistence;
 
 internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
 {
@@ -121,5 +121,6 @@ internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
         OnModelCreatingPartial(modelBuilder);
     }
 
-  partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+   partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }

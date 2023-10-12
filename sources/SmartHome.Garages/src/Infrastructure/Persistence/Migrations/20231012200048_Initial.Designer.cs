@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SmartHome.Infrastructure.Data;
+using SmartHome.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SmartHome.Infrastructure.Migrations
+namespace SmartHome.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SmartHomeDbContext))]
-    [Migration("20231012183717_Initial")]
+    [Migration("20231012200048_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -87,6 +87,43 @@ namespace SmartHome.Infrastructure.Migrations
                         .HasName("DayInWeek_pkey");
 
                     b.ToTable("DayInWeek", "Garages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Sunday"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Monday"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Tuesday"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Wednesday"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Thursday"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Friday"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Saturday"
+                        });
                 });
 
             modelBuilder.Entity("SmartHome.Core.Entities.Garage", b =>
@@ -109,6 +146,14 @@ namespace SmartHome.Infrastructure.Migrations
                         .HasName("Garage_pkey");
 
                     b.ToTable("Garage", "Garages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ip = "192.168.1.24",
+                            Name = "Garage Robert"
+                        });
                 });
 
             modelBuilder.Entity("SmartHome.Core.Entities.HeatLog", b =>

@@ -19,7 +19,7 @@ internal static class DaysInWeekInitializer
     }
 
     #region Nested types
-    private static class DaysInWeek
+    internal static class DaysInWeek
     {
         public static DayInWeek Sunday => new() { Id = 1, Name = "Sunday" };
         public static DayInWeek Monday => new() { Id = 2, Name = "Monday" };

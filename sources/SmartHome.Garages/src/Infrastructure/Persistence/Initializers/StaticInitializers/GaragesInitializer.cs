@@ -13,7 +13,7 @@ internal static class GaragesInitializer
     }
 
     #region Nested types
-    private static class Garages
+    internal static class Garages
     {
         public static Garage GarageRobert => new() { Id = 1, Name = "Garage Robert", Ip = "192.168.1.24" };
     }

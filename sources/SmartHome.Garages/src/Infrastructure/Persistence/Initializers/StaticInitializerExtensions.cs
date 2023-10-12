@@ -9,6 +9,5 @@ internal static class StaticInitializerExtensions
     {
       builder.SeedGarages();
       builder.SeedDaysInWeek();
-
     }
 }
