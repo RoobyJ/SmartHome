@@ -57,7 +57,6 @@ public class HeatingService : IHeatingService
         _startHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
 
       SetOnHeaters(listOfStartHeatTimes, garages);
-      await Task.Delay(1000);
     }
 #pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)

@@ -3,12 +3,13 @@
         <v-list nav density="compact" open-strategy="multiple" select-strategy="independent" class="main-menu-list">
             <template v-for="item in mainMenu" :key="item.title + ' group'">
                 <v-list-item
-                    class="main-menu-list__item mb-3"
+                    class="main-menu-list__item ml-2"
                     :class="item.isActive ? 'bg-active-menu-item' : 'bg-menu-item'"
                     @click="openView(item.view)"
                 >
                     {{ item.title }}
                 </v-list-item>
+                <v-divider />
             </template>
         </v-list>
     </v-navigation-drawer>
@@ -73,7 +74,8 @@ onMounted(() => {
         flex-direction: column;
         justify-content: center;
 
-        padding: 16px;
+        padding-left: 0;
+        padding-right: 0;
         font-weight: 500;
         font-size: 13px;
 
