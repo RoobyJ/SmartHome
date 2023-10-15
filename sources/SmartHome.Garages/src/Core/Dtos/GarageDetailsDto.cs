@@ -6,5 +6,5 @@ public class GarageDetailsDto
 
   public string Name { get; set; } = default!;
   
-  public bool HeaterStatus { get; set; }
+  public bool? HeaterStatus { get; set; }
 }

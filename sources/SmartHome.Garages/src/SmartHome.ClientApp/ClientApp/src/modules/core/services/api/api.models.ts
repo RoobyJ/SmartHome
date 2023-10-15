@@ -1,7 +1,7 @@
 export interface GarageDetailsDto {
     id: number;
     name: string;
-    heaterStatus: boolean;
+    heaterStatus: boolean | null;
 }
 
 export interface CyclicHeatTaskDto {

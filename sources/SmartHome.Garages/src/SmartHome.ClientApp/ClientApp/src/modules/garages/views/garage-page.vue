@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-space-between">
-      <div class="pl-4">Heat Tasks</div>
+      <div class="pl-4 d-flex align-center font-weight-bold">Heat Tasks</div>
       <add-heat-task-dialog />
     </div>
     <v-divider  />

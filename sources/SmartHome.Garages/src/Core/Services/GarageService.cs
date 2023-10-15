@@ -42,6 +42,7 @@ public class GarageService : IGarageService
       }
       catch (Exception ex)
       {
+        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, null));
         _logger.LogError(ex, $"{nameof(GarageService)}.{nameof(GetGarages)} threw an exception.");
       }
     }
