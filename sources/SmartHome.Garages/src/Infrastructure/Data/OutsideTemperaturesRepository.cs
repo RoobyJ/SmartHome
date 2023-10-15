@@ -2,6 +2,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
+using SmartHome.Infrastructure.Persistence;
 
 namespace SmartHome.Infrastructure.Data;
 

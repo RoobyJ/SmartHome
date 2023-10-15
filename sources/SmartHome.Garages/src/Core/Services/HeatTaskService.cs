@@ -24,7 +24,7 @@ public class HeatTaskService : IHeatTaskService
 
   public async Task SaveHeatTimeTask(int id, HeatRequestDto heatRequest, CancellationToken ct)
   {
-    var heatTimeRequest = new HeatTask() { GarageId = id, HeatTask1 = heatRequest.Date };
+    var heatTimeRequest = new HeatTask() { GarageId = id, Date = heatRequest.Date };
 
     await this._heatTaskRepository.AddAsync(heatTimeRequest, ct);
     await this._heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -65,7 +65,7 @@ public class HeatTaskService : IHeatTaskService
     await this._cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
 
     cyclicHeatTaskEntity.CyclicHeatTaskDaysInWeeks = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDaysInWeek() { DayId = (int)i, CyclicHeatTaskTimeId = cyclicHeatTaskEntity.Id }).ToList();
+      new CyclicHeatTaskDaysInWeek() { DayId = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
       
     await this._cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
     await this._cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -83,7 +83,7 @@ public class HeatTaskService : IHeatTaskService
     await this._cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
 
     cyclicHeatTaskEntity.CyclicHeatTaskDaysInWeeks = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDaysInWeek() { DayId = (int)i, CyclicHeatTaskTimeId = cyclicHeatTaskEntity.Id }).ToList();
+      new CyclicHeatTaskDaysInWeek() { DayId = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
       
     await this._cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
     await this._cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);

@@ -9,24 +9,24 @@ public abstract class HeatingServiceHelper
 {
   public static DateTime? CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
   {
-    var todayDay = (int)DateTime.Today.DayOfWeek;
+    var todayDay = (int)DateTime.Today.DayOfWeek + 1;
 
-    if (customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day) &&
+    if (customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day) &&
         cyclicHeatTask.CyclicHeatTaskDaysInWeeks.FirstOrDefault(i => i.DayId == todayDay) != null)
     {
       // Check for today comparation
-      if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
+      if (customHeatRequest.Date.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
           cyclicHeatTask.Time.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
       {
-        if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
+        if (customHeatRequest.Date.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
         {
-          return customHeatRequest.HeatTask1;
+          return customHeatRequest.Date;
         }
 
         return DateTime.Now.Date + cyclicHeatTask.Time;
       }
     }
-    else if (!customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day)
+    else if (!customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day)
             )
     {
       // today
@@ -35,30 +35,30 @@ public abstract class HeatingServiceHelper
         return DateTime.Now.Date + cyclicHeatTask.Time;
       }
     }
-    else if (customHeatRequest.HeatTask1.Date.Day.Equals(DateTime.Now.Day)
+    else if (customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day)
             )
     {
-      if (DateTime.Now.TimeOfDay.TotalSeconds < customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds)
+      if (DateTime.Now.TimeOfDay.TotalSeconds < customHeatRequest.Date.TimeOfDay.TotalSeconds)
       {
-        return DateTime.Now.Date + customHeatRequest.HeatTask1.TimeOfDay;
+        return DateTime.Now.Date + customHeatRequest.Date.TimeOfDay;
       }
     }
-    else if ((customHeatRequest.HeatTask1.Day.Equals(DateTime.Now.AddDays(1).Day) ||
+    else if ((customHeatRequest.Date.Day.Equals(DateTime.Now.AddDays(1).Day) ||
               CheckIfNextDayIsHeatTask(cyclicHeatTask, todayDay)
              ))
     {
       // Check for tomorrow
-      if (!(customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
+      if (!(customHeatRequest.Date.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
           !(cyclicHeatTask.Time.TotalSeconds >
             DateTime.Now.TimeOfDay.TotalSeconds))
       {
         return null;
       }
 
-      if (customHeatRequest.HeatTask1.TimeOfDay.TotalSeconds >
+      if (customHeatRequest.Date.TimeOfDay.TotalSeconds >
           cyclicHeatTask.Time.TotalSeconds)
       {
-        return customHeatRequest.HeatTask1;
+        return customHeatRequest.Date;
       }
 
       return DateTime.Now.Date + cyclicHeatTask.Time;

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 
 namespace SmartHome.Core.Entities;
 
-[Table("DaysInWeek", Schema = "Garages")]
-public sealed class DaysInWeek: IEntity
+[Table("DayInWeek", Schema = "Garages")]
+public sealed class DayInWeek : IEntity
 {
     [Key]
     public int Id { get; set; }
