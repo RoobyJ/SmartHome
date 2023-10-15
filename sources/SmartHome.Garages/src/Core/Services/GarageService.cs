@@ -27,11 +27,7 @@ public class GarageService : IGarageService
     _garageRepository = garageRepository;
     _outsideTemperatureRepository = outsideTemperatureRepository;
   }
-
-
-
-
-
+  
   public async Task<ICollection<GarageDetailsDto>> GetGarages(CancellationToken cancellationToken)
   {
     var garages = await this._garageRepository.Get(new GarageQueryOptions()).ToListAsync(cancellationToken);
@@ -39,8 +35,15 @@ public class GarageService : IGarageService
 
     foreach (var garage in garages)
     {
-      var response = await GarageClient.GetHeaterStatus(garage.Ip);
-      result.Add(GarageConverters.GarageToGarageDetailsDto(garage, response));
+      try
+      {
+        var response = await GarageClient.GetHeaterStatus(garage.Ip);
+        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, response));
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, $"{nameof(GarageService)}.{nameof(GetGarages)} threw an exception.");
+      }
     }
 
     return result;

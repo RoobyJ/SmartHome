@@ -9,7 +9,7 @@ public abstract class HeatingServiceHelper
 {
   public static DateTime? CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
   {
-    var todayDay = (int)DateTime.Today.DayOfWeek;
+    var todayDay = (int)DateTime.Today.DayOfWeek + 1;
 
     if (customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day) &&
         cyclicHeatTask.CyclicHeatTaskDaysInWeeks.FirstOrDefault(i => i.DayId == todayDay) != null)
