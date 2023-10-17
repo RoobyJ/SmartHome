@@ -32,6 +32,16 @@ const router = createRouter({
               name: View.garagePageView,
               component: GaragePageView
             },
+            {
+              path: ':garageId/temperatures',
+              name: View.temperatureView,
+              component: GaragePageView
+            },
+            {
+              path: ':garageId/heat-tasks',
+              name: View.taskView,
+              component: GaragePageView
+            },
           ]
         },
       ]
