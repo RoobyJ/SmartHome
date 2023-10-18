@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JetBrains.Annotations;
 using SmartHome.Core.Dtos;
+using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
 using SmartHome.Core.Entities;
 
@@ -17,12 +18,16 @@ public abstract class GarageConverters
       DaysInWeekSelected = heatTask.CyclicHeatTaskDaysInWeeks.Select(i => i.DayId).ToList()
     };
   }
-  
-  public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage, [CanBeNull] GarageHeaterStatusDto heaterStatusResponse)
+
+  public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage,
+    [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, TemperatureDto temperatureResponse)
   {
     return new GarageDetailsDto()
     {
-      Id = garage.Id, Name = garage.Name, HeaterStatus = heaterStatusResponse?.HeaterStatus
+      Id = garage.Id,
+      Name = garage.Name,
+      HeaterStatus = heaterStatusResponse?.HeaterStatus,
+      Temperature = temperatureResponse.Temperature
     };
   }
 }

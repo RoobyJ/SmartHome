@@ -17,10 +17,10 @@ namespace SmartHome.Core.Services;
 public class GarageService : IGarageService
 {
   private readonly IGarageRepository _garageRepository;
-  private readonly IOutsideTemperatureRepository _outsideTemperatureRepository;
+  private readonly IOutsideTemperatureRepository<OutsideTemperature> _outsideTemperatureRepository;
   private readonly ILogger<GarageService> _logger;
 
-  public GarageService(ILogger<GarageService> logger, IGarageRepository garageRepository, IOutsideTemperatureRepository
+  public GarageService(ILogger<GarageService> logger, IGarageRepository garageRepository, IOutsideTemperatureRepository<OutsideTemperature>
     outsideTemperatureRepository)
   {
     _logger = logger;
@@ -37,8 +37,9 @@ public class GarageService : IGarageService
     {
       try
       {
-        var response = await GarageClient.GetHeaterStatus(garage.Ip);
-        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, response));
+        var heaterStatus = await GarageClient.GetHeaterStatus(garage.Ip);
+        var temperature = await GarageClient.GetGarageTemperature(garage.Ip);
+        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
       }
       catch (Exception ex)
       {
@@ -50,11 +51,10 @@ public class GarageService : IGarageService
     return result;
   }
 
-  public async Task<List<OutsideTemperature>> GetTemperatures(int id, CancellationToken ct)
+  public async Task<List<OutsideTemperature>> GetTemperatures(int id, int days, CancellationToken ct)
   {
     return await this._outsideTemperatureRepository.Get(new OutsideTemperatureQueryOptions())
-      .Where(i => i.GarageId == id)
-      .Where(i => i.Date.Second > DateTime.Now.AddDays(-60).Second).ToListAsync(ct);
+      .Where(i => i.GarageId == id).Take(days*288).ToListAsync(ct);
   }
 
   public async Task<Garage> GetGarageById(int id, CancellationToken ct)

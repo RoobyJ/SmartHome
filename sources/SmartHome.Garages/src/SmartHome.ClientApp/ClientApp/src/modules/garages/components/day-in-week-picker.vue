@@ -11,5 +11,5 @@
 </template>
 
 <script setup lang="ts">
-const daysInWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
 </script>

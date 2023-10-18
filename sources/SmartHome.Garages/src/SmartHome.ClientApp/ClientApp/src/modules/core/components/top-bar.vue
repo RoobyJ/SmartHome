@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar class="top-bar" name="app-bar" color="app-bar" scroll-behavior="elevate">
+  <v-app-bar class="top-bar" name="app-bar" color="app-bar" elevation="1" scroll-behavior="elevate">
     <v-app-bar-nav-icon class="ml-0" @click="$emit('toggleMainMenu')" />
 
     <v-app-bar-title class="d-flex justify-center">
