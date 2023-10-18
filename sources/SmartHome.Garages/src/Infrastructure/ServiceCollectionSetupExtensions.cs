@@ -34,7 +34,7 @@ public static class ServiceCollectionSetupExtensions
     services.AddScoped<IHeatingLogRepository, HeatLogRepository>();
     services.AddScoped<IHeatTaskRepository<HeatTask>, HeatTaskRepository>();
     services.AddScoped<ICyclicHeatTaskRepository<CyclicHeatTask>, CyclicHeatTaskRepository>();
-    services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
+    services.AddScoped<IOutsideTemperatureRepository<OutsideTemperature>, OutsideTemperaturesRepository>();
   }
 
   public static void AddUrlCheckingServices(this IServiceCollection services)

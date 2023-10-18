@@ -51,7 +51,7 @@ public class HeatingService : IHeatingService
 
       CheckIfShouldBeOff(closestHeatTimes, garages);
 
-      var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages);
+      var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
         _startHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
@@ -113,15 +113,26 @@ public class HeatingService : IHeatingService
     return garagesClosestHeatingTimes;
   }
 
-  private async Task<List<GarageTemperatureDto>> GetListOfGarageTemperatures(List<Garage> garages)
+  private async Task<List<GarageTemperatureDto>> GetListOfGarageTemperatures(List<Garage> garages, CancellationToken ct)
   {
+    using var scope = _serviceScopeFactoryLocator.CreateScope();
+    var temperatureRepository =
+      scope.ServiceProvider
+        .GetService<IOutsideTemperatureRepository<OutsideTemperature>>();
     List<GarageTemperatureDto> listOfGarageTemperatureDtos = new();
 
     for (var i = 0; i < garages.Count; i++)
     {
       var response = await GarageClient.GetGarageTemperature(garages[i].Ip);
       listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = i + 1, Temperature = response.Temperature });
+      var entity = new OutsideTemperature()
+      {
+        Date = DateTime.Now, Temperature = response.Temperature, GarageId = i + 1
+      };
+      await temperatureRepository.AddAsync(entity, ct);
     }
+
+    await temperatureRepository.UnitOfWork.SaveChangesAsync(ct);
 
     return listOfGarageTemperatureDtos;
   }
