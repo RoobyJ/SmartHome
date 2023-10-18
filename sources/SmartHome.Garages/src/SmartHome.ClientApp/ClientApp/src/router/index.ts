@@ -3,6 +3,8 @@ import HomeView from '@/modules/home/views/home-page.vue'
 import GarageListView from '@/modules/garages/views/garage-list.vue'
 import GaragePageView from '@/modules/garages/views/garage-page.vue'
 import DefaultView from '@/modules/core/views/default-view.vue'
+import TemperatureView from '@/modules/garages/views/temperature-view.vue'
+import TaskView from '@/modules/garages/views/task-view.vue'
 import { View } from './view-definitions';
 
 const router = createRouter({
@@ -35,12 +37,12 @@ const router = createRouter({
             {
               path: ':garageId/temperatures',
               name: View.temperatureView,
-              component: GaragePageView
+              component: TemperatureView
             },
             {
               path: ':garageId/heat-tasks',
               name: View.taskView,
-              component: GaragePageView
+              component: TaskView
             },
           ]
         },

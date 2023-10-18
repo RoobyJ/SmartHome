@@ -12,24 +12,6 @@
         </v-col>
       </v-row>
     </div>
-    <v-row>
-            <v-col cols="6" sm="4" lg="3" v-if="hasAppAccessPermission">
-                <v-card :to="{ name: page.myRoutes }" class="dashboard-tile">
-                    <v-responsive :aspect-ratio="1" class="flex align-center">
-                        <div class="d-flex flex-column align-center">
-                            <v-avatar size="63%">
-                                <v-responsive :aspect-ratio="1">
-                                    <div class="d-flex align-center justify-center w-100">
-                                        <v-icon size="100%">$dm-my-routes</v-icon>
-                                    </div>
-                                </v-responsive>
-                            </v-avatar>
-                            <div class="mt-3 font-weight-medium">{{ $t('MyRoutes.MyRoutes') }}</div>
-                        </div>
-                    </v-responsive>
-                </v-card>
-            </v-col>
-        </v-row>
   </div>
 </template>
 
@@ -37,9 +19,8 @@
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client'
 import HeatTaskItem from '../components/heat-task-item.vue'
 import { onMounted, ref } from 'vue'
-import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
-import AddHeatTaskDialog from '../components/add-heat-task-dialog.vue';
 import { useRoute } from 'vue-router'
+import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models';
 
 const route = useRoute()
 
@@ -51,6 +32,9 @@ const loadItems = async () => {
 
   const response = await GarageClient.getCyclicHeatRequests(id)
   if (response.isSuccess) items.value = response.data
+}
+const openAddTaskDialog = () => {
+  console.log('test')
 }
 
 onMounted(async () => {

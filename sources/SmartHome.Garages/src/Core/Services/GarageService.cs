@@ -53,8 +53,7 @@ public class GarageService : IGarageService
   public async Task<List<OutsideTemperature>> GetTemperatures(int id, int days, CancellationToken ct)
   {
     return await this._outsideTemperatureRepository.Get(new OutsideTemperatureQueryOptions())
-      .Where(i => i.GarageId == id)
-      .Where(i => i.Date.Second > DateTime.Now.AddDays(-1*days).Second).ToListAsync(ct);
+      .Where(i => i.GarageId == id).Take(days*288).ToListAsync(ct);
   }
 
   public async Task<Garage> GetGarageById(int id, CancellationToken ct)
