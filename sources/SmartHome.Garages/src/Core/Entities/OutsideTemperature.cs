@@ -13,7 +13,7 @@ public sealed class OutsideTemperature : IEntity
 
     public DateTime Date { get; set; }
 
-    public int Temperature { get; set; }
+    public float Temperature { get; set; }
 
     public int GarageId { get; set; }
 

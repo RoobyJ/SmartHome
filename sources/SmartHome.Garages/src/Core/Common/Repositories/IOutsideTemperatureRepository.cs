@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SmartHome.Core.Entities;
 
 namespace SmartHome.Core.Common.Repositories;
@@ -8,7 +10,9 @@ public class OutsideTemperatureQueryOptions
   public bool AsNoTracking { get; set; } = true;
 }
 
-public interface IOutsideTemperatureRepository : IRepository
+public interface IOutsideTemperatureRepository<in TEntity> : IRepository where TEntity : IEntity
 {
   IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions);
+  
+  Task AddAsync(TEntity entity, CancellationToken ct = default);
 }
