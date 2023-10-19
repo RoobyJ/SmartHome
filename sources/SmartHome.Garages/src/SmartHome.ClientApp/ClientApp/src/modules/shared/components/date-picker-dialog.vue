@@ -1,34 +1,33 @@
 <template>
-<v-dialog v-model="showDialog">
+  <v-dialog v-model="showDialog">
     <template #activator="{ props }">
-        <v-btn-secondary v-bind="props">
-            <v-icon size="20" start>mdi-calendar</v-icon>
-        </v-btn-secondary>
+      <v-btn v-bind="props" variant="text" class="pr-0">
+        <v-icon size="20" start>mdi-calendar</v-icon>
+      </v-btn>
     </template>
 
     <v-card>
-        <v-card-title>Choose date</v-card-title>
-        
-        <v-card-actions>
-            <v-btn-primary @click="submitDate">Submit</v-btn-primary>
-            <v-btn-secondary @click="showDialog = false">Cancel</v-btn-secondary>
-        </v-card-actions>
+      <v-card-title class="font-weight-bold">Choose date</v-card-title>
+      <v-date-picker v-model="date" @click:save="submitDate()" @click:cancel="showDialog = false" />
     </v-card>
-</v-dialog>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue'
 
 const emit = defineEmits<{
-    chosen: [result: Date];
-}>();
+  chosen: [result: Date]
+}>()
 
-const showDialog = ref(false);
-const date = ref<Date | null>();
-
+const showDialog = ref(false)
+const date = ref<any>()
 
 const submitDate = () => {
-    if (date.value != null) emit('chosen', date.value);
-};
+  nextTick(() => {
+    const newDate = new Date(date.value)
+    if (date.value != null) emit('chosen', newDate)
+    showDialog.value = false
+  })
+}
 </script>

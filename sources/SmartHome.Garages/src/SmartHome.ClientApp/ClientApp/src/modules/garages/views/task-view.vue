@@ -21,6 +21,7 @@ import HeatTaskItem from '../components/heat-task-item.vue'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models';
+import AddHeatTaskDialog from '../components/add-heat-task-dialog.vue';
 
 const route = useRoute()
 
@@ -32,9 +33,6 @@ const loadItems = async () => {
 
   const response = await GarageClient.getCyclicHeatRequests(id)
   if (response.isSuccess) items.value = response.data
-}
-const openAddTaskDialog = () => {
-  console.log('test')
 }
 
 onMounted(async () => {

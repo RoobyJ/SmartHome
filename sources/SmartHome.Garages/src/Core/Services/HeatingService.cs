@@ -43,20 +43,20 @@ public class HeatingService : IHeatingService
 
       var garages = garageRepository.Get(new GarageQueryOptions { AsNoTracking = true }).ToList();
 
-      await InitGarageHeatersStatuses(garages);
+      await InitGarageHeatersStatuses(garages, ct);
 
 
       var closestHeatTimes = await FindClosestHeatTime(garages, ct);
 
 
-      CheckIfShouldBeOff(closestHeatTimes, garages);
+      CheckIfShouldBeOff(closestHeatTimes, garages, ct);
 
       var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
         _startHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
 
-      SetOnHeaters(listOfStartHeatTimes, garages);
+      SetOnHeaters(listOfStartHeatTimes, garages, ct);
     }
 #pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)
@@ -123,7 +123,7 @@ public class HeatingService : IHeatingService
 
     for (var i = 0; i < garages.Count; i++)
     {
-      var response = await GarageClient.GetGarageTemperature(garages[i].Ip);
+      var response = await GarageClient.GetGarageTemperature(garages[i].Ip, ct);
       listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = i + 1, Temperature = response.Temperature });
       var entity = new OutsideTemperature()
       {
@@ -137,7 +137,7 @@ public class HeatingService : IHeatingService
     return listOfGarageTemperatureDtos;
   }
 
-  private async void CheckIfShouldBeOff(List<GarageHeatingTime> todaysHeatTimes, List<Garage> garages)
+  private async void CheckIfShouldBeOff(List<GarageHeatingTime> todaysHeatTimes, List<Garage> garages, CancellationToken ct)
   {
     var scope = _serviceScopeFactoryLocator.CreateScope();
     var heatingLogRepository = scope.ServiceProvider.GetService<IHeatingLogRepository>();
@@ -149,7 +149,7 @@ public class HeatingService : IHeatingService
 
       if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
       {
-        await GarageClient.ChangeHeaterStatus("false", garage.Ip);
+        await GarageClient.ChangeHeaterStatus("false", garage.Ip, ct);
         _logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
         await heatingLogRepository.AddAsync(new HeatLog
         {
@@ -161,7 +161,7 @@ public class HeatingService : IHeatingService
       if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime!.Value.TimeOfDay.TotalSeconds &&
           garageHeaterStatus.HeatingStatus)
       {
-        await GarageClient.ChangeHeaterStatus("false", garage.Ip);
+        await GarageClient.ChangeHeaterStatus("false", garage.Ip, ct);
         _logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
         await heatingLogRepository.AddAsync(new HeatLog
         {
@@ -172,7 +172,7 @@ public class HeatingService : IHeatingService
   }
 
   // TODO: rework this method to much scopes!
-  private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages)
+  private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, CancellationToken ct)
   {
     var scope = _serviceScopeFactoryLocator.CreateScope();
     var heatingLogRepository = scope.ServiceProvider.GetService<IHeatingLogRepository>();
@@ -190,7 +190,7 @@ public class HeatingService : IHeatingService
         var ip = garages.Find(garage => garage.Id == garageStartHeatTime.Id).Ip;
         if (!String.IsNullOrEmpty(ip))
         {
-          await GarageClient.ChangeHeaterStatus("true", ip);
+          await GarageClient.ChangeHeaterStatus("true", ip, ct);
           _logger.LogInformation(
             $"Setted heater ON in garage {garageStartHeatTime.Id} running at: {DateTimeOffset.Now}");
           await heatingLogRepository.AddAsync(new HeatLog
@@ -202,7 +202,7 @@ public class HeatingService : IHeatingService
     }
   }
 
-  private async Task InitGarageHeatersStatuses(List<Garage> garages)
+  private async Task InitGarageHeatersStatuses(List<Garage> garages, CancellationToken ct)
   {
     foreach (var garage in garages)
     {
@@ -211,7 +211,7 @@ public class HeatingService : IHeatingService
         continue;
       }
 
-      var response = await GarageClient.GetHeaterStatus(garage.Ip);
+      var response = await GarageClient.GetHeaterStatus(garage.Ip, ct);
       _garagesHeatersStatuses.Add(new GarageHeaterStatus { Id = garage.Id, HeatingStatus = response.HeaterStatus });
     }
   }

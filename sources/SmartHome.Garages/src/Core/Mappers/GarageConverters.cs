@@ -20,14 +20,14 @@ public abstract class GarageConverters
   }
 
   public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage,
-    [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, TemperatureDto temperatureResponse)
+     [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, [CanBeNull] TemperatureDto temperatureResponse)
   {
     return new GarageDetailsDto()
     {
       Id = garage.Id,
       Name = garage.Name,
       HeaterStatus = heaterStatusResponse?.HeaterStatus,
-      Temperature = temperatureResponse.Temperature
+      Temperature = temperatureResponse?.Temperature
     };
   }
 }

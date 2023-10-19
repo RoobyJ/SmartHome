@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show">
+  <v-dialog v-model="show" max-width="95vw" width="99vw">
     <template #activator="{ props }">
       <v-btn v-bind="props" variant="text" icon="mdi-plus" />
     </template>
@@ -19,6 +19,7 @@
           variant="outlined"
           bg-color="white"
           prepend-inner-icon="mdi-clock"
+          placeholder="Time"
           class="time-input--margin"
           @picked="handlePickedDays"
         />
@@ -27,10 +28,12 @@
         <v-col cols="12" class="d-flex justify-end"
           ><date-picker-dialog @chosen="handleDatePick" />
         </v-col>
-        <v-col class="ml-5"><day-in-week-picker /></v-col>
+        <v-col>
+          <day-in-week-picker :disabled="pickedDate != null" />
+        </v-col>
       </v-row>
       <v-card-actions class="d-flex justify-end mt-5">
-        <v-btn variant="flat" color="#2488cf">Add</v-btn><v-btn variant="outlined">Cancel</v-btn>
+        <v-btn variant="flat" color="#2488cf">Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -46,8 +49,9 @@ const inputTime = ref('')
 const pickedDays = ref<number[]>([])
 const pickedDate = ref<Date | null>(null)
 
-const handlePickedDays = (data: any) => {}
+const handlePickedDays = (data: number[]) => {}
 const handleDatePick = (date: Date) => {
+  console.log(date);
   pickedDate.value = date
 }
 </script>

@@ -37,13 +37,13 @@ public class GarageService : IGarageService
     {
       try
       {
-        var heaterStatus = await GarageClient.GetHeaterStatus(garage.Ip);
-        var temperature = await GarageClient.GetGarageTemperature(garage.Ip);
+        var heaterStatus = await GarageClient.GetHeaterStatus(garage.Ip, cancellationToken);
+        var temperature = await GarageClient.GetGarageTemperature(garage.Ip, cancellationToken);
         result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
       }
       catch (Exception ex)
       {
-        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, null));
+        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, null, null));
         _logger.LogError(ex, $"{nameof(GarageService)}.{nameof(GetGarages)} threw an exception.");
       }
     }

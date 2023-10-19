@@ -1,37 +1,51 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
 
 namespace SmartHome.Core.Helpers;
 
-public class GarageClient
+public abstract class GarageClient
 {
-  private static readonly HttpClient Client = new();
-
-  public static async Task<TemperatureDto> GetGarageTemperature(string ip)
+  private static readonly HttpClient client = new();
+  
+  public static async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
   {
-    var response = await Client.GetAsync(ClientEndpoints.Garage.Temperature(ip));
-    var contentString = await response.Content.ReadAsStringAsync();
-    return JsonConvert.DeserializeObject<TemperatureDto>(contentString);
+    TemperatureDto? itemToReturn = null;
+    try
+    {
+      var response = await client.GetAsync(ClientEndpoints.Garage.Temperature(ip), ct);
+      var contentString = await response.Content.ReadAsStringAsync(ct);
+      itemToReturn = JsonConvert.DeserializeObject<TemperatureDto>(contentString);
+    }
+    catch (Exception ex)
+    {
+      Console.Write(ex);
+    }
+
+    return itemToReturn;
   }
 
-  public static async Task ChangeHeaterStatus(string onOff, string ip)
+  public static async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
     var content = new FormUrlEncodedContent(values);
-    await Client.PutAsync(ClientEndpoints.Garage.Heater(ip), content);
+    await client.PutAsync(ClientEndpoints.Garage.Heater(ip), content, cancellationToken: ct);
   }
 
-  public static async Task<GarageHeaterStatusDto> GetHeaterStatus(string ip)
+  public static async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
-    var response = await Client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip));
-    Console.Write(response);
-    var contentString = await response.Content.ReadAsStringAsync();
+    var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), ct);
+    var contentString = await response.Content.ReadAsStringAsync(ct);
     return JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
   }
 }

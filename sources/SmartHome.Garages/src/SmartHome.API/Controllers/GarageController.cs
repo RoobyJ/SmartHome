@@ -182,7 +182,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("This garage doesnt exist");
     }
 
-    await GarageClient.ChangeHeaterStatus("ON", garage.Ip);
+    await GarageClient.ChangeHeaterStatus("ON", garage.Ip, ct);
 
     return NoContent();
   }
