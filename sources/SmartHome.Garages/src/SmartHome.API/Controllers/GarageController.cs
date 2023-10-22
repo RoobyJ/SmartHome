@@ -12,13 +12,14 @@ public class GarageController : ApiControllerBase
 {
   private readonly IGarageService _garageService;
   private readonly IHeatTaskService _heatTaskService;
-  private readonly ILogger<GarageController> _logger;
+  private readonly IGarageClient garageClient;
 
-  public GarageController(ILogger<GarageController> logger, IGarageService garageService, IHeatTaskService heatTaskService)
+  public GarageController(IGarageService garageService,
+    IHeatTaskService heatTaskService, IGarageClient garageClient)
   {
-    _logger = logger;
     _garageService = garageService;
     _heatTaskService = heatTaskService;
+    this.garageClient = garageClient;
   }
 
   [HttpGet("garages")]
@@ -49,7 +50,7 @@ public class GarageController : ApiControllerBase
 
     return Ok(heatTimeRequests);
   }
-  
+
   [HttpPost("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> SaveHeatTimeRequest(int id, HeatRequestDto request, CancellationToken ct)
@@ -62,7 +63,7 @@ public class GarageController : ApiControllerBase
     await _heatTaskService.SaveHeatTimeTask(id, request, ct);
     return NoContent();
   }
-  
+
   [HttpPut("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatRequestDto request, CancellationToken ct)
@@ -75,7 +76,7 @@ public class GarageController : ApiControllerBase
     await _heatTaskService.SaveHeatTimeTask(id, request, ct);
     return NoContent();
   }
-  
+
   [HttpDelete("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteHeatTimeRequest(int id, int requestId, CancellationToken ct)
@@ -92,7 +93,8 @@ public class GarageController : ApiControllerBase
   [HttpGet("{id:int}/Temperatures")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id, [FromQuery]int days, CancellationToken ct)
+  public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id, [FromQuery] int days,
+    CancellationToken ct)
   {
     if (id < 1)
     {
@@ -122,7 +124,8 @@ public class GarageController : ApiControllerBase
 
   [HttpPost("{id:int}/CyclicHeatTimes")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult> CreateCyclicHeatTimeRequest(int id, CreateCyclicHeatTaskDto taskDto, CancellationToken ct)
+  public async Task<ActionResult> CreateCyclicHeatTimeRequest(int id, CreateCyclicHeatTaskDto taskDto,
+    CancellationToken ct)
   {
     if (taskDto == null)
     {
@@ -138,10 +141,11 @@ public class GarageController : ApiControllerBase
 
     return NoContent();
   }
-  
+
   [HttpPut("{id:int}/CyclicHeatTimes")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult> UpdateCyclicHeatTimeRequest(int id, UpdateCyclicHeatTaskDto requestDto, CancellationToken ct)
+  public async Task<ActionResult> UpdateCyclicHeatTimeRequest(int id, UpdateCyclicHeatTaskDto requestDto,
+    CancellationToken ct)
   {
     if (requestDto == null)
     {
@@ -157,7 +161,7 @@ public class GarageController : ApiControllerBase
 
     return NoContent();
   }
-  
+
   [HttpDelete("{id:int}/CyclicHeatTimes")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteCyclicHeatTimeRequest(int id, int requestId, CancellationToken ct)
@@ -182,7 +186,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("This garage doesnt exist");
     }
 
-    await GarageClient.ChangeHeaterStatus("ON", garage.Ip, ct);
+    await garageClient.ChangeHeaterStatus("ON", garage.Ip, ct);
 
     return NoContent();
   }

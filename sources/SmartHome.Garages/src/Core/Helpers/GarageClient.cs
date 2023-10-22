@@ -1,40 +1,49 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
+using SmartHome.Core.Interfaces;
 
 namespace SmartHome.Core.Helpers;
 
-public abstract class GarageClient
+public class GarageClient : IGarageClient
 {
   private static readonly HttpClient client = new();
+  private readonly ILogger<GarageClient> logger;
+
+  public GarageClient(ILogger<GarageClient> logger)
+  {
+    this.logger = logger;
+  }
   
-  public static async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
+  public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
   {
     TemperatureDto? itemToReturn = null;
+    var cts = new CancellationTokenSource();
+    
     try
     {
-      var response = await client.GetAsync(ClientEndpoints.Garage.Temperature(ip), ct);
+      cts.CancelAfter(10000);
+      var response = await client.GetAsync(ClientEndpoints.Garage.Temperature(ip), cts.Token);
       var contentString = await response.Content.ReadAsStringAsync(ct);
       itemToReturn = JsonConvert.DeserializeObject<TemperatureDto>(contentString);
     }
-    catch (Exception ex)
+    catch (TaskCanceledException)
     {
-      Console.Write(ex);
+      
+      return itemToReturn;
     }
 
     return itemToReturn;
   }
 
-  public static async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
+  public async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
@@ -42,10 +51,25 @@ public abstract class GarageClient
     await client.PutAsync(ClientEndpoints.Garage.Heater(ip), content, cancellationToken: ct);
   }
 
-  public static async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
+  public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
-    var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), ct);
-    var contentString = await response.Content.ReadAsStringAsync(ct);
-    return JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
+    
+    
+    GarageHeaterStatusDto? itemToReturn = null;
+    var cts = new CancellationTokenSource();
+    
+    try
+    {
+      cts.CancelAfter(10000);
+      var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), cts.Token);
+      var contentString = await response.Content.ReadAsStringAsync(ct);
+      itemToReturn =  JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
+    }
+    catch (TaskCanceledException)
+    {
+      return itemToReturn;
+    }
+
+    return itemToReturn;
   }
 }
