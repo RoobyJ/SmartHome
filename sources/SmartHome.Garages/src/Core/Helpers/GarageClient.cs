@@ -14,6 +14,7 @@ namespace SmartHome.Core.Helpers;
 
 public class GarageClient : IGarageClient
 {
+  private const int TimeToCancel = 3000;
   private static readonly HttpClient client = new();
   private readonly ILogger<GarageClient> logger;
 
@@ -29,7 +30,7 @@ public class GarageClient : IGarageClient
     
     try
     {
-      cts.CancelAfter(10000);
+      cts.CancelAfter(TimeToCancel);
       var response = await client.GetAsync(ClientEndpoints.Garage.Temperature(ip), cts.Token);
       var contentString = await response.Content.ReadAsStringAsync(ct);
       itemToReturn = JsonConvert.DeserializeObject<TemperatureDto>(contentString);
@@ -60,7 +61,7 @@ public class GarageClient : IGarageClient
     
     try
     {
-      cts.CancelAfter(10000);
+      cts.CancelAfter(TimeToCancel);
       var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), cts.Token);
       var contentString = await response.Content.ReadAsStringAsync(ct);
       itemToReturn =  JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);

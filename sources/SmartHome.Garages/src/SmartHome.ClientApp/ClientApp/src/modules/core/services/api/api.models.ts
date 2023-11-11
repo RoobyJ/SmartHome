@@ -1,3 +1,5 @@
+import type { DayInWeek } from "../../core.models";
+
 export interface GarageDetailsDto {
     id: number;
     name: string;
@@ -17,4 +19,13 @@ export interface TemperatureDto {
     date: Date;
     temperature: number;
     garageId: number;
+}
+
+export interface HeatRequestDto {
+    date: Date;
+}
+
+export interface CreateCyclicHeatTaskDto {
+    time: string;
+    daysInWeekSelected: DayInWeek[];
 }

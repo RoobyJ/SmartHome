@@ -28,7 +28,6 @@ const props = defineProps({
 })
 
 const dayClass = (i: number) => {
-  console.log(props.heatTask.daysInWeekSelected)
   if (props.isDisabled) return 'disabled-color pr-1';
   return props.heatTask.daysInWeekSelected.includes(i) ? 'day-character--blue pr-1' : 'pr-1'
 }

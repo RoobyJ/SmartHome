@@ -5,8 +5,7 @@
       variant="text"
       class="mr-1"
       :class="isSelected(0) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(0)"
+      @click="toggleSelect(0)"
       >S</v-btn
     >
     <v-btn
@@ -14,8 +13,7 @@
       variant="text"
       class="mr-1"
       :class="isSelected(1) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(1)"
+      @click="toggleSelect(1)"
       >M</v-btn
     >
     <v-btn
@@ -23,8 +21,7 @@
       variant="text"
       class="mr-1"
       :class="isSelected(2) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(2)"
+      @click="toggleSelect(2)"
       >T</v-btn
     >
     <v-btn
@@ -32,8 +29,7 @@
       variant="text"
       class="mr-1"
       :class="isSelected(3) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(3)"
+      @click="toggleSelect(3)"
       >W</v-btn
     >
     <v-btn
@@ -41,8 +37,7 @@
       variant="text"
       class="mr-1"
       :class="isSelected(4) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(4)"
+      @click="toggleSelect(4)"
       >T</v-btn
     >
     <v-btn
@@ -50,42 +45,47 @@
       variant="text"
       class="mr-1"
       :class="isSelected(5) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(5)"
+      @click="toggleSelect(5)"
       >F</v-btn
     >
-    <v-btn
-      icon
-      variant="text"
-      :class="isSelected(6) ? 'selected' : ''"
-      :disabled="disabled"
-      @click="toogleSelect(6)"
+    <v-btn icon variant="text" :class="isSelected(6) ? 'selected' : ''" @click="toggleSelect(6)"
       >S</v-btn
     >
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { ref } from 'vue'
 
-defineProps({
-  disabled: { type: Boolean, required: true }
+const emit = defineEmits(['update:modelValue', 'pick']);
+
+const props = defineProps({
+  modelValue: { type: Boolean, default: false }
+})
+
+const resetData = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
 })
 
 const selectedDays = ref<Map<number, boolean>>(new Map())
 
 const isSelected = (n: number): boolean => {
-  console.log(selectedDays.value.get(n))
   return selectedDays.value.get(n) ?? false
 }
 
-const toogleSelect = (n: number) => {
+const toggleSelect = (n: number) => {
   const value = selectedDays.value.get(n)
   selectedDays.value.set(n, !value)
+  emit('pick', selectedDays.value)
 }
 
-onMounted(() => {
+const resetSelectedDays = () => {
   selectedDays.value = new Map<number, boolean>([
     [0, false],
     [1, false],
@@ -95,6 +95,15 @@ onMounted(() => {
     [5, false],
     [6, false]
   ])
+}
+
+watch(resetData, (newValue: boolean) => {
+  if(newValue) resetSelectedDays();
+  resetData.value = false;
+});
+
+onMounted(() => {
+  resetSelectedDays();
 })
 </script>
 

@@ -2,7 +2,7 @@
   <div>
     <div>{{ garageName }}</div>
     <div>Heater status: <v-icon :color="getHeaterStatusColor">mdi-circle</v-icon></div>
-    <div>Current temperature: {{ temperature }}</div>
+    <div>Current temperature: {{ currentTemperature }}</div>
   </div>
 </template>
 
@@ -23,6 +23,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const currentTemperature = computed(() => props.temperature?.toString() + ' °C');
 
 const getHeaterStatusColor = computed(() => {
   switch (props.heaterStatus){
