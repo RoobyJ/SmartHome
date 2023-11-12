@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JetBrains.Annotations;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
@@ -18,15 +19,15 @@ public abstract class GarageConverters
     };
   }
 
-  public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage, GarageHeaterStatusDto heaterStatusResponse,
-    TemperatureDto temperatureResponse)
+  public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage,
+     [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, [CanBeNull] TemperatureDto temperatureResponse)
   {
     return new GarageDetailsDto()
     {
       Id = garage.Id,
       Name = garage.Name,
-      HeaterStatus = heaterStatusResponse.HeaterStatus,
-      Temperature = temperatureResponse.Temperature
+      HeaterStatus = heaterStatusResponse?.HeaterStatus,
+      Temperature = temperatureResponse?.Temperature
     };
   }
 }

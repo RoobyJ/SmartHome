@@ -18,14 +18,14 @@ public class GarageService : IGarageService
 {
   private readonly IGarageRepository _garageRepository;
   private readonly IOutsideTemperatureRepository<OutsideTemperature> _outsideTemperatureRepository;
-  private readonly ILogger<GarageService> _logger;
+  private readonly IGarageClient garageClient;
 
-  public GarageService(ILogger<GarageService> logger, IGarageRepository garageRepository, IOutsideTemperatureRepository<OutsideTemperature>
-    outsideTemperatureRepository)
+  public GarageService(IGarageRepository garageRepository, IOutsideTemperatureRepository<OutsideTemperature>
+    outsideTemperatureRepository, IGarageClient garageClient)
   {
-    _logger = logger;
     _garageRepository = garageRepository;
     _outsideTemperatureRepository = outsideTemperatureRepository;
+    this.garageClient = garageClient;
   }
   
   public async Task<ICollection<GarageDetailsDto>> GetGarages(CancellationToken cancellationToken)
@@ -35,16 +35,9 @@ public class GarageService : IGarageService
 
     foreach (var garage in garages)
     {
-      try
-      {
-        var heaterStatus = await GarageClient.GetHeaterStatus(garage.Ip);
-        var temperature = await GarageClient.GetGarageTemperature(garage.Ip);
+        var heaterStatus = await garageClient.GetHeaterStatus(garage.Ip, cancellationToken);
+        var temperature = await garageClient.GetGarageTemperature(garage.Ip, cancellationToken);
         result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, $"{nameof(GarageService)}.{nameof(GetGarages)} threw an exception.");
-      }
     }
 
     return result;

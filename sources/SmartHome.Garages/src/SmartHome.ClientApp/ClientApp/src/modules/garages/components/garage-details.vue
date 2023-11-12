@@ -1,15 +1,15 @@
 <template>
   <div>
     <div>{{ garageName }}</div>
-    <div>Heater status: <v-icon :color="heaterStatus ? 'green' : 'red'">mdi-circle</v-icon></div>
-    <div>Current temperature: {{ temperature }}</div>
+    <div>Heater status: <v-icon :color="getHeaterStatusColor">mdi-circle</v-icon></div>
+    <div>Current temperature: {{ currentTemperature }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue';
+import { computed, type PropType } from 'vue';
 
-defineProps({
+const props = defineProps({
   garageName: {
     type: String,
     required: true
@@ -23,4 +23,17 @@ defineProps({
     required: true
   }
 })
+
+const currentTemperature = computed(() => props.temperature?.toString() + ' °C');
+
+const getHeaterStatusColor = computed(() => {
+  switch (props.heaterStatus){
+    case true:
+      return 'green';
+    case false:
+      return 'red';
+    default:
+      return 'grey';
+  }
+});
 </script>

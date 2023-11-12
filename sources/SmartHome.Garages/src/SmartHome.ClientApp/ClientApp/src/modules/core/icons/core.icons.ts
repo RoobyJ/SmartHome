@@ -4,6 +4,7 @@ import AddAppIcon from './add-app-icon.vue';
 import CheckboxOffIcon from './checkbox-off-icon.vue';
 import CheckboxOnIcon from './checkbox-on-icon.vue';
 import SuccessIcon from './success-icon.vue';
+import DatePickerIcon from './date-picker-icon.vue';
 
 // IMPORTANT: check readme.md for instructions about adding new icons
 
@@ -13,6 +14,7 @@ import SuccessIcon from './success-icon.vue';
  * Usage: `<v-icon>dm:add-app</v-icon>`
  **/
 const components: Record<string, Component> = {
+    'date-picker': DatePickerIcon,
     'add-app': AddAppIcon,
     'checkbox-on': CheckboxOnIcon,
     'checkbox-off': CheckboxOffIcon,

@@ -1,3 +1,4 @@
+using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
 using SmartHome.Core.Services;
 using SmartHome.Infrastructure;
@@ -15,8 +16,10 @@ builder.Services.AddDbContext(builder.Configuration);
 
 builder.Services.AddRepositories();
 
+// TODO: move this into CoreExtensions.cs file
 builder.Services.AddScoped<IGarageService, GarageService>();
 builder.Services.AddScoped<IHeatTaskService, HeatTaskService>();
+builder.Services.AddScoped<IGarageClient, GarageClient>();
 
 var app = builder.Build();
 
