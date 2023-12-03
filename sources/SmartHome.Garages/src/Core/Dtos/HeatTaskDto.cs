@@ -2,7 +2,8 @@
 
 namespace SmartHome.Core.Dtos;
 
-public class HeatRequestDto
+public class HeatTaskDto
 {
+  public int Id { get; set; }
   public DateTime Date { get; init; }
 }

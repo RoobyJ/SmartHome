@@ -1,35 +1,69 @@
 <template>
-  <v-container class="heat-task-container">
+  <v-container class="heat-task-container" @click="test()">
     <v-row dense>
-      <v-col align-self="center">
-        <div class="d-flex align-center time-font-size pl-4">{{ heatTask.time.slice(0, 5) }}</div>
+      <v-col cols="1" align-self="center"
+        ><v-checkbox
+          density="compact"
+          class="pt-5"
+          color="#2488cf"
+          @update:modelValue="(val) => clickCheckbox(val)"
+        />
       </v-col>
-      <v-col cols="2" align-self="center">
-        <div class="d-flex justify-end">
+      <v-col align-self="center">
+        <div class="d-flex align-center time-font-size pl-4">{{ getTime }}</div>
+      </v-col>
+      <v-col cols="3" align-self="center">
+        <div v-if="isCyclic" class="d-flex justify-end">
           <div v-for="(day, i) in daysInWeek" :key="i" :class="dayClass(i)">
             {{ day.slice(0, 1).toUpperCase() }}
           </div>
         </div>
+        <div v-else class="date">
+          {{ getDate }}
+        </div>
       </v-col>
-      <v-col cols="2"><v-switch :disabled="isDisabled" class="d-flex align-start justify-end" /></v-col>
+      <v-col cols="2">
+        <v-switch hide-details />
+        <v-btn variant="text" icon size="small"><v-icon>mdi-lead-pencil</v-icon></v-btn>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import type { CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
-import type { PropType } from 'vue'
+import type { CustomHeatTaskDto, CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
+import { computed, type PropType } from 'vue'
 
 const daysInWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
+const emit = defineEmits(['clicked-checkbox'])
+
 const props = defineProps({
-  heatTask: { type: Object as PropType<CyclicHeatTaskDto>, required: true },
-    isDisabled: {type: Boolean, required: true}
+  heatTask: { type: Object as PropType<CustomHeatTaskDto | CyclicHeatTaskDto>, required: true }
+})
+
+const isCyclic = computed(() => 'time' in props.heatTask)
+
+const getDate = computed(() => {
+  if ('date' in props.heatTask) return props.heatTask.date.toString().slice(0, 10)
+})
+
+const getTime = computed(() => {
+  if ('time' in props.heatTask) return props.heatTask.time.slice(0, 5)
+  if ('date' in props.heatTask) return props.heatTask.date.toString().slice(11, 16)
 })
 
 const dayClass = (i: number) => {
-  if (props.isDisabled) return 'disabled-color pr-1';
+  if ('date' in props.heatTask) return 'pr-1'
   return props.heatTask.daysInWeekSelected.includes(i) ? 'day-character--blue pr-1' : 'pr-1'
+}
+
+const clickCheckbox = (val: boolean) => {
+  emit('clicked-checkbox', val, props.heatTask.id)
+}
+
+const test = () => {
+  console.log('test')
 }
 </script>
 <style lang="scss">
@@ -50,5 +84,9 @@ const dayClass = (i: number) => {
 
 .disabled-color {
   color: #5a5a5a;
+}
+
+.date {
+  color: #2488cf;
 }
 </style>

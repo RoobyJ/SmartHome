@@ -30,23 +30,12 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseRouting();
-
-if (builder.Environment.IsDevelopment())
-{
-  app.UseCors();
-}
-
-if (!app.Environment.IsDevelopment())
-{
-  app.UseHttpsRedirection();
-}
 
 if (app.Environment.IsDevelopment())
 {

@@ -40,7 +40,7 @@
         <v-btn
           variant="flat"
           color="#2488cf"
-          :disabled="pickedDate == null || pickedDays == null"
+          :disabled="inputTime.length < 1"
           @click="saveHeatRequest()"
           >Add</v-btn
         >
@@ -50,20 +50,32 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, type PropType } from 'vue'
 import DayInWeekPicker from './day-in-week-picker.vue'
 import DatePickerDialog from '@/modules/shared/components/date-picker-dialog.vue'
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client'
 import { useRoute } from 'vue-router'
-import type { HeatRequestDto } from '@/modules/core/services/api/api.models'
+import type {
+  CreateCyclicHeatTaskDto,
+  CyclicHeatTaskDto,
+  HeatRequestDto
+} from '@/modules/core/services/api/api.models'
 
 const route = useRoute()
 
+const props = defineProps({
+  selectedTime: { type: String, default: '' },
+  selectedDay: { type: Object as PropType<Date | null>, default: null },
+  selectedDays: { type: Object as PropType<Map<number, boolean>>, default: new Map() }
+})
+
 const show = ref(false)
 const resetSelectedDays = ref(false)
-const inputTime = ref('')
-const pickedDays = ref<Map<number, boolean>>(new Map())
-const pickedDate = ref<Date | null>(null)
+const inputTime = ref(props.selectedTime)
+const pickedDays = ref<Map<number, boolean>>(props.selectedDays)
+const pickedDate = ref<Date | null>(props.selectedDay)
+
+const emit = defineEmits(['created']);
 
 const timeInputRules = [
   (val: string) => val.length === 5 || 'too short',
@@ -95,12 +107,31 @@ const saveHeatRequest = () => {
     const payload: HeatRequestDto = { date: pickedDate.value }
     GarageClient.saveCustomHeatRequest(id, payload)
   }
+
+  if (pickedDays.value.size > 0) {
+    const selectedDays = selectedDaysToList()
+    const payload: CreateCyclicHeatTaskDto = {
+      time: inputTime.value + ':00',
+      daysInWeekSelected: selectedDays
+    }
+    GarageClient.saveCyclicHeatRequest(id, payload)
+  }
   show.value = false
+  emit('created')
 }
 
 onMounted(() => {
   pickedDate.value = new Date()
 })
+
+function selectedDaysToList(): number[] {
+  const selectedDays: number[] = []
+  for (let i = 0; i < pickedDays.value.size; i++) {
+    if (pickedDays.value.get(i) === true) selectedDays.push(i)
+  }
+
+  return selectedDays
+}
 </script>
 
 <style lang="scss">

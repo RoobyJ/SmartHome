@@ -14,6 +14,11 @@ export interface CyclicHeatTaskDto {
     daysInWeekSelected: number[];
 }
 
+export interface CustomHeatTaskDto {
+    id: number;
+    date: Date;
+}
+
 export interface TemperatureDto {
     id: number;
     date: Date;

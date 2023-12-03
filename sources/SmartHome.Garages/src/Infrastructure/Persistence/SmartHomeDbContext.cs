@@ -77,7 +77,7 @@ internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
             entity.HasKey(e => e.Id).HasName("CyclicHeatTaskDaysInWeek_pkey");
 
             entity.HasOne(d => d.CyclicHeatTask).WithMany(p => p.CyclicHeatTaskDaysInWeeks)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("CyclicHeatTaskId");
 
             entity.HasOne(d => d.Day).WithMany(p => p.CyclicHeatTaskDaysInWeeks)

@@ -22,9 +22,9 @@ public class HeatTaskService : IHeatTaskService
     _heatTaskRepository = heatTaskRepository;
   }
 
-  public async Task SaveHeatTimeTask(int id, HeatRequestDto heatRequest, CancellationToken ct)
+  public async Task SaveHeatTimeTask(int id, CreateHeatTaskDto heatTask, CancellationToken ct)
   {
-    var heatTimeRequest = new HeatTask() { GarageId = id, Date = heatRequest.Date };
+    var heatTimeRequest = new HeatTask() { GarageId = id, Date = heatTask.Date };
 
     await this._heatTaskRepository.AddAsync(heatTimeRequest, ct);
     await this._heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -36,7 +36,7 @@ public class HeatTaskService : IHeatTaskService
       .ToListAsync(ct);
   }
 
-  public async Task UpdateHeatTask(int id, HeatRequestDto request, CancellationToken ct)
+  public async Task UpdateHeatTask(int id, CreateHeatTaskDto task, CancellationToken ct)
   {
     var heatRequest = await this._heatTaskRepository.Get(new HeatRequestQueryOptions()).Where(i => i.GarageId == id)
       .FirstAsync(ct);
@@ -103,7 +103,7 @@ public class HeatTaskService : IHeatTaskService
   {
     var request = await this._cyclicHeatTaskRepository.Get(new CyclicHeatingTaskQueryOptions()
       {
-        AsNoTracking = true,
+        AsNoTracking = false,
         IncludeCyclicHeatTaskDays = true
       })
       .Where(i => i.GarageId == id && i.Id == taskId).FirstAsync(ct);

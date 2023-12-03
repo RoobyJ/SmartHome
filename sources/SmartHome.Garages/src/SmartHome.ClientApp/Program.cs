@@ -24,8 +24,6 @@ if (!app.Environment.IsDevelopment())
   app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
 // Enable for debugging the proxied requests
 // app.UseHttpLogging();
 
