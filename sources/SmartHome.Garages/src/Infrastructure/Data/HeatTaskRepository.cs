@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
 using SmartHome.Infrastructure.Persistence;
 

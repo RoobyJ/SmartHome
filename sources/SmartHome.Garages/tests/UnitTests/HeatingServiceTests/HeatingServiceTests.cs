@@ -27,10 +27,9 @@ public class HeatingServiceTests
       Id = 1,
       Time = DateTime.Now.AddHours(1).TimeOfDay,
       GarageId = 1,
-      CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
+      CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>
       {
-        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 },
-        new CyclicHeatTaskDaysInWeek() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 },
+        new() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 }
       }
     };
 
@@ -79,7 +78,8 @@ public class HeatingServiceTests
                          expectedResult[0].HeatTime.Value.TimeOfDay.TotalMinutes) < 10);
   }
 
-  private static TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic, int extraHoursExpected)
+  private static TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic,
+    int extraHoursExpected)
   {
     return new TestingDataWhichIsCloser
     {
@@ -92,10 +92,9 @@ public class HeatingServiceTests
         Id = 1,
         Time = DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
         GarageId = 1,
-        CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>()
+        CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>
         {
-          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskId = 1, DayId = 0},
-          new CyclicHeatTaskDaysInWeek() {Id = 1, CyclicHeatTaskId = 1, DayId = 1},
+          new() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 }
         }
       }
     };

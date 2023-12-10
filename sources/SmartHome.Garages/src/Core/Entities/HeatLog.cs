@@ -8,10 +8,9 @@ namespace SmartHome.Core.Entities;
 [Table("HeatLog", Schema = "Garages")]
 public class HeatLog : IEntity
 {
-    [Key]
-    public int Id { get; set; }
+  public DateTime Date { get; set; }
 
-    public DateTime Date { get; set; }
+  public string Info { get; set; }
 
-    public string Info { get; set; }
+  [Key] public int Id { get; set; }
 }

@@ -11,7 +11,7 @@ public abstract class GarageConverters
 {
   public static CyclicHeatTaskDto CyclicHeatTaskToDto(CyclicHeatTask heatTask)
   {
-    return new CyclicHeatTaskDto()
+    return new CyclicHeatTaskDto
     {
       Id = heatTask.Id,
       Time = heatTask.Time.ToString(),
@@ -20,9 +20,9 @@ public abstract class GarageConverters
   }
 
   public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage,
-     [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, [CanBeNull] TemperatureDto temperatureResponse)
+    [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, [CanBeNull] TemperatureDto temperatureResponse)
   {
-    return new GarageDetailsDto()
+    return new GarageDetailsDto
     {
       Id = garage.Id,
       Name = garage.Name,

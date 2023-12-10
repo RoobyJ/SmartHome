@@ -37,7 +37,7 @@ internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
   public virtual DbSet<HeatTask> HeatTasks { get; set; }
 
   public virtual DbSet<OutsideTemperature> OutsideTemperatures { get; set; }
-  
+
 
   public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
     CancellationToken cancellationToken = default)
@@ -61,66 +61,65 @@ internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
     return SaveChangesAsync(new CancellationToken());
   }
 
-   protected override void OnModelCreating(ModelBuilder modelBuilder)
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    modelBuilder.Entity<CyclicHeatTask>(entity =>
     {
-        modelBuilder.Entity<CyclicHeatTask>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("CyclicHeatTask_pkey");
+      entity.HasKey(e => e.Id).HasName("CyclicHeatTask_pkey");
 
-            entity.HasOne(d => d.Garage).WithMany(p => p.CyclicHeatTasks)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("GarageId");
-        });
+      entity.HasOne(d => d.Garage).WithMany(p => p.CyclicHeatTasks)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("GarageId");
+    });
 
-        modelBuilder.Entity<CyclicHeatTaskDaysInWeek>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("CyclicHeatTaskDaysInWeek_pkey");
+    modelBuilder.Entity<CyclicHeatTaskDaysInWeek>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("CyclicHeatTaskDaysInWeek_pkey");
 
-            entity.HasOne(d => d.CyclicHeatTask).WithMany(p => p.CyclicHeatTaskDaysInWeeks)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("CyclicHeatTaskId");
+      entity.HasOne(d => d.CyclicHeatTask).WithMany(p => p.CyclicHeatTaskDaysInWeeks)
+        .OnDelete(DeleteBehavior.Cascade)
+        .HasConstraintName("CyclicHeatTaskId");
 
-            entity.HasOne(d => d.Day).WithMany(p => p.CyclicHeatTaskDaysInWeeks)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("DayId");
-        });
+      entity.HasOne(d => d.Day).WithMany(p => p.CyclicHeatTaskDaysInWeeks)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("DayId");
+    });
 
-        modelBuilder.Entity<DayInWeek>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("DayInWeek_pkey");
-        });
+    modelBuilder.Entity<DayInWeek>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("DayInWeek_pkey");
+    });
 
-        modelBuilder.Entity<Garage>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("Garage_pkey");
-        });
+    modelBuilder.Entity<Garage>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("Garage_pkey");
+    });
 
-        modelBuilder.Entity<HeatLog>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("HeatLog_pkey");
-        });
+    modelBuilder.Entity<HeatLog>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("HeatLog_pkey");
+    });
 
-        modelBuilder.Entity<HeatTask>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("HeatTask_pkey");
+    modelBuilder.Entity<HeatTask>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("HeatTask_pkey");
 
-            entity.HasOne(d => d.Garage).WithMany(p => p.HeatTasks)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("GarageId");
-        });
+      entity.HasOne(d => d.Garage).WithMany(p => p.HeatTasks)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("GarageId");
+    });
 
-        modelBuilder.Entity<OutsideTemperature>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("OutsideTemperature_pkey");
+    modelBuilder.Entity<OutsideTemperature>(entity =>
+    {
+      entity.HasKey(e => e.Id).HasName("OutsideTemperature_pkey");
 
-            entity.HasOne(d => d.Garage).WithMany(p => p.OutsideTemperatures)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("GarageId");
-        });
-        modelBuilder.SeedWithStaticData();
-        OnModelCreatingPartial(modelBuilder);
-    }
+      entity.HasOne(d => d.Garage).WithMany(p => p.OutsideTemperatures)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("GarageId");
+    });
+    modelBuilder.SeedWithStaticData();
+    OnModelCreatingPartial(modelBuilder);
+  }
 
-   partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
+  partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

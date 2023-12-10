@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Interfaces;
 using SmartHome.Infrastructure.Data;
@@ -21,7 +20,7 @@ public static class ServiceCollectionSetupExtensions
       options.UseNpgsql(
         configuration.GetConnectionString("DefaultConnection"))).AddScoped<SmartHomeDbContextInitializer>();
   }
-  
+
   public static async Task MigrateDatabase(this IApplicationBuilder app)
   {
     using var scope = app.ApplicationServices.CreateScope();

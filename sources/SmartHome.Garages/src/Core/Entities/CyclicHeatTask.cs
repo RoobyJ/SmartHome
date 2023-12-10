@@ -9,19 +9,19 @@ namespace SmartHome.Core.Entities;
 [Table("CyclicHeatTask", Schema = "Garages")]
 public sealed class CyclicHeatTask : IEntity
 {
-    [Key]
-    public int Id { get; set; }
+  public int GarageId { get; set; }
 
-    public int GarageId { get; set; }
+  public TimeSpan Time { get; set; }
 
-    public TimeSpan Time { get; set; }
-    
-    public bool Active { get; set; }
+  public bool Active { get; set; }
 
-    [InverseProperty("CyclicHeatTask")]
-    public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } = new List<CyclicHeatTaskDaysInWeek>();
+  [InverseProperty("CyclicHeatTask")]
+  public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } =
+    new List<CyclicHeatTaskDaysInWeek>();
 
-    [ForeignKey("GarageId")]
-    [InverseProperty("CyclicHeatTasks")]
-    public Garage Garage { get; set; }
+  [ForeignKey("GarageId")]
+  [InverseProperty("CyclicHeatTasks")]
+  public Garage Garage { get; set; }
+
+  [Key] public int Id { get; set; }
 }

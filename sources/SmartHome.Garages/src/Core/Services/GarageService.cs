@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
-using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
 using SmartHome.Core.Mappers;
 
@@ -28,17 +24,17 @@ public class GarageService : IGarageService
     _outsideTemperatureRepository = outsideTemperatureRepository;
     this.garageClient = garageClient;
   }
-  
+
   public async Task<ICollection<GarageDetailsDto>> GetGarages(CancellationToken cancellationToken)
   {
-    var garages = await this._garageRepository.Get(new GarageQueryOptions()).ToListAsync(cancellationToken);
+    var garages = await _garageRepository.Get(new GarageQueryOptions()).ToListAsync(cancellationToken);
     var result = new List<GarageDetailsDto>();
 
     foreach (var garage in garages)
     {
-        var heaterStatus = await garageClient.GetHeaterStatus(garage.Ip, cancellationToken);
-        var temperature = await garageClient.GetGarageTemperature(garage.Ip, cancellationToken);
-        result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
+      var heaterStatus = await garageClient.GetHeaterStatus(garage.Ip, cancellationToken);
+      var temperature = await garageClient.GetGarageTemperature(garage.Ip, cancellationToken);
+      result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
     }
 
     return result;
@@ -46,12 +42,12 @@ public class GarageService : IGarageService
 
   public async Task<List<OutsideTemperature>> GetTemperatures(int id, int days, CancellationToken ct)
   {
-    return await this._outsideTemperatureRepository.Get(new OutsideTemperatureQueryOptions())
-      .Where(i => i.GarageId == id).Take(days*288).ToListAsync(ct);
+    return await _outsideTemperatureRepository.Get(new OutsideTemperatureQueryOptions())
+      .Where(i => i.GarageId == id).Take(days * 288).ToListAsync(ct);
   }
 
   public async Task<Garage> GetGarageById(int id, CancellationToken ct)
   {
-    return await this._garageRepository.Get(new GarageQueryOptions()).Where(i => i.Id == id).FirstAsync(ct);
+    return await _garageRepository.Get(new GarageQueryOptions()).Where(i => i.Id == id).FirstAsync(ct);
   }
 }
