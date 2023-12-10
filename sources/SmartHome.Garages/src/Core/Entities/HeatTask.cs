@@ -14,6 +14,8 @@ public sealed class HeatTask : IEntity
     public DateTime Date { get; set; }
 
     public int GarageId { get; set; }
+    
+    public bool Active { get; set; }
 
     [ForeignKey("GarageId")]
     [InverseProperty("HeatTasks")]

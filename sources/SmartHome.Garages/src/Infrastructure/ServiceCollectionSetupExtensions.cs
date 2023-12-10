@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Core.Common.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;

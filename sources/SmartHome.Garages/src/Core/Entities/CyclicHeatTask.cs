@@ -15,6 +15,8 @@ public sealed class CyclicHeatTask : IEntity
     public int GarageId { get; set; }
 
     public TimeSpan Time { get; set; }
+    
+    public bool Active { get; set; }
 
     [InverseProperty("CyclicHeatTask")]
     public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } = new List<CyclicHeatTaskDaysInWeek>();

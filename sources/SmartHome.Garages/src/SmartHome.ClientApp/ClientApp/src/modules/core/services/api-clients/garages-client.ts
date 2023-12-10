@@ -78,10 +78,36 @@ export class GarageClient {
         return apiResponse;
     }
 
+    /** Saves the given custom heat request to db */
+    public static async editCustomHeatRequest(id: string, payload: CustomHeatTaskDto): Promise<ApiResponse<any>> {
+        const url = this.urlBase + `/${id}/heatTimeRequests`;
+        const request = httpClient.put(url, { json: payload });
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
     /** Saves the given cyclic heat request to db */
     public static async saveCyclicHeatRequest(id: string, payload: CreateCyclicHeatTaskDto): Promise<ApiResponse<any>> {
         const url = this.urlBase + `/${id}/CyclicHeatTimes`;
         const request = httpClient.post(url, { json: payload });
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Saves the given cyclic heat request to db */
+    public static async editCyclicHeatRequest(id: string, payload: CyclicHeatTaskDto): Promise<ApiResponse<any>> {
+        const url = this.urlBase + `/${id}/CyclicHeatTimes`;
+        const request = httpClient.put(url, { json: payload });
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;

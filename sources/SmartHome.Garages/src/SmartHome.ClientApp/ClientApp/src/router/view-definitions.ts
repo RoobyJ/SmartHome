@@ -1,8 +1,8 @@
 export enum View {
-    homeView = 'HomeView',
-    garageListView = 'GarageListView',
-    garageDetailsView = 'garageDetailsView',
-    garagePageView = 'GaragePageView',
-    temperatureView = 'TemperatureView',
-    taskView = 'TasksView'
+    homeView = 'Home',
+    garageListView = 'Garages',
+    garageDetailsView = 'Garage Details',
+    garagePageView = 'Garage Page',
+    temperatureView = 'Temperature',
+    taskView = 'Tasks'
 }

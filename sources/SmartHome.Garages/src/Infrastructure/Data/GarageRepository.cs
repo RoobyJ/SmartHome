@@ -1,4 +1,5 @@
 using System.Linq;
+using Core.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;

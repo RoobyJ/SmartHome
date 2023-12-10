@@ -1,5 +1,5 @@
 <template>
-  <v-container class="heat-task-container" @click="test()">
+  <v-container class="heat-task-container">
     <v-row dense>
       <v-col cols="1" align-self="center"
         ><v-checkbox
@@ -19,12 +19,20 @@
           </div>
         </div>
         <div v-else class="date">
-          {{ getDate }}
+          {{ getDateString }}
         </div>
       </v-col>
       <v-col cols="2">
         <v-switch hide-details />
-        <v-btn variant="text" icon size="small"><v-icon>mdi-lead-pencil</v-icon></v-btn>
+        <heat-task-form-dialog
+          :selected-time="getTime"
+          :selected-day="getDate"
+          :selected-days="getSelectedDays"
+          :selected-item-id="heatTask.id"
+          is-edit
+          icon="mdi-lead-pencil"
+          @created="emit('updated')"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -32,11 +40,12 @@
 
 <script setup lang="ts">
 import type { CustomHeatTaskDto, CyclicHeatTaskDto } from '@/modules/core/services/api/api.models'
+import HeatTaskFormDialog from './heat-task-form-dialog.vue';
 import { computed, type PropType } from 'vue'
 
 const daysInWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
-const emit = defineEmits(['clicked-checkbox'])
+const emit = defineEmits(['clicked-checkbox', 'updated'])
 
 const props = defineProps({
   heatTask: { type: Object as PropType<CustomHeatTaskDto | CyclicHeatTaskDto>, required: true }
@@ -45,7 +54,22 @@ const props = defineProps({
 const isCyclic = computed(() => 'time' in props.heatTask)
 
 const getDate = computed(() => {
+  if ('date' in props.heatTask) return new Date(props.heatTask.date.toString().slice(0, 10))
+})
+
+const getDateString = computed(() => {
   if ('date' in props.heatTask) return props.heatTask.date.toString().slice(0, 10)
+})
+
+const getSelectedDays = computed(() => {
+  if ('daysInWeekSelected' in props.heatTask) {
+    let cyclicHeatDays = new Map<number, boolean>();
+    for (let i =0; i < 7; i++) {
+      cyclicHeatDays.set(i, props.heatTask.daysInWeekSelected.includes(i));
+    }
+
+    return cyclicHeatDays;
+  }
 })
 
 const getTime = computed(() => {
@@ -60,10 +84,6 @@ const dayClass = (i: number) => {
 
 const clickCheckbox = (val: boolean) => {
   emit('clicked-checkbox', val, props.heatTask.id)
-}
-
-const test = () => {
-  console.log('test')
 }
 </script>
 <style lang="scss">

@@ -4,17 +4,17 @@
       <div class="pl-4 d-flex align-center font-weight-bold">Heat Tasks</div>
       <div>
         <v-btn variant="text" icon :disabled="selectedTasksIds.length < 1" @click="deleteTasks()"><v-icon>mdi-delete</v-icon></v-btn>
-        <heat-task-form-dialog :selected-time="selectedTime" :selected-day="selectedDay" :selected-days="undefined" @created="loadItems" />
+        <heat-task-form-dialog :selected-time="selectedTime" icon="mdi-plus" @created="loadItems" />
       </div>
     </div>
     <v-divider />
     <div class="pt-2 mx-2">
       <v-row>
         <v-col cols="12" v-for="(item, index) in cyclicItems" :key="index">
-          <heat-task-item :heat-task="item" @clicked-checkbox="processCheckboxClick" />
+          <heat-task-item :heat-task="item" @clicked-checkbox="processCheckboxClick" @updated="loadItems" />
         </v-col>
         <v-col cols="12" v-for="(item, index) in customItems" :key="index">
-          <heat-task-item :heat-task="item" @clicked-checkbox="processCheckboxClick" />
+          <heat-task-item :heat-task="item" @clicked-checkbox="processCheckboxClick" @updated="loadItems" />
         </v-col>
       </v-row>
     </div>
@@ -35,8 +35,6 @@ const cyclicItems = ref<CyclicHeatTaskDto[] | null>(null)
 const customItems = ref<CustomHeatTaskDto[] | null>(null)
 const selectedTasksIds = ref<number[]>([]);
 const selectedTime = ref('');
-const selectedDay = ref<Date | null>(null);
-const selectedDays = ref<number[]>([])
 
 const loadItems = async () => {
   const id = route.params.garageId

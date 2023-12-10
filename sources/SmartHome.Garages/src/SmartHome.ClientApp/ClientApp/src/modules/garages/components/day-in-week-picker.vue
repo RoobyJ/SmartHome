@@ -58,10 +58,12 @@
 import { computed, onMounted, watch } from 'vue'
 import { ref } from 'vue'
 
-const emit = defineEmits(['update:modelValue', 'pick']);
+const emit = defineEmits(['update:modelValue', 'pick'])
 
 const props = defineProps({
-  modelValue: { type: Boolean, default: false }
+  modelValue: { type: Boolean, default: false },
+  isEdit: { type: Boolean, default: false },
+  pickedDays: { type: Map<number, boolean>, default: new Map<number, boolean>()}
 })
 
 const resetData = computed({
@@ -73,7 +75,7 @@ const resetData = computed({
   }
 })
 
-const selectedDays = ref<Map<number, boolean>>(new Map())
+const selectedDays = ref<Map<number, boolean>>(props.pickedDays)
 
 const isSelected = (n: number): boolean => {
   return selectedDays.value.get(n) ?? false
@@ -98,12 +100,12 @@ const resetSelectedDays = () => {
 }
 
 watch(resetData, (newValue: boolean) => {
-  if(newValue) resetSelectedDays();
-  resetData.value = false;
-});
+  if (newValue) resetSelectedDays()
+  resetData.value = false
+})
 
 onMounted(() => {
-  resetSelectedDays();
+  if (!props.isEdit) resetSelectedDays()
 })
 </script>
 

@@ -1,3 +1,4 @@
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Core.Mappers;
 using SmartHome.Core.Dtos;
@@ -66,14 +67,14 @@ public class GarageController : ApiControllerBase
 
   [HttpPut("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult> UpdateHeatTimeRequest(int id, CreateHeatTaskDto task, CancellationToken ct)
+  public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatTaskDto task, CancellationToken ct)
   {
     if (id < 1)
     {
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.SaveHeatTimeTask(id, task, ct);
+    await _heatTaskService.UpdateHeatTask(id, task, ct);
     return NoContent();
   }
 
