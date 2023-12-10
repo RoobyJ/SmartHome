@@ -20,7 +20,7 @@ public static class ServiceCollectionSetupExtensions
       options.UseNpgsql(
         configuration.GetConnectionString("DefaultConnection"))).AddScoped<SmartHomeDbContextInitializer>();
   }
-  
+
   public static async Task MigrateDatabase(this IApplicationBuilder app)
   {
     using var scope = app.ApplicationServices.CreateScope();

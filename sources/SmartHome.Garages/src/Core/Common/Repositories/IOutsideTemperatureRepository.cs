@@ -13,6 +13,6 @@ public class OutsideTemperatureQueryOptions
 public interface IOutsideTemperatureRepository<in TEntity> : IRepository where TEntity : IEntity
 {
   IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions);
-  
+
   Task AddAsync(TEntity entity, CancellationToken ct = default);
 }

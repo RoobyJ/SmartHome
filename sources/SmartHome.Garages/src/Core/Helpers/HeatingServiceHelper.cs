@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartHome.Core.Entities;
 
@@ -43,9 +42,8 @@ public abstract class HeatingServiceHelper
         return DateTime.Now.Date + customHeatRequest.Date.TimeOfDay;
       }
     }
-    else if ((customHeatRequest.Date.Day.Equals(DateTime.Now.AddDays(1).Day) ||
-              CheckIfNextDayIsHeatTask(cyclicHeatTask, todayDay)
-             ))
+    else if (customHeatRequest.Date.Day.Equals(DateTime.Now.AddDays(1).Day) ||
+             CheckIfNextDayIsHeatTask(cyclicHeatTask, todayDay))
     {
       // Check for tomorrow
       if (!(customHeatRequest.Date.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
@@ -72,7 +70,7 @@ public abstract class HeatingServiceHelper
   private static bool CheckIfNextDayIsHeatTask(CyclicHeatTask cyclicHeatTask, int todayDay)
   {
     return cyclicHeatTask.CyclicHeatTaskDaysInWeeks.FirstOrDefault(i =>
-      (todayDay == 6 ? i.DayId == 0 : i.DayId == todayDay + 1)) != null;
+      todayDay == 6 ? i.DayId == 0 : i.DayId == todayDay + 1) != null;
   }
 
   #endregion

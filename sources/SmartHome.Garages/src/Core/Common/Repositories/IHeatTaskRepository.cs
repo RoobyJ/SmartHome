@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SmartHome.Core.Entities;
 
 namespace SmartHome.Core.Common.Repositories;
 
@@ -15,7 +14,7 @@ public interface IHeatTaskRepository<TEntity> : IRepository where TEntity : IEnt
   IQueryable<TEntity> Get(HeatRequestQueryOptions queryOptions);
 
   Task AddAsync(TEntity entity, CancellationToken ct = default);
-  
+
   Task UpdateAsync(TEntity entity, CancellationToken ct = default);
 
   Task DeleteAsync(TEntity entity, CancellationToken ct = default);

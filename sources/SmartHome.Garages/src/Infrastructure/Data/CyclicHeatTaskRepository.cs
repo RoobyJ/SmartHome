@@ -20,7 +20,7 @@ internal class CyclicHeatTaskRepository : EfRepository<CyclicHeatTask>, ICyclicH
     {
       query = query.AsNoTracking();
     }
-    
+
     if (queryOptions.IncludeCyclicHeatTaskDays)
     {
       query = query.Include(i => i.CyclicHeatTaskDaysInWeeks);

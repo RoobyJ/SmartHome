@@ -6,7 +6,8 @@ using SmartHome.Infrastructure.Persistence;
 
 namespace SmartHome.Infrastructure.Data;
 
-internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>, IOutsideTemperatureRepository<OutsideTemperature>
+internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>,
+  IOutsideTemperatureRepository<OutsideTemperature>
 {
   public OutsideTemperaturesRepository(SmartHomeDbContext dbContext) : base(dbContext)
   {

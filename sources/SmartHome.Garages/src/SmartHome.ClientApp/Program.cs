@@ -1,6 +1,4 @@
-using CMPL.DatacarWeb.ClientApp.Services;
 using GoCloudNative.Bff.Authentication.ModuleInitializers;
-using TheCloudNativeWebApp.Bff.Authentication.OpenIdConnect;
 
 var builder = WebApplication.CreateBuilder(args);
 
