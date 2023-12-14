@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Common.Repositories;
+using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
-using SmartHome.Core.Interfaces;
 
-namespace SmartHome.Core.Services;
+namespace Core.Services;
 
 public class HeatTaskService : IHeatTaskService
 {
@@ -22,9 +22,9 @@ public class HeatTaskService : IHeatTaskService
     _heatTaskRepository = heatTaskRepository;
   }
 
-  public async Task SaveHeatTimeTask(int id, HeatRequestDto heatRequest, CancellationToken ct)
+  public async Task SaveHeatTimeTask(int id, CreateHeatTaskDto heatTask, CancellationToken ct)
   {
-    var heatTimeRequest = new HeatTask { GarageId = id, Date = heatRequest.Date };
+    var heatTimeRequest = new HeatTask { GarageId = id, Date = heatTask.Date };
 
     await _heatTaskRepository.AddAsync(heatTimeRequest, ct);
     await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -32,23 +32,24 @@ public class HeatTaskService : IHeatTaskService
 
   public async Task<ICollection<HeatTask>> GetHeatTimeTasks(int id, CancellationToken ct)
   {
-    return await _heatTaskRepository.Get(new HeatRequestQueryOptions()).Where(i => i.GarageId == id)
+    return await _heatTaskRepository.Get().Where(i => i.GarageId == id)
       .ToListAsync(ct);
   }
 
-  public async Task UpdateHeatTask(int id, HeatRequestDto request, CancellationToken ct)
+  public async Task UpdateHeatTask(int id, HeatTaskDto task, CancellationToken ct)
   {
-    var heatRequest = await _heatTaskRepository.Get(new HeatRequestQueryOptions()).Where(i => i.GarageId == id)
+    var heatTask = await _heatTaskRepository.Get().Where(i => i.GarageId == id && i.Id == task.Id)
       .FirstAsync(ct);
-    //TODO: this method and the cyclic one must be corrected, its not working
 
-    await _heatTaskRepository.UpdateAsync(heatRequest, ct);
+    heatTask.Date = task.Date;
+
+    await _heatTaskRepository.UpdateAsync(heatTask, ct);
     await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
   }
 
   public async Task DeleteHeatTimeTask(int garageId, int requestId, CancellationToken ct)
   {
-    var request = await _heatTaskRepository.Get(new HeatRequestQueryOptions())
+    var request = await _heatTaskRepository.Get()
       .Where(i => i.GarageId == garageId && i.Id == requestId).FirstAsync(ct);
     await _heatTaskRepository.DeleteAsync(request, ct);
     await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -69,6 +70,8 @@ public class HeatTaskService : IHeatTaskService
 
   public async Task UpdateCyclicHeatTask(int id, UpdateCyclicHeatTaskDto task, CancellationToken ct)
   {
+    await DeleteCyclicHeatTask(id, task.Id, ct);
+
     var cyclicHeatTaskEntity = new CyclicHeatTask { Id = task.Id, GarageId = id, Time = task.Time };
 
     await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
@@ -93,7 +96,7 @@ public class HeatTaskService : IHeatTaskService
   {
     var request = await _cyclicHeatTaskRepository.Get(new CyclicHeatingTaskQueryOptions
       {
-        AsNoTracking = true, IncludeCyclicHeatTaskDays = true
+        AsNoTracking = false, IncludeCyclicHeatTaskDays = true
       })
       .Where(i => i.GarageId == id && i.Id == taskId).FirstAsync(ct);
     await _cyclicHeatTaskRepository.DeleteAsync(request, ct);

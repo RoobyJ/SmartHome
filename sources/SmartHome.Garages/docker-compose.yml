@@ -1,0 +1,6 @@
+﻿services:
+  smarthome.api:
+    image: smarthome.api
+    build:
+      context: .
+      dockerfile: src/SmartHome.API/Dockerfile

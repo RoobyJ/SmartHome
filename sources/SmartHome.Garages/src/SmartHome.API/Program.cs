@@ -1,3 +1,5 @@
+using Core.Interfaces;
+using Core.Services;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Interfaces;
 using SmartHome.Core.Services;
@@ -30,23 +32,12 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseRouting();
-
-if (builder.Environment.IsDevelopment())
-{
-  app.UseCors();
-}
-
-if (!app.Environment.IsDevelopment())
-{
-  app.UseHttpsRedirection();
-}
 
 if (app.Environment.IsDevelopment())
 {

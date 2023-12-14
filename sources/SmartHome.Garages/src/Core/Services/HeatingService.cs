@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.DTOs;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Helpers;
@@ -81,15 +81,15 @@ public class HeatingService : IHeatingService
     List<GarageHeatingTime> garagesClosestHeatingTimes = new();
     foreach (var garage in garages)
     {
-      var customHeatRequests = await heatRepository.Get(new HeatRequestQueryOptions { AsNoTracking = true })
-        .Where(item => item.Id == garage.Id).ToListAsync(ct);
+      var customHeatRequests = await heatRepository.Get()
+        .Where(item => item.Id == garage.Id && item.Active).ToListAsync(ct);
 
       var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.Date - DateTime.Now).Ticks));
 
       var cyclicHeatTasks =
         await cyclicHeatRepository
           .Get(new CyclicHeatingTaskQueryOptions { AsNoTracking = true, IncludeCyclicHeatTaskDays = true })
-          .Where(item => item.Id == garage.Id)
+          .Where(item => item.Id == garage.Id && item.Active)
           .ToListAsync(ct);
 
 

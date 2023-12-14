@@ -1,3 +1,4 @@
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.Entities;
@@ -33,7 +34,7 @@ public class GarageController : ApiControllerBase
   [HttpGet("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<IEnumerable<HeatRequestDto>>> GetHeatTimeRequests(int id, CancellationToken ct)
+  public async Task<ActionResult<IEnumerable<HeatTaskDto>>> GetHeatTimeRequests(int id, CancellationToken ct)
   {
     if (id < 1)
     {
@@ -52,27 +53,27 @@ public class GarageController : ApiControllerBase
 
   [HttpPost("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult> SaveHeatTimeRequest(int id, HeatRequestDto request, CancellationToken ct)
+  public async Task<ActionResult> SaveHeatTimeRequest(int id, CreateHeatTaskDto task, CancellationToken ct)
   {
     if (id < 1)
     {
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.SaveHeatTimeTask(id, request, ct);
+    await _heatTaskService.SaveHeatTimeTask(id, task, ct);
     return NoContent();
   }
 
   [HttpPut("{id:int}/heatTimeRequests")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatRequestDto request, CancellationToken ct)
+  public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatTaskDto task, CancellationToken ct)
   {
     if (id < 1)
     {
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.SaveHeatTimeTask(id, request, ct);
+    await _heatTaskService.UpdateHeatTask(id, task, ct);
     return NoContent();
   }
 

@@ -12,6 +12,8 @@ public sealed class HeatTask : IEntity
 
   public int GarageId { get; set; }
 
+  public bool Active { get; set; }
+
   [ForeignKey("GarageId")]
   [InverseProperty("HeatTasks")]
   public Garage Garage { get; set; }

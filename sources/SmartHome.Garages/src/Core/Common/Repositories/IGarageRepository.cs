@@ -3,16 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using SmartHome.Core.Entities;
 
-namespace SmartHome.Core.Common.Repositories;
+namespace Core.Common.Repositories;
 
 public class GarageQueryOptions
 {
-  public bool AsNoTracking { get; set; }
+  public bool AsNoTracking { get; set; } = true;
 }
 
 public interface IGarageRepository
 {
-  IQueryable<Garage> Get(GarageQueryOptions queryOptions);
+  IQueryable<Garage> Get(GarageQueryOptions queryOptions = default);
 
   Task AddAsync(Garage entity, CancellationToken cancellationToken = default);
 }

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Core.Common.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Interfaces;
 using SmartHome.Infrastructure.Data;

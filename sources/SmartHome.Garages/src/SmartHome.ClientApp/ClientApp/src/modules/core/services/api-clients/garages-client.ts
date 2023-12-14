@@ -1,6 +1,7 @@
 import { useErrorStore } from '../../store/error-store';
 import type {
     CreateCyclicHeatTaskDto,
+    CustomHeatTaskDto,
     CyclicHeatTaskDto,
     GarageDetailsDto,
     HeatRequestDto,
@@ -25,10 +26,23 @@ export class GarageClient {
         return apiResponse;
     }
 
-    /** Gets all heat request for garage */
+    /** Gets all cyclic heat request for garage */
     public static async getCyclicHeatRequests(id: string): Promise<ApiResponse<CyclicHeatTaskDto[]>> {
         const url = this.urlBase + `/${id}/CyclicHeatTimes`;
         const request = httpClient.get(url).json<CyclicHeatTaskDto[]>();
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Gets all custom heat request for garage */
+    public static async getCustomHeatRequests(id: string): Promise<ApiResponse<CustomHeatTaskDto[]>> {
+        const url = this.urlBase + `/${id}/heatTimeRequests`;
+        const request = httpClient.get(url).json<CustomHeatTaskDto[]>();
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;
@@ -54,7 +68,20 @@ export class GarageClient {
     /** Saves the given custom heat request to db */
     public static async saveCustomHeatRequest(id: string, payload: HeatRequestDto): Promise<ApiResponse<any>> {
         const url = this.urlBase + `/${id}/heatTimeRequests`;
-        const request = httpClient.post(url, {json: payload });
+        const request = httpClient.post(url, { json: payload });
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Saves the given custom heat request to db */
+    public static async editCustomHeatRequest(id: string, payload: CustomHeatTaskDto): Promise<ApiResponse<any>> {
+        const url = this.urlBase + `/${id}/heatTimeRequests`;
+        const request = httpClient.put(url, { json: payload });
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;
@@ -67,7 +94,33 @@ export class GarageClient {
     /** Saves the given cyclic heat request to db */
     public static async saveCyclicHeatRequest(id: string, payload: CreateCyclicHeatTaskDto): Promise<ApiResponse<any>> {
         const url = this.urlBase + `/${id}/CyclicHeatTimes`;
-        const request = httpClient.post(url, {json: payload });
+        const request = httpClient.post(url, { json: payload });
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Saves the given cyclic heat request to db */
+    public static async editCyclicHeatRequest(id: string, payload: CyclicHeatTaskDto): Promise<ApiResponse<any>> {
+        const url = this.urlBase + `/${id}/CyclicHeatTimes`;
+        const request = httpClient.put(url, { json: payload });
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Deletes given cyclic heat task */
+    public static async deleteCyclicHeatRequest(id: string, taskId: number): Promise<ApiResponse<any>> {
+        const url = this.urlBase + `/${id}/CyclicHeatTimes?requestId=${taskId}`;
+        const request = httpClient.delete(url);
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;
