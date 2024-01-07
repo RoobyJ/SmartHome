@@ -1,20 +1,23 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["SmartHome.API.csproj", "SmartHome.API"]
-RUN dotnet restore "SmartHome.API/SmartHome.API.csproj"
+COPY ["src/SmartHome.Api/SmartHome.Api.csproj", "src/SmartHome.Api/"]
+RUN dotnet restore "src/SmartHome.Api/SmartHome.Api.csproj"
 COPY . .
-WORKDIR "/src/SmartHome.API"
-RUN dotnet build "SmartHome.API.csproj" -c Release -o /app/build
+WORKDIR "/src/src/SmartHome.Api"
+RUN dotnet build "SmartHome.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "SmartHome.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "SmartHome.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SmartHome.API.dll"]
+ENTRYPOINT ["dotnet", "SmartHome.Api.dll"]

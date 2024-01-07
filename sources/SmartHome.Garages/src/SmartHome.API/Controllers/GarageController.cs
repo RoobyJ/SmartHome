@@ -5,7 +5,7 @@ using SmartHome.Core.Entities;
 using SmartHome.Core.Interfaces;
 using SmartHome.Core.Mappers;
 
-namespace SmartHome.api.Controllers;
+namespace SmartHome.Api.Controllers;
 
 [Route("api")]
 public class GarageController : ApiControllerBase

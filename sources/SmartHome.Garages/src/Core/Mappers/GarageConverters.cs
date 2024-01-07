@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using JetBrains.Annotations;
+﻿#nullable enable
+using System.Linq;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
@@ -20,7 +20,7 @@ public abstract class GarageConverters
   }
 
   public static GarageDetailsDto GarageToGarageDetailsDto(Garage garage,
-    [CanBeNull] GarageHeaterStatusDto heaterStatusResponse, [CanBeNull] TemperatureDto temperatureResponse)
+    GarageHeaterStatusDto? heaterStatusResponse, TemperatureDto? temperatureResponse)
   {
     return new GarageDetailsDto
     {

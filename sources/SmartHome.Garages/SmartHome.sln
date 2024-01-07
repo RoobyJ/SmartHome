@@ -26,14 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{2DD960C4-746
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.ClientApp", "src\SmartHome.ClientApp\SmartHome.ClientApp.csproj", "{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.API", "src\SmartHome.API\SmartHome.API.csproj", "{49FC9B1D-A7FF-4161-B678-A5BAAB49789B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5ABC7C0A-A852-4153-90B9-BE291167103A}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.Api", "src\SmartHome.Api\SmartHome.Api.csproj", "{D707D3B9-3496-419B-A405-8641FAC609C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,14 +56,14 @@ Global
 		{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49FC9B1D-A7FF-4161-B678-A5BAAB49789B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49FC9B1D-A7FF-4161-B678-A5BAAB49789B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49FC9B1D-A7FF-4161-B678-A5BAAB49789B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49FC9B1D-A7FF-4161-B678-A5BAAB49789B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D707D3B9-3496-419B-A405-8641FAC609C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D707D3B9-3496-419B-A405-8641FAC609C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D707D3B9-3496-419B-A405-8641FAC609C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D707D3B9-3496-419B-A405-8641FAC609C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,8 +74,8 @@ Global
 		{57D03E58-4CF6-48C9-AE51-45122A6DE029} = {103BC25E-93A0-485E-8C74-77D2CB4F0AA1}
 		{2163398E-7732-4F63-B490-6DFEF8A5E619} = {103BC25E-93A0-485E-8C74-77D2CB4F0AA1}
 		{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B} = {103BC25E-93A0-485E-8C74-77D2CB4F0AA1}
-		{49FC9B1D-A7FF-4161-B678-A5BAAB49789B} = {103BC25E-93A0-485E-8C74-77D2CB4F0AA1}
 		{8CF34F3E-7E79-4D70-8B67-D2C08D9F5FA3} = {2B6A6F0C-5CF1-4A47-84EF-05665CDCE0ED}
+		{D707D3B9-3496-419B-A405-8641FAC609C7} = {103BC25E-93A0-485E-8C74-77D2CB4F0AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {35EF64A7-2C17-4EB0-B9FB-D9C7B21AEDC0}
