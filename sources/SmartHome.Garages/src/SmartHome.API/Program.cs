@@ -32,17 +32,13 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
-
-app.UseAuthorization();
-
 app.MapControllers();
-
-app.UseRouting();
 
 if (app.Environment.IsDevelopment())
 {
   await app.MigrateDatabase();
 }
 
+app.UseHttpsRedirection();
 
 app.Run();
