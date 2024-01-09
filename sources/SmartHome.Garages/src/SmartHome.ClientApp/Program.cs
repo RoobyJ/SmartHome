@@ -1,19 +1,8 @@
-using GoCloudNative.Bff.Authentication.ModuleInitializers;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-  .AddSecurityBff(options =>
-  {
-    var customHostName = builder.Configuration.GetValue<string?>("ReplaceHostWithUri");
-    if (!string.IsNullOrWhiteSpace(customHostName))
-    {
-      options.SetCustomHostName(new Uri(customHostName));
-    }
+builder.Logging.ClearProviders();
 
-    options.SessionCookieName = "smarthome.session";
-  })
-  .AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -22,10 +11,13 @@ if (!app.Environment.IsDevelopment())
   app.UseHsts();
 }
 
-// Enable for debugging the proxied requests
-// app.UseHttpLogging();
+app.UseHttpsRedirection();
+
+var enableHttpLogging = builder.Configuration["EnableHttpLogging"] == "True";
+if (enableHttpLogging) app.UseHttpLogging();
 
 app.UseRouting();
+
 
 // serve static files as a fallback, so if route has not matched any configured reverse proxy path
 // then emit static files (SPA app) and fallback to index.html
