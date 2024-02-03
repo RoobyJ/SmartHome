@@ -170,8 +170,7 @@ public class HeatingService : IHeatingService
       }
     }
   }
-
-  // TODO: rework this method to much scopes!
+  
   private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, CancellationToken ct)
   {
     var scope = _serviceScopeFactoryLocator.CreateScope();
