@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Entities;
 
-namespace SmartHome.Infrastructure.Persistence.Initializers.StaticInitializers;
+namespace Infrastructure.Persistence.Initializers.StaticInitializers;
 
 internal static class DaysInWeekInitializer
 {

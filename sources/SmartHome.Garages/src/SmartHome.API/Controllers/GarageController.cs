@@ -8,26 +8,18 @@ using SmartHome.Core.Mappers;
 namespace SmartHome.Api.Controllers;
 
 [Route("api")]
-public class GarageController : ApiControllerBase
+public class GarageController(
+  IGarageService garageService,
+  IHeatTaskService heatTaskService,
+  IGarageClient garageClient)
+  : ApiControllerBase
 {
-  private readonly IGarageService _garageService;
-  private readonly IHeatTaskService _heatTaskService;
-  private readonly IGarageClient garageClient;
-
-  public GarageController(IGarageService garageService,
-    IHeatTaskService heatTaskService, IGarageClient garageClient)
-  {
-    _garageService = garageService;
-    _heatTaskService = heatTaskService;
-    this.garageClient = garageClient;
-  }
-
   [HttpGet("garages")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<ICollection<GarageDetailsDto>>> GetGarages(CancellationToken cancellationToken)
   {
-    var garages = await _garageService.GetGarages(cancellationToken);
+    var garages = await garageService.GetGarages(cancellationToken);
     return Ok(garages);
   }
 
@@ -41,7 +33,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    var heatTimeRequests = await _heatTaskService.GetHeatTimeTasks(id, ct);
+    var heatTimeRequests = await heatTaskService.GetHeatTimeTasks(id, ct);
 
     if (heatTimeRequests == null)
     {
@@ -60,7 +52,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.SaveHeatTimeTask(id, task, ct);
+    await heatTaskService.SaveHeatTimeTask(id, task, ct);
     return NoContent();
   }
 
@@ -73,7 +65,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.UpdateHeatTask(id, task, ct);
+    await heatTaskService.UpdateHeatTask(id, task, ct);
     return NoContent();
   }
 
@@ -86,7 +78,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.DeleteHeatTimeTask(id, requestId, ct);
+    await heatTaskService.DeleteHeatTimeTask(id, requestId, ct);
     return NoContent();
   }
 
@@ -101,7 +93,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    var temperatures = await _garageService.GetTemperatures(id, days, ct);
+    var temperatures = await garageService.GetTemperatures(id, days, ct);
 
     return Ok(temperatures);
   }
@@ -116,7 +108,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Nie ma takiego garażu");
     }
 
-    var garageCyclicHeatTasks = await _heatTaskService.GetCyclicHeatTasks(id, ct);
+    var garageCyclicHeatTasks = await heatTaskService.GetCyclicHeatTasks(id, ct);
 
     var result = garageCyclicHeatTasks.Select(GarageConverters.CyclicHeatTaskToDto);
     return Ok(result);
@@ -137,7 +129,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.CreateCyclicHeatTask(id, taskDto, ct);
+    await heatTaskService.CreateCyclicHeatTask(id, taskDto, ct);
 
     return NoContent();
   }
@@ -157,7 +149,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.UpdateCyclicHeatTask(id, requestDto, ct);
+    await heatTaskService.UpdateCyclicHeatTask(id, requestDto, ct);
 
     return NoContent();
   }
@@ -171,7 +163,7 @@ public class GarageController : ApiControllerBase
       throw new Exception("Such garage doesnt exists");
     }
 
-    await _heatTaskService.DeleteCyclicHeatTask(id, requestId, ct);
+    await heatTaskService.DeleteCyclicHeatTask(id, requestId, ct);
     return NoContent();
   }
 
@@ -179,7 +171,7 @@ public class GarageController : ApiControllerBase
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult<string>> SetHeatingOn(int id, CancellationToken ct)
   {
-    var garage = await _garageService.GetGarageById(id, ct);
+    var garage = await garageService.GetGarageById(id, ct);
 
     if (garage == null)
     {

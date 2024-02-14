@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 using SmartHome.Core.Common.Repositories;
-using SmartHome.Infrastructure.Persistence;
 
-namespace SmartHome.Infrastructure.Data;
+namespace Infrastructure.Data;
 
 internal class EfRepository : IRepository
 {

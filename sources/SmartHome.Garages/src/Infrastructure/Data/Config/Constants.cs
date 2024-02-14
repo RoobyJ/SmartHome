@@ -1,4 +1,4 @@
-﻿namespace SmartHome.Infrastructure.Data.Config;
+﻿namespace Infrastructure.Data.Config;
 
 public static class Constants
 {

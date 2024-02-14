@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Infrastructure.Data;
+using Infrastructure.Http;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartHome.Core.Entities;
 using SmartHome.Core.Interfaces;
-using SmartHome.Infrastructure.Data;
-using SmartHome.Infrastructure.Http;
-using SmartHome.Infrastructure.Persistence;
 
-namespace SmartHome.Infrastructure;
+namespace Infrastructure;
 
 public static class ServiceCollectionSetupExtensions
 {

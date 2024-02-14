@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SmartHome.Core.Interfaces;
 
-namespace SmartHome.Infrastructure.Http;
+namespace Infrastructure.Http;
 
 /// <summary>
 ///   An implementation of IHttpService using HttpClient

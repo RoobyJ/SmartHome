@@ -2,13 +2,13 @@
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Infrastructure.Persistence.Initializers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using SmartHome.Core.Common.Repositories;
 using SmartHome.Core.Entities;
-using SmartHome.Infrastructure.Persistence.Initializers;
 
-namespace SmartHome.Infrastructure.Persistence;
+namespace Infrastructure.Persistence;
 
 internal partial class SmartHomeDbContext : DbContext, IUnitOfWork
 {

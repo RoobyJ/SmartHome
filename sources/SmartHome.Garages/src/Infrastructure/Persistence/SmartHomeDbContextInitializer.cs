@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace SmartHome.Infrastructure.Persistence;
+namespace Infrastructure.Persistence;
 
 internal class SmartHomeDbContextInitializer
 {

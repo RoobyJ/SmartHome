@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartHome.Infrastructure.Persistence.Initializers.StaticInitializers;
+﻿using Infrastructure.Persistence.Initializers.StaticInitializers;
+using Microsoft.EntityFrameworkCore;
 
-namespace SmartHome.Infrastructure.Persistence.Initializers;
+namespace Infrastructure.Persistence.Initializers;
 
 internal static class StaticInitializerExtensions
 {
