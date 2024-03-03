@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Interfaces;
 using Microsoft.Extensions.Hosting;
-using SmartHome.Core.Interfaces;
 
 namespace SmartHome.Worker;
 

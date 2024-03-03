@@ -4,9 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
-namespace SmartHome.Infrastructure.Persistence.Migrations
+namespace Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -16,20 +14,6 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.EnsureSchema(
                 name: "Garages");
-
-            migrationBuilder.CreateTable(
-                name: "DayInWeek",
-                schema: "Garages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("DayInWeek_pkey", x => x.Id);
-                });
 
             migrationBuilder.CreateTable(
                 name: "Garage",
@@ -69,7 +53,8 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     GarageId = table.Column<int>(type: "integer", nullable: false),
-                    Time = table.Column<TimeSpan>(type: "interval", nullable: false)
+                    Time = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,7 +75,8 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    GarageId = table.Column<int>(type: "integer", nullable: false)
+                    GarageId = table.Column<int>(type: "integer", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,7 +97,7 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Temperature = table.Column<int>(type: "integer", nullable: false),
+                    Temperature = table.Column<float>(type: "real", nullable: false),
                     GarageId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -126,13 +112,13 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CyclicHeatTaskDaysInWeek",
+                name: "CyclicHeatTaskDay",
                 schema: "Garages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DayId = table.Column<int>(type: "integer", nullable: false),
+                    Day = table.Column<int>(type: "integer", nullable: false),
                     CyclicHeatTaskId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -144,34 +130,7 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                         principalSchema: "Garages",
                         principalTable: "CyclicHeatTask",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "DayId",
-                        column: x => x.DayId,
-                        principalSchema: "Garages",
-                        principalTable: "DayInWeek",
-                        principalColumn: "Id");
                 });
-
-            migrationBuilder.InsertData(
-                schema: "Garages",
-                table: "DayInWeek",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Sunday" },
-                    { 2, "Monday" },
-                    { 3, "Tuesday" },
-                    { 4, "Wednesday" },
-                    { 5, "Thursday" },
-                    { 6, "Friday" },
-                    { 7, "Saturday" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "Garages",
-                table: "Garage",
-                columns: new[] { "Id", "Ip", "Name" },
-                values: new object[] { 1, "192.168.1.24", "Garage Robert" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CyclicHeatTask_GarageId",
@@ -182,14 +141,14 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CyclicHeatTaskDaysInWeek_CyclicHeatTaskId",
                 schema: "Garages",
-                table: "CyclicHeatTaskDaysInWeek",
+                table: "CyclicHeatTaskDay",
                 column: "CyclicHeatTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CyclicHeatTaskDaysInWeek_DayId",
                 schema: "Garages",
-                table: "CyclicHeatTaskDaysInWeek",
-                column: "DayId");
+                table: "CyclicHeatTaskDay",
+                column: "Day");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HeatTask_GarageId",
@@ -208,7 +167,7 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CyclicHeatTaskDaysInWeek",
+                name: "CyclicHeatTaskDay",
                 schema: "Garages");
 
             migrationBuilder.DropTable(
@@ -225,10 +184,6 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "CyclicHeatTask",
-                schema: "Garages");
-
-            migrationBuilder.DropTable(
-                name: "DayInWeek",
                 schema: "Garages");
 
             migrationBuilder.DropTable(

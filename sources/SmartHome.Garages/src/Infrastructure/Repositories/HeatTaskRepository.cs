@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Entities;
-using SmartHome.Infrastructure.Persistence;
+using Core.Entities;
 
-namespace SmartHome.Infrastructure.Data;
+namespace Infrastructure.Repositories;
 
 internal class HeatTaskRepository : EfRepository<HeatTask>, IHeatTaskRepository<HeatTask>
 {

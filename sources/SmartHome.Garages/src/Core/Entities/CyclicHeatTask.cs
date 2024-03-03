@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using SmartHome.Core.Common;
 
-namespace SmartHome.Core.Entities;
+namespace Core.Entities;
 
-[Table("CyclicHeatTask", Schema = "Garages")]
-public sealed class CyclicHeatTask : IEntity
+public partial class CyclicHeatTask : IEntity
 {
-  public int GarageId { get; set; }
+    public int Id { get; set; }
 
-  public TimeSpan Time { get; set; }
+    public int GarageId { get; set; }
 
-  public bool Active { get; set; }
+    public TimeSpan Time { get; set; }
+    
+    public bool Active { get; set; }
 
-  [InverseProperty("CyclicHeatTask")]
-  public ICollection<CyclicHeatTaskDaysInWeek> CyclicHeatTaskDaysInWeeks { get; set; } =
-    new List<CyclicHeatTaskDaysInWeek>();
+    public virtual ICollection<CyclicHeatTaskDay> CyclicHeatTaskDays { get; set; } = new List<CyclicHeatTaskDay>();
 
-  [ForeignKey("GarageId")]
-  [InverseProperty("CyclicHeatTasks")]
-  public Garage Garage { get; set; }
-
-  [Key] public int Id { get; set; }
+    public virtual Garage Garage { get; set; }
 }

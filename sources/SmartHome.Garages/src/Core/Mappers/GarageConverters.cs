@@ -3,9 +3,9 @@ using System.Linq;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
-namespace SmartHome.Core.Mappers;
+namespace Core.Mappers;
 
 public abstract class GarageConverters
 {
@@ -15,7 +15,7 @@ public abstract class GarageConverters
     {
       Id = heatTask.Id,
       Time = heatTask.Time.ToString(),
-      DaysInWeekSelected = heatTask.CyclicHeatTaskDaysInWeeks.Select(i => i.DayId).ToList()
+      DaysInWeekSelected = heatTask.CyclicHeatTaskDays.Select(i => i.Day).ToList()
     };
   }
 

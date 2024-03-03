@@ -1,8 +1,11 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": ".",
+            "name": "Smart Home"
+        }
+    ],
+    "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib"
+    }
 }

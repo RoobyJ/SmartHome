@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace SmartHome.Core.Interfaces;
+namespace Core.Interfaces;
 
 public interface IHttpService
 {

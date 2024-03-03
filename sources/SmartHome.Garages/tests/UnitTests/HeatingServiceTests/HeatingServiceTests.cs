@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Core.Helpers;
 using SmartHome.Core.DTOs;
-using SmartHome.Core.Entities;
+using Core.Entities;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Models;
 
@@ -27,9 +28,9 @@ public class HeatingServiceTests
       Id = 1,
       Time = DateTime.Now.AddHours(1).TimeOfDay,
       GarageId = 1,
-      CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>
+      CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
       {
-        new() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 }
+        new() { Id = 1, CyclicHeatTaskId = 1, Day = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, Day = 1 }
       }
     };
 
@@ -92,9 +93,9 @@ public class HeatingServiceTests
         Id = 1,
         Time = DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
         GarageId = 1,
-        CyclicHeatTaskDaysInWeeks = new List<CyclicHeatTaskDaysInWeek>
+        CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
         {
-          new() { Id = 1, CyclicHeatTaskId = 1, DayId = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, DayId = 1 }
+          new() { Id = 1, CyclicHeatTaskId = 1, Day = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, Day = 1 }
         }
       }
     };

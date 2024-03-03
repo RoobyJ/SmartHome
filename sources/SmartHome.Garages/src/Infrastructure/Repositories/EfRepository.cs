@@ -1,21 +1,16 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 using SmartHome.Core.Common.Repositories;
-using SmartHome.Infrastructure.Persistence;
 
-namespace SmartHome.Infrastructure.Data;
+namespace Infrastructure.Repositories;
 
-internal class EfRepository : IRepository
+internal class EfRepository(IUnitOfWork dbContext) : IRepository
 {
-  public EfRepository(IUnitOfWork dbContext)
-  {
-    UnitOfWork = dbContext;
-  }
-
-  public IUnitOfWork UnitOfWork { get; }
+  public IUnitOfWork UnitOfWork { get; } = dbContext;
 }
 
 internal class EfRepository<T> : EfRepository, IRepository<T> where T : class, IEntity

@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Dtos;
-using SmartHome.Core.Entities;
-using SmartHome.Core.Interfaces;
-using SmartHome.Core.Mappers;
+using Core.Entities;
+using Core.Mappers;
 
-namespace SmartHome.Core.Services;
+namespace Core.Services;
 
 public class GarageService : IGarageService
 {

@@ -1,8 +1,8 @@
 ﻿using System;
+using Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using SmartHome.Core.Interfaces;
 
-namespace SmartHome.Infrastructure;
+namespace Infrastructure;
 
 /// <summary>
 ///   An ILoggerAdapter implementation that uses Microsoft.Extensions.Logging

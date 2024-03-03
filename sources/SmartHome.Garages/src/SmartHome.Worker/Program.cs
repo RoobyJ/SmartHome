@@ -1,15 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Core.Interfaces;
+using Core.Services;
+using Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartHome.Core.Helpers;
-using SmartHome.Core.Interfaces;
 using SmartHome.Core.Services;
 using SmartHome.Heater.Settings;
-using SmartHome.Infrastructure;
 
 namespace SmartHome.Worker;
 
-public class Program
+public abstract class Program
 {
   public static void Main(string[] args)
   {

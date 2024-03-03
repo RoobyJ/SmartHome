@@ -6,7 +6,7 @@ using Core.Common.Repositories;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Dtos;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
 namespace Core.Services;
 
@@ -61,8 +61,8 @@ public class HeatTaskService : IHeatTaskService
 
     await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
 
-    cyclicHeatTaskEntity.CyclicHeatTaskDaysInWeeks = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDaysInWeek { DayId = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
+    cyclicHeatTaskEntity.CyclicHeatTaskDays = task.DaysInWeekSelected.Select(i =>
+      new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
 
     await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
     await _cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
@@ -76,8 +76,8 @@ public class HeatTaskService : IHeatTaskService
 
     await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
 
-    cyclicHeatTaskEntity.CyclicHeatTaskDaysInWeeks = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDaysInWeek { DayId = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
+    cyclicHeatTaskEntity.CyclicHeatTaskDays = task.DaysInWeekSelected.Select(i =>
+      new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
 
     await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
     await _cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
