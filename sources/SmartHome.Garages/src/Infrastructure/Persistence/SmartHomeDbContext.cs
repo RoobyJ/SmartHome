@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Entities;
+using Infrastructure.Persistence.Initializers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using SmartHome.Core.Common.Repositories;
@@ -124,7 +125,10 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("GarageId");
         });
+        
+        modelBuilder.SeedWithStaticData();
+        OnModelCreatingPartial(modelBuilder);
     }
-
+    
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

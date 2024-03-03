@@ -132,6 +132,12 @@ namespace Infrastructure.Persistence.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.InsertData(
+                schema: "Garages",
+                table: "Garage",
+                columns: new[] { "Id", "Ip", "Name" },
+                values: new object[] { 1, "192.168.1.10", "Garage Robert" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CyclicHeatTask_GarageId",
                 schema: "Garages",

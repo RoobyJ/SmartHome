@@ -91,6 +91,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasName("Garage_pkey");
 
                     b.ToTable("Garage", "Garages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ip = "192.168.1.10",
+                            Name = "Garage Robert"
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.HeatLog", b =>

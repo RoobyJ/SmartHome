@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SmartHomeDbContext))]
-    [Migration("20240303115456_Initial")]
+    [Migration("20240303123711_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -94,6 +94,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasName("Garage_pkey");
 
                     b.ToTable("Garage", "Garages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ip = "192.168.1.10",
+                            Name = "Garage Robert"
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.HeatLog", b =>
