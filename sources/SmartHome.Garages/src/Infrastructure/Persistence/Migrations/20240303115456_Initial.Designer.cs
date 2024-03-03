@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SmartHome.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SmartHome.Infrastructure.Persistence.Migrations
+namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SmartHomeDbContext))]
-    [Migration("20231012200048_Initial")]
+    [Migration("20240303115456_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -21,18 +20,21 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SmartHome.Core.Entities.CyclicHeatTask", b =>
+            modelBuilder.Entity("Core.Entities.CyclicHeatTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
@@ -43,12 +45,12 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("CyclicHeatTask_pkey");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex(new[] { "GarageId" }, "IX_CyclicHeatTask_GarageId");
 
                     b.ToTable("CyclicHeatTask", "Garages");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.CyclicHeatTaskDaysInWeek", b =>
+            modelBuilder.Entity("Core.Entities.CyclicHeatTaskDay", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,75 +61,20 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.Property<int>("CyclicHeatTaskId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DayId")
+                    b.Property<int>("Day")
                         .HasColumnType("integer");
 
                     b.HasKey("Id")
                         .HasName("CyclicHeatTaskDaysInWeek_pkey");
 
-                    b.HasIndex("CyclicHeatTaskId");
+                    b.HasIndex(new[] { "CyclicHeatTaskId" }, "IX_CyclicHeatTaskDaysInWeek_CyclicHeatTaskId");
 
-                    b.HasIndex("DayId");
+                    b.HasIndex(new[] { "Day" }, "IX_CyclicHeatTaskDaysInWeek_DayId");
 
-                    b.ToTable("CyclicHeatTaskDaysInWeek", "Garages");
+                    b.ToTable("CyclicHeatTaskDay", "Garages");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.DayInWeek", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id")
-                        .HasName("DayInWeek_pkey");
-
-                    b.ToTable("DayInWeek", "Garages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Sunday"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Monday"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Tuesday"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Wednesday"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Thursday"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Friday"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Saturday"
-                        });
-                });
-
-            modelBuilder.Entity("SmartHome.Core.Entities.Garage", b =>
+            modelBuilder.Entity("Core.Entities.Garage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,17 +94,9 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                         .HasName("Garage_pkey");
 
                     b.ToTable("Garage", "Garages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Ip = "192.168.1.24",
-                            Name = "Garage Robert"
-                        });
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.HeatLog", b =>
+            modelBuilder.Entity("Core.Entities.HeatLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -177,13 +116,16 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.ToTable("HeatLog", "Garages");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.HeatTask", b =>
+            modelBuilder.Entity("Core.Entities.HeatTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -194,12 +136,12 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("HeatTask_pkey");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex(new[] { "GarageId" }, "IX_HeatTask_GarageId");
 
                     b.ToTable("HeatTask", "Garages");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.OutsideTemperature", b =>
+            modelBuilder.Entity("Core.Entities.OutsideTemperature", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,20 +155,20 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.Property<int>("GarageId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Temperature")
-                        .HasColumnType("integer");
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
 
                     b.HasKey("Id")
                         .HasName("OutsideTemperature_pkey");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex(new[] { "GarageId" }, "IX_OutsideTemperature_GarageId");
 
                     b.ToTable("OutsideTemperature", "Garages");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.CyclicHeatTask", b =>
+            modelBuilder.Entity("Core.Entities.CyclicHeatTask", b =>
                 {
-                    b.HasOne("SmartHome.Core.Entities.Garage", "Garage")
+                    b.HasOne("Core.Entities.Garage", "Garage")
                         .WithMany("CyclicHeatTasks")
                         .HasForeignKey("GarageId")
                         .IsRequired()
@@ -235,28 +177,20 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.Navigation("Garage");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.CyclicHeatTaskDaysInWeek", b =>
+            modelBuilder.Entity("Core.Entities.CyclicHeatTaskDay", b =>
                 {
-                    b.HasOne("SmartHome.Core.Entities.CyclicHeatTask", "CyclicHeatTask")
-                        .WithMany("CyclicHeatTaskDaysInWeeks")
+                    b.HasOne("Core.Entities.CyclicHeatTask", "CyclicHeatTask")
+                        .WithMany("CyclicHeatTaskDays")
                         .HasForeignKey("CyclicHeatTaskId")
                         .IsRequired()
                         .HasConstraintName("CyclicHeatTaskId");
 
-                    b.HasOne("SmartHome.Core.Entities.DayInWeek", "Day")
-                        .WithMany("CyclicHeatTaskDaysInWeeks")
-                        .HasForeignKey("DayId")
-                        .IsRequired()
-                        .HasConstraintName("DayId");
-
                     b.Navigation("CyclicHeatTask");
-
-                    b.Navigation("Day");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.HeatTask", b =>
+            modelBuilder.Entity("Core.Entities.HeatTask", b =>
                 {
-                    b.HasOne("SmartHome.Core.Entities.Garage", "Garage")
+                    b.HasOne("Core.Entities.Garage", "Garage")
                         .WithMany("HeatTasks")
                         .HasForeignKey("GarageId")
                         .IsRequired()
@@ -265,9 +199,9 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.Navigation("Garage");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.OutsideTemperature", b =>
+            modelBuilder.Entity("Core.Entities.OutsideTemperature", b =>
                 {
-                    b.HasOne("SmartHome.Core.Entities.Garage", "Garage")
+                    b.HasOne("Core.Entities.Garage", "Garage")
                         .WithMany("OutsideTemperatures")
                         .HasForeignKey("GarageId")
                         .IsRequired()
@@ -276,17 +210,12 @@ namespace SmartHome.Infrastructure.Persistence.Migrations
                     b.Navigation("Garage");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.CyclicHeatTask", b =>
+            modelBuilder.Entity("Core.Entities.CyclicHeatTask", b =>
                 {
-                    b.Navigation("CyclicHeatTaskDaysInWeeks");
+                    b.Navigation("CyclicHeatTaskDays");
                 });
 
-            modelBuilder.Entity("SmartHome.Core.Entities.DayInWeek", b =>
-                {
-                    b.Navigation("CyclicHeatTaskDaysInWeeks");
-                });
-
-            modelBuilder.Entity("SmartHome.Core.Entities.Garage", b =>
+            modelBuilder.Entity("Core.Entities.Garage", b =>
                 {
                     b.Navigation("CyclicHeatTasks");
 

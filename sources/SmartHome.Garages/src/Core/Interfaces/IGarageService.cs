@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Entities;
 using SmartHome.Core.Dtos;
-using SmartHome.Core.Entities;
 
-namespace SmartHome.Core.Interfaces;
+namespace Core.Interfaces;
 
 public interface IGarageService
 {

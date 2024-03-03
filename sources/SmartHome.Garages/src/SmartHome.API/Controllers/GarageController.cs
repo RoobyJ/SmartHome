@@ -1,9 +1,8 @@
+using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Core.Dtos;
-using SmartHome.Core.Entities;
-using SmartHome.Core.Interfaces;
-using SmartHome.Core.Mappers;
+using Core.Mappers;
 
 namespace SmartHome.Api.Controllers;
 

@@ -5,19 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence;
 
-internal class SmartHomeDbContextInitializer
+internal class SmartHomeDbContextInitializer(
+  SmartHomeDbContext dbContext,
+  ILogger<SmartHomeDbContextInitializer> logger)
 {
-  private readonly SmartHomeDbContext dbContext;
-  private readonly ILogger<SmartHomeDbContextInitializer> logger;
-
-
-  public SmartHomeDbContextInitializer(SmartHomeDbContext dbContext,
-    ILogger<SmartHomeDbContextInitializer> logger)
-  {
-    this.dbContext = dbContext;
-    this.logger = logger;
-  }
-
   public async Task InitializeAsync()
   {
     try

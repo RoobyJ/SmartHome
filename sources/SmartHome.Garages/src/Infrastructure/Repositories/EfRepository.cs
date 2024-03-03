@@ -6,16 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using SmartHome.Core.Common;
 using SmartHome.Core.Common.Repositories;
 
-namespace Infrastructure.Data;
+namespace Infrastructure.Repositories;
 
-internal class EfRepository : IRepository
+internal class EfRepository(IUnitOfWork dbContext) : IRepository
 {
-  public EfRepository(IUnitOfWork dbContext)
-  {
-    UnitOfWork = dbContext;
-  }
-
-  public IUnitOfWork UnitOfWork { get; }
+  public IUnitOfWork UnitOfWork { get; } = dbContext;
 }
 
 internal class EfRepository<T> : EfRepository, IRepository<T> where T : class, IEntity

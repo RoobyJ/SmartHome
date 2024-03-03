@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartHome.Core.Interfaces;
+namespace Core.Interfaces;
 
 // Helps if you need to confirm logging is happening
 // https://ardalis.com/testing-logging-in-aspnet-core

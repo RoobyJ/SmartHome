@@ -8,6 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/SmartHome.Api/SmartHome.Api.csproj", "src/SmartHome.Api/"]
+COPY ["src/Core/Core.csproj", "src/Core/"]
+COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
 RUN dotnet restore "src/SmartHome.Api/SmartHome.Api.csproj"
 COPY . .
 WORKDIR "/src/src/SmartHome.Api"

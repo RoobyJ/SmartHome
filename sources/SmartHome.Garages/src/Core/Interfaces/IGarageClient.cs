@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
 
-namespace SmartHome.Core.Interfaces;
+namespace Core.Interfaces;
 
 public interface IGarageClient
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
 namespace Infrastructure.Persistence.Initializers.StaticInitializers;
 

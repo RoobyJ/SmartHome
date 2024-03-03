@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SmartHome.Core.Dtos;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
 namespace Core.Interfaces;
 

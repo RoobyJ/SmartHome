@@ -2,9 +2,9 @@
 using Core.Common.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
-namespace Infrastructure.Data;
+namespace Infrastructure.Repositories;
 
 internal class CyclicHeatTaskRepository : EfRepository<CyclicHeatTask>, ICyclicHeatTaskRepository<CyclicHeatTask>
 {
@@ -23,7 +23,7 @@ internal class CyclicHeatTaskRepository : EfRepository<CyclicHeatTask>, ICyclicH
 
     if (queryOptions.IncludeCyclicHeatTaskDays)
     {
-      query = query.Include(i => i.CyclicHeatTaskDaysInWeeks);
+      query = query.Include(i => i.CyclicHeatTaskDays);
     }
 
     return query;

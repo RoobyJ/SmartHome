@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
-using SmartHome.Core.Interfaces;
 
-namespace SmartHome.Core.Helpers;
-
-public class GarageClient : IGarageClient
+namespace SmartHome.Core.Helpers
 {
-  private const int TimeToCancel = 3000;
-  private static readonly HttpClient client = new();
-  private readonly ILogger<GarageClient> logger;
+  public class GarageClient : IGarageClient
+  {
+    private const int TimeToCancel = 3000;
+    private static readonly HttpClient client = new();
+    private readonly ILogger<GarageClient> logger;
 
-  public GarageClient(ILogger<GarageClient> logger)
+    public GarageClient(ILogger<GarageClient> logger)
   {
     this.logger = logger;
   }
 
-  public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
+    public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
   {
     TemperatureDto? itemToReturn = null;
     var cts = new CancellationTokenSource();
@@ -42,7 +42,7 @@ public class GarageClient : IGarageClient
     return itemToReturn;
   }
 
-  public async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
+    public async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
@@ -50,7 +50,7 @@ public class GarageClient : IGarageClient
     await client.PutAsync(ClientEndpoints.Garage.Heater(ip), content, ct);
   }
 
-  public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
+    public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
     GarageHeaterStatusDto? itemToReturn = null;
     var cts = new CancellationTokenSource();
@@ -68,5 +68,6 @@ public class GarageClient : IGarageClient
     }
 
     return itemToReturn;
+  }
   }
 }

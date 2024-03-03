@@ -4,16 +4,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Core.Helpers;
+using Core.Interfaces;
+using SmartHome.Core.DTOs;
+using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Core.DTOs;
-using SmartHome.Core.Entities;
 using SmartHome.Core.Helpers;
-using SmartHome.Core.Interfaces;
 using SmartHome.Core.Models;
+using SmartHome.Core.Services;
 using SmartHome.Heater.Models;
 
-namespace SmartHome.Core.Services;
+namespace Core.Services;
 
 public class HeatingService : IHeatingService
 {
@@ -65,8 +67,6 @@ public class HeatingService : IHeatingService
     catch (Exception ex)
     {
       _logger.LogError(ex, $"{nameof(HeatingService)}.{nameof(ExecuteAsync)} threw an exception.");
-      // TODO: Decide if you want to re-throw which will crash the worker service
-      //throw;
     }
   }
 
@@ -125,7 +125,7 @@ public class HeatingService : IHeatingService
     var temperatureRepository =
       scope.ServiceProvider
         .GetService<IOutsideTemperatureRepository<OutsideTemperature>>();
-    List<GarageTemperatureDto> listOfGarageTemperatureDtos = new();
+    List<GarageTemperatureDto> listOfGarageTemperatureDtos = [];
 
     for (var i = 0; i < garages.Count; i++)
     {

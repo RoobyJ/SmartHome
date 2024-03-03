@@ -1,24 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using SmartHome.Core.Common;
 
-namespace SmartHome.Core.Entities;
+namespace Core.Entities;
 
-[Table("Garage", Schema = "Garages")]
-public sealed class Garage : IEntity
+public partial class Garage : IEntity
 {
-  [Required] public string Name { get; set; }
+    public int Id { get; set; }
 
-  [Required] public string Ip { get; set; }
+    public string Name { get; set; }
 
-  [InverseProperty("Garage")]
-  public ICollection<CyclicHeatTask> CyclicHeatTasks { get; set; } = new List<CyclicHeatTask>();
+    public string Ip { get; set; }
 
-  [InverseProperty("Garage")] public ICollection<HeatTask> HeatTasks { get; set; } = new List<HeatTask>();
+    public virtual ICollection<CyclicHeatTask> CyclicHeatTasks { get; set; } = new List<CyclicHeatTask>();
 
-  [InverseProperty("Garage")]
-  public ICollection<OutsideTemperature> OutsideTemperatures { get; set; } = new List<OutsideTemperature>();
+    public virtual ICollection<HeatTask> HeatTasks { get; set; } = new List<HeatTask>();
 
-  [Key] public int Id { get; set; }
+    public virtual ICollection<OutsideTemperature> OutsideTemperatures { get; set; } = new List<OutsideTemperature>();
 }

@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Core.Common.Repositories;
-using Infrastructure.Data;
 using Infrastructure.Http;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.Core.Entities;
-using SmartHome.Core.Interfaces;
+using Core.Entities;
+using Core.Interfaces;
 
 namespace Infrastructure;
 

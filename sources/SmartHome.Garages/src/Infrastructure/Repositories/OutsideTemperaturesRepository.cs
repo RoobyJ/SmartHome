@@ -2,9 +2,9 @@ using System.Linq;
 using Core.Common.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Entities;
+using Core.Entities;
 
-namespace Infrastructure.Data;
+namespace Infrastructure.Repositories;
 
 internal class OutsideTemperaturesRepository : EfRepository<OutsideTemperature>,
   IOutsideTemperatureRepository<OutsideTemperature>

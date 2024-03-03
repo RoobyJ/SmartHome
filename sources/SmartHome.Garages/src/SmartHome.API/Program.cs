@@ -2,7 +2,6 @@ using Core.Interfaces;
 using Core.Services;
 using Infrastructure;
 using SmartHome.Core.Helpers;
-using SmartHome.Core.Interfaces;
 using SmartHome.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +38,9 @@ if (app.Environment.IsDevelopment())
   await app.MigrateDatabase();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+  app.UseHttpsRedirection();
+}
 
 app.Run();

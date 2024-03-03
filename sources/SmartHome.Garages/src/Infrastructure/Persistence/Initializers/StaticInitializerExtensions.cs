@@ -8,6 +8,5 @@ internal static class StaticInitializerExtensions
   public static void SeedWithStaticData(this ModelBuilder builder)
   {
     builder.SeedGarages();
-    builder.SeedDaysInWeek();
   }
 }
