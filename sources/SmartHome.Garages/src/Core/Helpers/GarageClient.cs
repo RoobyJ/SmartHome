@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,19 +7,15 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
+using SmartHome.Core.Helpers;
 
-namespace SmartHome.Core.Helpers
+namespace Core.Helpers
 {
-  public class GarageClient : IGarageClient
+  public class GarageClient(ILogger<GarageClient> logger) : IGarageClient
   {
-    private const int TimeToCancel = 3000;
+    private const int TimeToCancel = 4000;
     private static readonly HttpClient client = new();
-    private readonly ILogger<GarageClient> logger;
-
-    public GarageClient(ILogger<GarageClient> logger)
-  {
-    this.logger = logger;
-  }
+    private readonly ILogger<GarageClient> logger = logger;
 
     public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
   {
@@ -53,12 +48,12 @@ namespace SmartHome.Core.Helpers
     public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
     GarageHeaterStatusDto? itemToReturn = null;
-    var cts = new CancellationTokenSource();
+    //var cts = new CancellationTokenSource();
 
     try
     {
-      cts.CancelAfter(TimeToCancel);
-      var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), cts.Token);
+      //cts.CancelAfter(TimeToCancel);
+      var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip));
       var contentString = await response.Content.ReadAsStringAsync(ct);
       itemToReturn = JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
     }

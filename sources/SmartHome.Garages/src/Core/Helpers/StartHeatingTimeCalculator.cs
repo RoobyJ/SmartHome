@@ -39,10 +39,10 @@ namespace SmartHome.Core.Helpers
     {
       // linear formula 
       var result = temp - 14.1061;
-      result = result / 0.161569;
+      result /= 0.161569;
       if (result < 0)
       {
-        return 0;
+        return result * -1;
       }
 
       return result; // the result is in minutes

@@ -25,7 +25,6 @@ public abstract class Program
       {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IHeatingService, HeatingService>();
-        services.AddSingleton<IServiceLocator, ServiceScopeFactoryLocator>();
         services.AddTransient<StartHeatingTimeCalculator>();
 
         // Infrastructure.ContainerSetup

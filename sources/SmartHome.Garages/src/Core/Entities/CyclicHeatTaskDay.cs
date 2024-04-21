@@ -10,5 +10,5 @@ public partial class CyclicHeatTaskDay : IEntity
 
     public int CyclicHeatTaskId { get; set; }
 
-    public virtual CyclicHeatTask CyclicHeatTask { get; set; }
+    public virtual CyclicHeatTask CyclicHeatTask { get; set; } = null!;
 }

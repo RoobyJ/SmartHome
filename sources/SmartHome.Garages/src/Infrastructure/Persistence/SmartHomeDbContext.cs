@@ -12,44 +12,38 @@ namespace Infrastructure.Persistence;
 
 public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> options) : DbContext(options), IUnitOfWork
 {
-  private IDbContextTransaction _dbContextTransaction;
-  
-  public virtual DbSet<CyclicHeatTask> CyclicHeatTasks { get; set; }
+  private IDbContextTransaction? dbContextTransaction;
+  public virtual DbSet<CyclicHeatTask> CyclicHeatTasks { get; init; } = null!;
 
-    public virtual DbSet<CyclicHeatTaskDay> CyclicHeatTaskDays { get; set; }
+  public virtual DbSet<CyclicHeatTaskDay> CyclicHeatTaskDays { get; init; } = null!;
 
-    public virtual DbSet<Garage> Garages { get; set; }
+  public virtual DbSet<Garage> Garages { get; init; } = null!;
 
-    public virtual DbSet<HeatLog> HeatLogs { get; set; }
+  public virtual DbSet<HeatLog> HeatLogs { get; init; } = null!;
 
-    public virtual DbSet<HeatTask> HeatTasks { get; set; }
+  public virtual DbSet<HeatTask> HeatTasks { get; init; } = null!;
 
-    public virtual DbSet<OutsideTemperature> OutsideTemperatures { get; set; }
-    
-    
-    public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
-      CancellationToken cancellationToken = default)
+  public virtual DbSet<OutsideTemperature> OutsideTemperatures { get; init; } = null!;
+
+
+  public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
+    CancellationToken cancellationToken = default)
+  {
+    dbContextTransaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+    return dbContextTransaction;
+  }
+
+  public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+  {
+    if (dbContextTransaction == null)
     {
-      _dbContextTransaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
-      return _dbContextTransaction;
+      return;
     }
 
-    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-    {
-      if (_dbContextTransaction == null)
-      {
-        return;
-      }
+    await dbContextTransaction.CommitAsync(cancellationToken);
+  }
 
-      await _dbContextTransaction.CommitAsync(cancellationToken);
-    }
-
-    public virtual Task<int> SaveChangesAsync()
-    {
-      return SaveChangesAsync(new CancellationToken());
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CyclicHeatTask>(entity =>
         {
@@ -77,7 +71,6 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
             entity.HasOne(d => d.CyclicHeatTask).WithMany(p => p.CyclicHeatTaskDays)
                 .HasForeignKey(d => d.CyclicHeatTaskId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("CyclicHeatTaskId");
         });
 
@@ -86,9 +79,6 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
             entity.HasKey(e => e.Id).HasName("Garage_pkey");
 
             entity.ToTable("Garage", "Garages");
-
-            entity.Property(e => e.Ip).IsRequired();
-            entity.Property(e => e.Name).IsRequired();
         });
 
         modelBuilder.Entity<HeatLog>(entity =>
@@ -125,10 +115,10 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("GarageId");
         });
-        
         modelBuilder.SeedWithStaticData();
+
         OnModelCreatingPartial(modelBuilder);
     }
-    
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+  partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

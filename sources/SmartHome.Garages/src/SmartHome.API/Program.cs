@@ -1,3 +1,4 @@
+using Core.Helpers;
 using Core.Interfaces;
 using Core.Services;
 using Infrastructure;
@@ -6,6 +7,7 @@ using SmartHome.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var migrateOnStartUp = builder.Configuration.GetValue<Boolean>("MigrateOnStartUp");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -33,14 +35,8 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-if (app.Environment.IsDevelopment())
-{
-  await app.MigrateDatabase();
-}
+if (migrateOnStartUp) await app.MigrateDatabase();
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 
-if (!app.Environment.IsDevelopment())
-{
-  app.UseHttpsRedirection();
-}
 
 app.Run();

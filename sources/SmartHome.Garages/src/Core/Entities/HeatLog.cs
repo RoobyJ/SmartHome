@@ -9,5 +9,5 @@ public partial class HeatLog : IEntity
 
     public DateTime Date { get; set; }
 
-    public string Info { get; set; }
+    public string? Info { get; set; }
 }

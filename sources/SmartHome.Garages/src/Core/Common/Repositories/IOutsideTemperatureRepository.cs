@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,14 +8,8 @@ using Core.Entities;
 
 namespace Core.Common.Repositories;
 
-public class OutsideTemperatureQueryOptions
+public interface IOutsideTemperatureRepository
 {
-  public bool AsNoTracking { get; set; } = true;
-}
-
-public interface IOutsideTemperatureRepository<in TEntity> : IRepository where TEntity : IEntity
-{
-  IQueryable<OutsideTemperature> Get(OutsideTemperatureQueryOptions queryOptions = default);
-
-  Task AddAsync(TEntity entity, CancellationToken ct = default);
+  Task<ICollection<OutsideTemperature>> GetTemperatures(int garageId, int days, CancellationToken ct);
+  Task AddTemperatures(ICollection<OutsideTemperature> temperatures, CancellationToken ct);
 }

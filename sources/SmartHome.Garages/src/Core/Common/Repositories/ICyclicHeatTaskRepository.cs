@@ -1,24 +1,20 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Entities;
 using SmartHome.Core.Common;
 using SmartHome.Core.Common.Repositories;
 
 namespace Core.Common.Repositories;
 
-public class CyclicHeatingTaskQueryOptions
+public interface ICyclicHeatTaskRepository
 {
-  public bool AsNoTracking { get; init; } = true;
-  public bool IncludeCyclicHeatTaskDays { get; init; }
-}
+  Task<ICollection<CyclicHeatTask>> GetCyclicHeatTasks(int garageId, CancellationToken ct);
+  Task<CyclicHeatTask> GetCyclicHeatTask(int garageId, int id, CancellationToken ct);
+  Task AddCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default);
 
-public interface ICyclicHeatTaskRepository<TEntity> : IRepository where TEntity : IEntity
-{
-  IQueryable<TEntity> Get(CyclicHeatingTaskQueryOptions queryOptions = default);
+  Task UpdateCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default);
 
-  Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-
-  Task UpdateAsync(TEntity entity, CancellationToken ct = default);
-
-  Task DeleteAsync(TEntity entity, CancellationToken ct = default);
+  Task DeleteCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default);
 }

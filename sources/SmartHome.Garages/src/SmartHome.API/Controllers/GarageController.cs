@@ -22,14 +22,14 @@ public class GarageController(
     return Ok(garages);
   }
 
-  [HttpGet("{id:int}/heatTimeRequests")]
+  [HttpGet("{id:int}/customHeatTasks")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<IEnumerable<HeatTaskDto>>> GetHeatTimeRequests(int id, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     var heatTimeRequests = await heatTaskService.GetHeatTimeTasks(id, ct);
@@ -42,46 +42,46 @@ public class GarageController(
     return Ok(heatTimeRequests);
   }
 
-  [HttpPost("{id:int}/heatTimeRequests")]
+  [HttpPost("{id:int}/customHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> SaveHeatTimeRequest(int id, CreateHeatTaskDto task, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.SaveHeatTimeTask(id, task, ct);
     return NoContent();
   }
 
-  [HttpPut("{id:int}/heatTimeRequests")]
+  [HttpPut("{id:int}/customHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatTaskDto task, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.UpdateHeatTask(id, task, ct);
     return NoContent();
   }
 
-  [HttpDelete("{id:int}/heatTimeRequests")]
+  [HttpDelete("{id:int}/customHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteHeatTimeRequest(int id, int requestId, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.DeleteHeatTimeTask(id, requestId, ct);
     return NoContent();
   }
 
-  [HttpGet("{id:int}/Temperatures")]
+  [HttpGet("{id:int}/temperatures")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id, [FromQuery] int days,
@@ -89,7 +89,7 @@ public class GarageController(
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     var temperatures = await garageService.GetTemperatures(id, days, ct);
@@ -97,14 +97,14 @@ public class GarageController(
     return Ok(temperatures);
   }
 
-  [HttpGet("{id:int}/CyclicHeatTimes")]
+  [HttpGet("{id:int}/cyclicHeatTasks")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<ICollection<CyclicHeatTaskDto>>> GetCyclicHeatTimes(int id, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Nie ma takiego garażu");
+      throw new Exception("Such garage doesn't exists");
     }
 
     var garageCyclicHeatTasks = await heatTaskService.GetCyclicHeatTasks(id, ct);
@@ -113,19 +113,19 @@ public class GarageController(
     return Ok(result);
   }
 
-  [HttpPost("{id:int}/CyclicHeatTimes")]
+  [HttpPost("{id:int}/cyclicHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> CreateCyclicHeatTimeRequest(int id, CreateCyclicHeatTaskDto taskDto,
     CancellationToken ct)
   {
     if (taskDto == null)
     {
-      throw new Exception("Brak danych do zapisania");
+      throw new Exception("No data to save");
     }
 
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.CreateCyclicHeatTask(id, taskDto, ct);
@@ -133,19 +133,19 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpPut("{id:int}/CyclicHeatTimes")]
+  [HttpPut("{id:int}/cyclicHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> UpdateCyclicHeatTimeRequest(int id, UpdateCyclicHeatTaskDto requestDto,
     CancellationToken ct)
   {
     if (requestDto == null)
     {
-      throw new Exception("Brak danych do zapisania");
+      throw new Exception("No data to save");
     }
 
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.UpdateCyclicHeatTask(id, requestDto, ct);
@@ -153,20 +153,20 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpDelete("{id:int}/CyclicHeatTimes")]
+  [HttpDelete("{id:int}/cyclicHeatTasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteCyclicHeatTimeRequest(int id, int requestId, CancellationToken ct)
   {
     if (id < 1)
     {
-      throw new Exception("Such garage doesnt exists");
+      throw new Exception("Such garage doesn't exists");
     }
 
     await heatTaskService.DeleteCyclicHeatTask(id, requestId, ct);
     return NoContent();
   }
 
-  [HttpPatch("{id:int}/Heater")]
+  [HttpPatch("{id:int}/heater")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult<string>> SetHeatingOn(int id, CancellationToken ct)
   {
@@ -174,7 +174,7 @@ public class GarageController(
 
     if (garage == null)
     {
-      throw new Exception("This garage doesnt exist");
+      throw new Exception("This garage doesn't exist");
     }
 
     await garageClient.ChangeHeaterStatus("ON", garage.Ip, ct);

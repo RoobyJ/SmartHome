@@ -11,10 +11,10 @@ public partial class CyclicHeatTask : IEntity
     public int GarageId { get; set; }
 
     public TimeSpan Time { get; set; }
-    
+
     public bool Active { get; set; }
 
     public virtual ICollection<CyclicHeatTaskDay> CyclicHeatTaskDays { get; set; } = new List<CyclicHeatTaskDay>();
 
-    public virtual Garage Garage { get; set; }
+    public virtual Garage Garage { get; set; } = null!;
 }

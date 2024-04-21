@@ -32,9 +32,10 @@ public static class ServiceCollectionSetupExtensions
   {
     services.AddScoped<IGarageRepository, GarageRepository>();
     services.AddScoped<IHeatingLogRepository, HeatLogRepository>();
-    services.AddScoped<IHeatTaskRepository<HeatTask>, HeatTaskRepository>();
-    services.AddScoped<ICyclicHeatTaskRepository<CyclicHeatTask>, CyclicHeatTaskRepository>();
-    services.AddScoped<IOutsideTemperatureRepository<OutsideTemperature>, OutsideTemperaturesRepository>();
+    services.AddScoped<IHeatTaskRepository, HeatTaskRepository>();
+    services.AddScoped<ICyclicHeatTaskRepository, CyclicHeatTaskRepository>();
+    services.AddScoped<ICyclicHeatTaskDayRepository, CyclicHeatTaskDayRepository>();
+    services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
   }
 
   public static void AddUrlCheckingServices(this IServiceCollection services)

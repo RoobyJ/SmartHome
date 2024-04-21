@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
@@ -8,26 +11,34 @@ using Core.Entities;
 
 namespace Infrastructure.Repositories;
 
-internal class HeatTaskRepository : EfRepository<HeatTask>, IHeatTaskRepository<HeatTask>
+internal class HeatTaskRepository(SmartHomeDbContext dbContext) : IHeatTaskRepository
 {
-  public HeatTaskRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public async Task<ICollection<HeatTask>> GetHeatTasks(int garageId, CancellationToken ct)
   {
+    return await dbContext.HeatTasks.Where(i => i.GarageId == garageId).ToListAsync(ct);
   }
 
-  public IQueryable<HeatTask> Get(HeatRequestQueryOptions queryOptions)
+  public async Task<HeatTask?> GetHeatTask(int garageId, CancellationToken ct)
   {
-    var query = GetAll();
-
-    if (queryOptions.AsNoTracking)
-    {
-      query = query.AsNoTracking();
-    }
-
-    return query;
+    return await dbContext.HeatTasks.Where(i => i.GarageId == garageId).FirstOrDefaultAsync(ct);
   }
 
-  public override async Task UpdateAsync(HeatTask entity, CancellationToken ct = default)
+  public async Task UpdateHeatTask(HeatTask heatTask, CancellationToken ct)
   {
-    await base.UpdateAsync(entity, ct);
+    dbContext.HeatTasks.Update(heatTask);
+    await dbContext.SaveChangesAsync(ct);
+  }
+
+  public async Task AddHeatTask(HeatTask heatTask, CancellationToken ct)
+  {
+    await dbContext.HeatTasks.AddAsync(heatTask, ct);
+    await dbContext.SaveChangesAsync(ct);
+  }
+
+  public async Task DeleteHeatTask(int heatTaskId, int garageId, CancellationToken ct)
+  {
+    var heatTask = await dbContext.HeatTasks.FirstAsync(i => i.Id == heatTaskId && i.GarageId == garageId, ct);
+    dbContext.HeatTasks.Remove(heatTask);
+    await dbContext.SaveChangesAsync(ct);
   }
 }

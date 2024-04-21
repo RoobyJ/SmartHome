@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Core.Common.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -6,26 +9,34 @@ using Core.Entities;
 
 namespace Infrastructure.Repositories;
 
-internal class CyclicHeatTaskRepository : EfRepository<CyclicHeatTask>, ICyclicHeatTaskRepository<CyclicHeatTask>
+internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicHeatTaskRepository
 {
-  public CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public async Task<ICollection<CyclicHeatTask>> GetCyclicHeatTasks(int garageId, CancellationToken ct)
   {
+    return await dbContext.CyclicHeatTasks.Include(i => i.CyclicHeatTaskDays).Where(i => i.GarageId == garageId)
+      .ToListAsync(ct);
   }
 
-  public IQueryable<CyclicHeatTask> Get(CyclicHeatingTaskQueryOptions queryOptions)
+  public async Task<CyclicHeatTask> GetCyclicHeatTask(int garageId, int id, CancellationToken ct)
   {
-    var query = GetAll();
+    return await dbContext.CyclicHeatTasks.FirstAsync(i => i.GarageId == garageId, ct);
+  }
 
-    if (queryOptions.AsNoTracking)
-    {
-      query = query.AsNoTracking();
-    }
+  public async Task AddCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  {
+    await dbContext.CyclicHeatTasks.AddAsync(entity, ct);
+    await dbContext.SaveChangesAsync(ct);
+  }
 
-    if (queryOptions.IncludeCyclicHeatTaskDays)
-    {
-      query = query.Include(i => i.CyclicHeatTaskDays);
-    }
+  public async Task UpdateCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  {
+    dbContext.CyclicHeatTasks.Update(entity);
+    await dbContext.SaveChangesAsync(ct);
+  }
 
-    return query;
+  public async Task DeleteCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  {
+    dbContext.CyclicHeatTasks.Remove(entity);
+    await dbContext.SaveChangesAsync(ct);
   }
 }

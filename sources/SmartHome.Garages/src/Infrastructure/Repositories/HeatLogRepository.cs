@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Core.Common.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -6,21 +9,16 @@ using Core.Entities;
 
 namespace Infrastructure.Repositories;
 
-internal class HeatLogRepository : EfRepository<HeatLog>, IHeatingLogRepository
+internal class HeatLogRepository(SmartHomeDbContext dbContext) : IHeatingLogRepository
 {
-  public HeatLogRepository(SmartHomeDbContext dbContext) : base(dbContext)
+  public async Task<ICollection<HeatLog>> GetHeatLogs(CancellationToken ct)
   {
+    return await dbContext.HeatLogs.ToListAsync(ct);
   }
 
-  public IQueryable<HeatLog> Get(GarageQueryOptions queryOptions)
+  public async Task AddHeatLog(HeatLog heatLog, CancellationToken ct)
   {
-    var query = GetAll();
-
-    if (queryOptions.AsNoTracking)
-    {
-      query = query.AsNoTracking();
-    }
-
-    return query;
+    await dbContext.HeatLogs.AddAsync(heatLog, ct);
+    await dbContext.SaveChangesAsync(ct);
   }
 }

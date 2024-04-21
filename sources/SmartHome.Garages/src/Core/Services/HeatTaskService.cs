@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,96 +11,73 @@ using Core.Entities;
 
 namespace Core.Services;
 
-public class HeatTaskService : IHeatTaskService
+public class HeatTaskService(
+  ICyclicHeatTaskRepository cyclicHeatTaskRepository,
+  ICyclicHeatTaskDayRepository cyclicHeatTaskDayRepository,
+  IHeatTaskRepository heatTaskRepository)
+  : IHeatTaskService
 {
-  private readonly ICyclicHeatTaskRepository<CyclicHeatTask> _cyclicHeatTaskRepository;
-  private readonly IHeatTaskRepository<HeatTask> _heatTaskRepository;
-
-  public HeatTaskService(ICyclicHeatTaskRepository<CyclicHeatTask> cyclicHeatTaskRepository,
-    IHeatTaskRepository<HeatTask> heatTaskRepository)
-  {
-    _cyclicHeatTaskRepository = cyclicHeatTaskRepository;
-    _heatTaskRepository = heatTaskRepository;
-  }
-
   public async Task SaveHeatTimeTask(int id, CreateHeatTaskDto heatTask, CancellationToken ct)
   {
-    var heatTimeRequest = new HeatTask { GarageId = id, Date = heatTask.Date };
-
-    await _heatTaskRepository.AddAsync(heatTimeRequest, ct);
-    await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    var heatTaskRequest = new HeatTask { GarageId = id, Date = heatTask.Date };
+    await heatTaskRepository.AddHeatTask(heatTaskRequest, ct);
   }
 
   public async Task<ICollection<HeatTask>> GetHeatTimeTasks(int id, CancellationToken ct)
   {
-    return await _heatTaskRepository.Get().Where(i => i.GarageId == id)
-      .ToListAsync(ct);
+    return await heatTaskRepository.GetHeatTasks(id, ct);
   }
 
-  public async Task UpdateHeatTask(int id, HeatTaskDto task, CancellationToken ct)
+  public async Task UpdateHeatTask(int garageId, HeatTaskDto task, CancellationToken ct)
   {
-    var heatTask = await _heatTaskRepository.Get().Where(i => i.GarageId == id && i.Id == task.Id)
-      .FirstAsync(ct);
+    var heatTask = await heatTaskRepository.GetHeatTask(garageId, ct);
+
+    if (heatTask == null) throw new Exception("Such heat task doesn't exist");
 
     heatTask.Date = task.Date;
 
-    await _heatTaskRepository.UpdateAsync(heatTask, ct);
-    await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    await heatTaskRepository.UpdateHeatTask(heatTask, ct);
   }
 
-  public async Task DeleteHeatTimeTask(int garageId, int requestId, CancellationToken ct)
+  public async Task DeleteHeatTimeTask(int garageId, int heatTaskId, CancellationToken ct)
   {
-    var request = await _heatTaskRepository.Get()
-      .Where(i => i.GarageId == garageId && i.Id == requestId).FirstAsync(ct);
-    await _heatTaskRepository.DeleteAsync(request, ct);
-    await _heatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    await heatTaskRepository.DeleteHeatTask(heatTaskId, garageId, ct);
   }
 
   public async Task CreateCyclicHeatTask(int id, CreateCyclicHeatTaskDto task, CancellationToken ct)
   {
     var cyclicHeatTaskEntity = new CyclicHeatTask { GarageId = id, Time = task.Time };
 
-    await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
-
     cyclicHeatTaskEntity.CyclicHeatTaskDays = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
+      new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTask = cyclicHeatTaskEntity }).ToList();
 
-    await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
-    await _cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    await cyclicHeatTaskRepository.AddCyclicHeatTask(cyclicHeatTaskEntity, ct);
   }
 
-  public async Task UpdateCyclicHeatTask(int id, UpdateCyclicHeatTaskDto task, CancellationToken ct)
+  public async Task UpdateCyclicHeatTask(int garageId, UpdateCyclicHeatTaskDto task, CancellationToken ct)
   {
-    await DeleteCyclicHeatTask(id, task.Id, ct);
+    var cyclicHeatTask = await cyclicHeatTaskRepository.GetCyclicHeatTask(garageId, task.Id, ct);
+    await cyclicHeatTaskDayRepository.DeleteCyclicHeatTaskDays(cyclicHeatTask.CyclicHeatTaskDays, ct);
 
-    var cyclicHeatTaskEntity = new CyclicHeatTask { Id = task.Id, GarageId = id, Time = task.Time };
-
-    await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
-
-    cyclicHeatTaskEntity.CyclicHeatTaskDays = task.DaysInWeekSelected.Select(i =>
-      new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTaskId = cyclicHeatTaskEntity.Id }).ToList();
-
-    await _cyclicHeatTaskRepository.AddAsync(cyclicHeatTaskEntity, ct);
-    await _cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    var entity = new CyclicHeatTask
+    {
+      Id = task.Id,
+      GarageId = garageId,
+      Time = task.Time,
+      CyclicHeatTaskDays = task.DaysInWeekSelected
+        .Select(i => new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTaskId = task.Id }).ToList()
+    };
+    await cyclicHeatTaskRepository.UpdateCyclicHeatTask(entity, ct);
   }
 
   public async Task<ICollection<CyclicHeatTask>> GetCyclicHeatTasks(int id, CancellationToken ct)
   {
-    return await _cyclicHeatTaskRepository.Get(new CyclicHeatingTaskQueryOptions
-      {
-        AsNoTracking = true, IncludeCyclicHeatTaskDays = true
-      })
-      .Where(i => i.GarageId == id).ToListAsync(ct);
+    return await cyclicHeatTaskRepository.GetCyclicHeatTasks(id, ct);
   }
 
-  public async Task DeleteCyclicHeatTask(int id, int taskId, CancellationToken ct)
+  public async Task DeleteCyclicHeatTask(int garageId, int taskId, CancellationToken ct)
   {
-    var request = await _cyclicHeatTaskRepository.Get(new CyclicHeatingTaskQueryOptions
-      {
-        AsNoTracking = false, IncludeCyclicHeatTaskDays = true
-      })
-      .Where(i => i.GarageId == id && i.Id == taskId).FirstAsync(ct);
-    await _cyclicHeatTaskRepository.DeleteAsync(request, ct);
-    await _cyclicHeatTaskRepository.UnitOfWork.SaveChangesAsync(ct);
+    var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(garageId, taskId, ct);
+    await cyclicHeatTaskRepository.DeleteCyclicHeatTask(task, ct);
   }
 }

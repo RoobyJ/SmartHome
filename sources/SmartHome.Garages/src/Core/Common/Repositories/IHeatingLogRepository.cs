@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SmartHome.Core.Common.Repositories;
@@ -6,14 +6,9 @@ using Core.Entities;
 
 namespace Core.Common.Repositories;
 
-public class HeatingLogQueryOptions
+public interface IHeatingLogRepository
 {
-  public bool AsNoTracking { get; set; } = true;
-}
+  Task<ICollection<HeatLog>> GetHeatLogs(CancellationToken ct);
 
-public interface IHeatingLogRepository : IRepository
-{
-  IQueryable<HeatLog> Get(GarageQueryOptions queryOptions = default);
-
-  Task AddAsync(HeatLog entity, CancellationToken cancellationToken = default);
+  Task AddHeatLog(HeatLog heatLog, CancellationToken ct);
 }

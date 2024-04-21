@@ -10,8 +10,8 @@ public partial class HeatTask : IEntity
     public DateTime Date { get; set; }
 
     public int GarageId { get; set; }
-    
+
     public bool Active { get; set; }
 
-    public virtual Garage Garage { get; set; }
+    public virtual Garage Garage { get; set; } = null!;
 }
