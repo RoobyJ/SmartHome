@@ -5,6 +5,7 @@ using Core.Common.Repositories;
 using Core.Interfaces;
 using SmartHome.Core.Dtos;
 using Core.Entities;
+using Core.Helpers;
 using Core.Mappers;
 
 namespace Core.Services;
@@ -38,5 +39,12 @@ public class GarageService(
   public async Task<Garage?> GetGarageById(int id, CancellationToken ct)
   {
     return await garageRepository.GetGarage(id, ct);
+  }
+
+  public async Task<bool?> GetGarageHeaterStatus(int garageId, CancellationToken ct)
+  {
+    var garage = await garageRepository.GetGarage(garageId, ct);
+    var result = await garageClient.GetHeaterStatus(garage!.Ip, ct);
+    return result?.HeaterStatus ?? null;
   }
 }

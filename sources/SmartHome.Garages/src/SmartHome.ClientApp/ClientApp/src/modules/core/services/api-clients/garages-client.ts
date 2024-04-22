@@ -130,10 +130,36 @@ export class GarageClient {
         return apiResponse;
     }
 
-     /** Deletes given custom heat task */
-     public static async deleteCustomHeatRequest(id: string, taskId: number): Promise<ApiResponse<any>> {
+    /** Deletes given custom heat task */
+    public static async deleteCustomHeatRequest(id: string, taskId: number): Promise<ApiResponse<any>> {
         const url = this.urlBase + `/${id}/customHeatTasks?requestId=${taskId}`;
         const request = httpClient.delete(url);
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Gets specified garages heater status */
+    public static async getGarageHeaterStatus(garageId: number): Promise<ApiResponse<boolean | null>> {
+        const url = this.urlBase + `/garage/heater-status?garageId=${garageId}`;
+        const request = httpClient.get(url).json<boolean | null>();
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Gets specified garages heater status */
+    public static async setGarageHeaterStatus(garageId: number, statusToSet: boolean): Promise<ApiResponse<void>> {
+        const url = this.urlBase + `/garage/${garageId}/heater`;
+        const request = httpClient.patch(url, { json: statusToSet }).json<void>();
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;
