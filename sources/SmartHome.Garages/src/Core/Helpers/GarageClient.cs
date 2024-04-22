@@ -42,7 +42,7 @@ namespace Core.Helpers
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
     var content = new FormUrlEncodedContent(values);
-    await client.PutAsync(ClientEndpoints.Garage.Heater(ip), content, ct);
+    await client.PatchAsync(ClientEndpoints.Garage.Heater(ip), content, ct);
   }
 
     public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)

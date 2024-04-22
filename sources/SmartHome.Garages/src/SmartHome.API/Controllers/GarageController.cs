@@ -166,9 +166,9 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpPatch("{id:int}/heater")]
+  [HttpPatch("garage/{id:int}/heater")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult<string>> SetHeatingOn(int id, CancellationToken ct)
+  public async Task<ActionResult<string>> SetHeatingStatus(int id, [FromBody] bool newStatus, CancellationToken ct)
   {
     var garage = await garageService.GetGarageById(id, ct);
 
@@ -177,8 +177,19 @@ public class GarageController(
       throw new Exception("This garage doesn't exist");
     }
 
-    await garageClient.ChangeHeaterStatus("ON", garage.Ip, ct);
+    var content = newStatus ? "ON" : "OFF";
+
+    await garageClient.ChangeHeaterStatus(content, garage.Ip, ct);
 
     return NoContent();
+  }
+  
+  [HttpGet("garage/heater-status")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public async Task<ActionResult<bool?>> GetGarageHeaterStatus(int garageId,CancellationToken cancellationToken)
+  {
+    var status = await garageService.GetGarageHeaterStatus(garageId, cancellationToken);
+    return Ok(status);
   }
 }
