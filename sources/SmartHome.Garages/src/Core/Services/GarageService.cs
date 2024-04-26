@@ -45,6 +45,6 @@ public class GarageService(
   {
     var garage = await garageRepository.GetGarage(garageId, ct);
     var result = await garageClient.GetHeaterStatus(garage!.Ip, ct);
-    return result?.HeaterStatus ?? null;
+    return result?.HeatingStatus ?? null;
   }
 }

@@ -191,7 +191,7 @@ public class HeatingService(
 
       if (response != null)
       {
-        garagesHeatersStatuses.Add(new GarageHeaterStatus { Id = garage.Id, HeatingStatus = response.HeaterStatus });
+        garagesHeatersStatuses.Add(new GarageHeaterStatus { Id = garage.Id, HeatingStatus = response.HeatingStatus });
       }
       else
       {

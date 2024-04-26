@@ -21,7 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{2DD960C4-746
 		Directory.Packages.props = Directory.Packages.props
 		ef-migrations.txt = ef-migrations.txt
 		global.json = global.json
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.ClientApp", "src\SmartHome.ClientApp\SmartHome.ClientApp.csproj", "{88DD1B24-A8E7-4BF8-817D-ABBBCDD2B12B}"

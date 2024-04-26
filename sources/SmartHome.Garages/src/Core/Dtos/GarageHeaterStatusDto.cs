@@ -2,5 +2,5 @@
 
 public class GarageHeaterStatusDto
 {
-  public bool HeaterStatus { get; set; }
+  public bool HeatingStatus { get; set; }
 }

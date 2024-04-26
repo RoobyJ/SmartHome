@@ -26,7 +26,7 @@ public abstract class GarageConverters
     {
       Id = garage.Id,
       Name = garage.Name,
-      HeaterStatus = heaterStatusResponse?.HeaterStatus,
+      HeaterStatus = heaterStatusResponse?.HeatingStatus,
       Temperature = temperatureResponse?.Temperature
     };
   }

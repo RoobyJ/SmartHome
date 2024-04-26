@@ -48,12 +48,10 @@ namespace Core.Helpers
     public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
     GarageHeaterStatusDto? itemToReturn = null;
-    //var cts = new CancellationTokenSource();
 
     try
     {
-      //cts.CancelAfter(TimeToCancel);
-      var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip));
+      var response = await client.GetAsync(ClientEndpoints.Garage.HeaterStatus(ip), ct);
       var contentString = await response.Content.ReadAsStringAsync(ct);
       itemToReturn = JsonConvert.DeserializeObject<GarageHeaterStatusDto>(contentString);
     }
