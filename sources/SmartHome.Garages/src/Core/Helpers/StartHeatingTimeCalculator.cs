@@ -4,59 +4,51 @@ using SmartHome.Core.DTOs;
 using SmartHome.Core.Models;
 using SmartHome.Heater.Models;
 
-namespace SmartHome.Core.Helpers
+namespace SmartHome.Core.Helpers;
+
+public class StartHeatingTimeCalculator
 {
-  public class StartHeatingTimeCalculator
+  public List<GarageStartHeatTime> CalculateForMultipleGarages(List<GarageTemperatureDto> listOfGarageTemperatureDtos,
+    List<GarageHeatingTime> listOfGarageEndHeatTimes)
   {
-    public List<GarageStartHeatTime> CalculateForMultipleGarages(List<GarageTemperatureDto> listOfGarageTemperatureDtos,
-      List<GarageHeatingTime> listOfGarageEndHeatTimes)
-    {
-      List<GarageStartHeatTime> listOfGarageStartHeatTimes = new();
+    List<GarageStartHeatTime> listOfGarageStartHeatTimes = new();
 
-      for (var i = 0; i < listOfGarageEndHeatTimes.Count; i++)
+    for (var i = 0; i < listOfGarageEndHeatTimes.Count; i++)
+    {
+      var heatTime = listOfGarageEndHeatTimes[i].HeatTime;
+      if (heatTime != null)
       {
-        var heatTime = listOfGarageEndHeatTimes[i].HeatTime;
-        if (heatTime != null)
+        var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay,
+          listOfGarageTemperatureDtos[i].Temperature);
+        if (startHeatTime == null)
         {
-          var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay,
-            listOfGarageTemperatureDtos[i].Temperature);
-          if (startHeatTime == null)
-          {
-            continue;
-          }
-
-          var startHeatingDate = heatTime.Value.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds
-            ? heatTime.Value.AddDays(-1) + startHeatTime
-            : heatTime.Value.Date + startHeatTime;
-          listOfGarageStartHeatTimes.Add(new GarageStartHeatTime { Id = i + 1, StartHeatTime = startHeatingDate });
+          continue;
         }
-      }
 
-      return listOfGarageStartHeatTimes;
+        var startHeatingDate = heatTime.Value.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds
+          ? heatTime.Value.AddDays(-1) + startHeatTime
+          : heatTime.Value.Date + startHeatTime;
+        listOfGarageStartHeatTimes.Add(new GarageStartHeatTime { Id = i + 1, StartHeatTime = startHeatingDate });
+      }
     }
 
-    private double CalculateOnHeatTime(float temp)
+    return listOfGarageStartHeatTimes;
+  }
+
+  private static double CalculateOnHeatTime(float temp)
+  {
+    // linear formula 
+    return ((Math.Log(temp) + 1) * 35) + 125;
+  }
+
+  private static TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float temp)
+  {
+    if (endHeatTime == null)
     {
-      // linear formula 
-      var result = temp - 14.1061;
-      result /= 0.161569;
-      if (result < 0)
-      {
-        return result * -1;
-      }
-
-      return result; // the result is in minutes
+      return null;
     }
 
-    private TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float temp)
-    {
-      if (endHeatTime == null)
-      {
-        return null;
-      }
-
-      var offsetTimeSpan = TimeSpan.FromMinutes(CalculateOnHeatTime(temp));
-      return endHeatTime.Value.Subtract(offsetTimeSpan);
-    }
+    var offsetTimeSpan = TimeSpan.FromMinutes(CalculateOnHeatTime(temp));
+    return endHeatTime.Value.Subtract(offsetTimeSpan);
   }
 }

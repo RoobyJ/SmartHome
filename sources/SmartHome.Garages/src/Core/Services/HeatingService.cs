@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Core.Entities;
 using Core.Helpers;
 using Core.Interfaces;
 using SmartHome.Core.DTOs;
-using Core.Entities;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Models;
 using SmartHome.Heater.Models;
@@ -68,7 +68,10 @@ public class HeatingService(
 
       var customHeatRequest = customHeatRequests.MinBy(item => Math.Abs((item.Date - DateTime.Now).Ticks));
 
-      if (customHeatRequest == null) throw new Exception("Couldn't get custom heat request");
+      if (customHeatRequest == null)
+      {
+        throw new Exception("Couldn't get custom heat request");
+      }
 
       var cyclicHeatTasks = await cyclicHeatTaskRepository.GetCyclicHeatTasks(garage.Id, ct);
 
@@ -99,7 +102,8 @@ public class HeatingService(
     return garagesClosestHeatingTimes;
   }
 
-  private async Task<List<GarageTemperatureDto>> GetListOfGarageTemperatures(IReadOnlyList<Garage> garages, CancellationToken ct)
+  private async Task<List<GarageTemperatureDto>> GetListOfGarageTemperatures(IReadOnlyList<Garage> garages,
+    CancellationToken ct)
   {
     List<GarageTemperatureDto> listOfGarageTemperatureDtos = [];
     List<OutsideTemperature> temperatures = [];
@@ -107,7 +111,11 @@ public class HeatingService(
     for (var i = 0; i < garages.Count; i++)
     {
       var response = await garageClient.GetGarageTemperature(garages[i].Ip, ct);
-      if (response == null) continue;
+      if (response == null)
+      {
+        continue;
+      }
+
       listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = i + 1, Temperature = response.Temperature });
       var entity = new OutsideTemperature { Date = DateTime.Now, Temperature = response.Temperature, GarageId = i + 1 };
       temperatures.Add(entity);
@@ -126,7 +134,10 @@ public class HeatingService(
       var garage = garages.Find(i => i.Id == heatTime.Id);
       var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == heatTime.Id);
 
-      if (garage == null || garageHeaterStatus == null) throw new Exception("Garage or garage heater status not found");
+      if (garage == null || garageHeaterStatus == null)
+      {
+        throw new Exception("Garage or garage heater status not found");
+      }
 
       if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
       {
@@ -164,7 +175,7 @@ public class HeatingService(
       }
 
       var ip = garages.Find(garage => garage.Id == garageStartHeatTime.Id)?.Ip;
-        
+
       if (String.IsNullOrEmpty(ip))
       {
         continue;
@@ -197,7 +208,6 @@ public class HeatingService(
       {
         await heatingLogRepository.AddHeatLog(new HeatLog { Date = new DateTime(), Info = "No response" }, ct);
       }
-      
     }
   }
 

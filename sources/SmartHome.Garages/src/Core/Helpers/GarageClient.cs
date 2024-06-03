@@ -9,15 +9,15 @@ using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
 using SmartHome.Core.Helpers;
 
-namespace Core.Helpers
-{
-  public class GarageClient(ILogger<GarageClient> logger) : IGarageClient
-  {
-    private const int TimeToCancel = 4000;
-    private static readonly HttpClient client = new();
-    private readonly ILogger<GarageClient> logger = logger;
+namespace Core.Helpers;
 
-    public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
+public class GarageClient(ILogger<GarageClient> logger) : IGarageClient
+{
+  private const int TimeToCancel = 4000;
+  private static readonly HttpClient client = new();
+  private readonly ILogger<GarageClient> logger = logger;
+
+  public async Task<TemperatureDto?> GetGarageTemperature(string ip, CancellationToken ct)
   {
     TemperatureDto? itemToReturn = null;
     var cts = new CancellationTokenSource();
@@ -37,7 +37,7 @@ namespace Core.Helpers
     return itemToReturn;
   }
 
-    public async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
+  public async Task ChangeHeaterStatus(string onOff, string ip, CancellationToken ct)
   {
     var values = new Dictionary<string, string> { { "heat", $"{onOff}" } };
 
@@ -45,7 +45,7 @@ namespace Core.Helpers
     await client.PatchAsync(ClientEndpoints.Garage.Heater(ip), content, ct);
   }
 
-    public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
+  public async Task<GarageHeaterStatusDto?> GetHeaterStatus(string ip, CancellationToken ct)
   {
     GarageHeaterStatusDto? itemToReturn = null;
 
@@ -61,6 +61,5 @@ namespace Core.Helpers
     }
 
     return itemToReturn;
-  }
   }
 }

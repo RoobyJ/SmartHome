@@ -3,11 +3,10 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public partial class HeatLog : IEntity
+public class HeatLog : IEntity
 {
-    public int Id { get; set; }
+  public DateTime Date { get; set; }
 
-    public DateTime Date { get; set; }
-
-    public string? Info { get; set; }
+  public string? Info { get; set; }
+  public int Id { get; set; }
 }

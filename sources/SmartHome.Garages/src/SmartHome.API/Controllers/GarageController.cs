@@ -1,8 +1,8 @@
 using Core.Entities;
 using Core.Interfaces;
+using Core.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Core.Dtos;
-using Core.Mappers;
 
 namespace SmartHome.Api.Controllers;
 
@@ -183,11 +183,11 @@ public class GarageController(
 
     return NoContent();
   }
-  
+
   [HttpGet("garage/heater-status")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<bool?>> GetGarageHeaterStatus(int garageId,CancellationToken cancellationToken)
+  public async Task<ActionResult<bool?>> GetGarageHeaterStatus(int garageId, CancellationToken cancellationToken)
   {
     var status = await garageService.GetGarageHeaterStatus(garageId, cancellationToken);
     return Ok(status);

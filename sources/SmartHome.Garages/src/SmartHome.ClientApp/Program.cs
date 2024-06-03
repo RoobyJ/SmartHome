@@ -14,7 +14,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var enableHttpLogging = builder.Configuration["EnableHttpLogging"] == "True";
-if (enableHttpLogging) app.UseHttpLogging();
+if (enableHttpLogging)
+{
+  app.UseHttpLogging();
+}
 
 app.UseRouting();
 
