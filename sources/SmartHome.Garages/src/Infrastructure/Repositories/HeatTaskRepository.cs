@@ -16,9 +16,9 @@ internal class HeatTaskRepository(SmartHomeDbContext dbContext) : IHeatTaskRepos
     return await dbContext.HeatTasks.Where(i => i.GarageId == garageId).ToListAsync(ct);
   }
 
-  public async Task<HeatTask?> GetHeatTask(int garageId, CancellationToken ct)
+  public async Task<HeatTask> GetHeatTask(int taskId, CancellationToken ct)
   {
-    return await dbContext.HeatTasks.Where(i => i.GarageId == garageId).FirstOrDefaultAsync(ct);
+    return await dbContext.HeatTasks.Where(i => i.Id == taskId).FirstAsync(ct);
   }
 
   public async Task UpdateHeatTask(HeatTask heatTask, CancellationToken ct)
