@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.Arm;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Core.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Core.Entities;
 
 namespace Infrastructure.Repositories;
 

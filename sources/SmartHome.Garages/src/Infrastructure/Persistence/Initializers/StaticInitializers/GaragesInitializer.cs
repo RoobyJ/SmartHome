@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Core.Entities;
+﻿using Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Initializers.StaticInitializers;
 

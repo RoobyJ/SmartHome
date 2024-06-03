@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
-using Core.Interfaces;
-using SmartHome.Core.Dtos;
 using Core.Entities;
-using Core.Helpers;
+using Core.Interfaces;
 using Core.Mappers;
+using SmartHome.Core.Dtos;
 
 namespace Core.Services;
 

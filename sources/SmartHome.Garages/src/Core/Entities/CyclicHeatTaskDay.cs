@@ -2,13 +2,12 @@
 
 namespace Core.Entities;
 
-public partial class CyclicHeatTaskDay : IEntity
+public class CyclicHeatTaskDay : IEntity
 {
-    public int Id { get; set; }
+  public int Day { get; set; }
 
-    public int Day { get; set; }
+  public int CyclicHeatTaskId { get; set; }
 
-    public int CyclicHeatTaskId { get; set; }
-
-    public virtual CyclicHeatTask CyclicHeatTask { get; set; } = null!;
+  public virtual CyclicHeatTask CyclicHeatTask { get; set; } = null!;
+  public int Id { get; set; }
 }

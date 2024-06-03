@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Core.Entities;
 using Core.Helpers;
 using SmartHome.Core.DTOs;
-using Core.Entities;
 using SmartHome.Core.Helpers;
 using SmartHome.Core.Models;
 

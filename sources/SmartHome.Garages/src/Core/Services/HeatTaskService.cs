@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
-using Core.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using SmartHome.Core.Dtos;
 using Core.Entities;
+using Core.Interfaces;
+using SmartHome.Core.Dtos;
 
 namespace Core.Services;
 
@@ -32,7 +31,10 @@ public class HeatTaskService(
   {
     var heatTask = await heatTaskRepository.GetHeatTask(garageId, ct);
 
-    if (heatTask == null) throw new Exception("Such heat task doesn't exist");
+    if (heatTask == null)
+    {
+      throw new Exception("Such heat task doesn't exist");
+    }
 
     heatTask.Date = task.Date;
 

@@ -1,9 +1,5 @@
-using Core.Helpers;
-using Core.Interfaces;
-using Core.Services;
+using Core;
 using Infrastructure;
-using SmartHome.Core.Helpers;
-using SmartHome.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First()); });
 
-builder.Services.AddDbContext(builder.Configuration);
-
-builder.Services.AddRepositories();
-
-// TODO: move this into CoreExtensions.cs file
-builder.Services.AddScoped<IGarageService, GarageService>();
-builder.Services.AddScoped<IHeatTaskService, HeatTaskService>();
-builder.Services.AddScoped<IGarageClient, GarageClient>();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCore();
 
 var app = builder.Build();
 
@@ -35,8 +25,15 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-if (migrateOnStartUp) await app.MigrateDatabase();
-if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+if (migrateOnStartUp)
+{
+  await app.MigrateDatabase();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+  app.UseHttpsRedirection();
+}
 
 
 app.Run();

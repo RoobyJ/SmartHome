@@ -5,8 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartHome.Core.Helpers;
-using SmartHome.Core.Services;
-using SmartHome.Heater.Settings;
 
 namespace SmartHome.Worker;
 
@@ -27,18 +25,9 @@ public abstract class Program
         services.AddSingleton<IHeatingService, HeatingService>();
         services.AddTransient<StartHeatingTimeCalculator>();
 
-        // Infrastructure.ContainerSetup
-        services.AddDbContext(hostContext.Configuration);
-        services.AddRepositories();
-        services.AddUrlCheckingServices();
-
         var workerSettings = new WorkerSettings();
         hostContext.Configuration.Bind(nameof(WorkerSettings), workerSettings);
         services.AddSingleton(workerSettings);
-
-        var heatingSettings = new HeatingSettings();
-        hostContext.Configuration.Bind(nameof(HeatingSettings), heatingSettings);
-        services.AddSingleton(heatingSettings);
 
         services.AddHostedService<Worker>();
       });

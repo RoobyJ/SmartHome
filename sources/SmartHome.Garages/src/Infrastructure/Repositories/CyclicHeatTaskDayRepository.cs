@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Core.Entities;
+using Infrastructure.Persistence;
 
 namespace Infrastructure.Repositories;
 
@@ -17,6 +15,7 @@ internal class CyclicHeatTaskDayRepository(SmartHomeDbContext dbContext) : ICycl
     {
       dbContext.CyclicHeatTaskDays.Remove(entity);
     }
+
     await dbContext.SaveChangesAsync(ct);
   }
 }

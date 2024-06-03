@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SmartHome.Core.Common.Repositories;
 using Core.Entities;
 
 namespace Core.Common.Repositories;

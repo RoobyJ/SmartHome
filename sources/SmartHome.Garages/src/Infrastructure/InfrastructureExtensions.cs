@@ -1,24 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Core.Common.Repositories;
-using Infrastructure.Http;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Core.Entities;
-using Core.Interfaces;
 
 namespace Infrastructure;
 
-public static class ServiceCollectionSetupExtensions
+public static class InfrastructureExtensions
 {
-  public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
+  public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
   {
-    services.AddDbContext<SmartHomeDbContext>(options =>
-      options.UseNpgsql(
-        configuration.GetConnectionString("DefaultConnection"))).AddScoped<SmartHomeDbContextInitializer>();
+    services.AddDbContext(configuration);
+    services.AddRepositories();
   }
 
   public static async Task MigrateDatabase(this IApplicationBuilder app)
@@ -28,7 +24,16 @@ public static class ServiceCollectionSetupExtensions
     await initializer.InitializeAsync();
   }
 
-  public static void AddRepositories(this IServiceCollection services)
+  #region private methods
+
+  private static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
+  {
+    services.AddDbContext<SmartHomeDbContext>(options =>
+      options.UseNpgsql(
+        configuration.GetConnectionString("DefaultConnection"))).AddScoped<SmartHomeDbContextInitializer>();
+  }
+
+  private static void AddRepositories(this IServiceCollection services)
   {
     services.AddScoped<IGarageRepository, GarageRepository>();
     services.AddScoped<IHeatingLogRepository, HeatLogRepository>();
@@ -38,8 +43,5 @@ public static class ServiceCollectionSetupExtensions
     services.AddScoped<IOutsideTemperatureRepository, OutsideTemperaturesRepository>();
   }
 
-  public static void AddUrlCheckingServices(this IServiceCollection services)
-  {
-    services.AddTransient<IHttpService, HttpService>();
-  }
+  #endregion
 }

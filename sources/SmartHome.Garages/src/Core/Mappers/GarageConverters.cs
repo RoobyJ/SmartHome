@@ -1,9 +1,8 @@
-﻿#nullable enable
-using System.Linq;
+﻿using System.Linq;
+using Core.Entities;
 using SmartHome.Core.Dtos;
 using SmartHome.Core.DTos;
 using SmartHome.Core.DTOs;
-using Core.Entities;
 
 namespace Core.Mappers;
 
