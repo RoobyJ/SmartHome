@@ -83,21 +83,25 @@ public class HeatTaskService(
     await cyclicHeatTaskRepository.DeleteCyclicHeatTask(task, ct);
   }
 
-  public async Task ChangeCyclicHeatTaskStatus(int taskId, CancellationToken ct)
+  public async Task<bool> ChangeCyclicHeatTaskStatus(int taskId, CancellationToken ct)
   {
     var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(taskId, ct);
 
     task.Active = !task.Active;
 
     await cyclicHeatTaskRepository.UpdateCyclicHeatTask(task, ct);
+    
+    return task.Active;
   }
 
-  public  async Task ChangeStatusOfHeatTask(int taskId, CancellationToken ct)
+  public  async Task<bool> ChangeStatusOfHeatTask(int taskId, CancellationToken ct)
   {
     var task = await heatTaskRepository.GetHeatTask(taskId, ct);
 
     task.Active = !task.Active;
 
     await heatTaskRepository.UpdateHeatTask(task, ct);
+
+    return task.Active;
   }
 }

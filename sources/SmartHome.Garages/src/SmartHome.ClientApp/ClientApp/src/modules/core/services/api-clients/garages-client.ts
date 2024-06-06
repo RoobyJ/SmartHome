@@ -145,7 +145,7 @@ export class GarageClient {
 
     /** Gets specified garages heater status */
     public static async getGarageHeaterStatus(garageId: number): Promise<ApiResponse<boolean | null>> {
-        const url = this.urlBase + `/garage/heater-status?garageId=${garageId}`;
+        const url = this.urlBase + `/garage/heaterstatus?garageId=${garageId}`;
         const request = httpClient.get(url).json<boolean | null>();
         const apiResponse = await createApiResponse(request);
 
@@ -160,6 +160,32 @@ export class GarageClient {
     public static async setGarageHeaterStatus(garageId: number, statusToSet: boolean): Promise<ApiResponse<void>> {
         const url = this.urlBase + `/garage/${garageId}/heater`;
         const request = httpClient.patch(url, { json: statusToSet }).json<void>();
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+    /** Sets task status to the opposite */
+    public static async changeStatusOfCyclicHeatTask(taskId: number): Promise<ApiResponse<boolean>> {
+        const url = this.urlBase + `/cyclicHeatTasks/${taskId}/status`;
+        const request = httpClient.patch(url).json<boolean>();
+        const apiResponse = await createApiResponse(request);
+
+        if (apiResponse.isSuccess) return apiResponse;
+
+        const { processError } = useErrorStore();
+        await processError(apiResponse.error);
+        return apiResponse;
+    }
+
+     /** Sets task status to the opposite */
+    public static async changeStatusOfHeatTask(taskId: number): Promise<ApiResponse<boolean>> {
+        const url = this.urlBase + `/heatTasks/${taskId}/status`;
+        const request = httpClient.patch(url).json<boolean>();
         const apiResponse = await createApiResponse(request);
 
         if (apiResponse.isSuccess) return apiResponse;

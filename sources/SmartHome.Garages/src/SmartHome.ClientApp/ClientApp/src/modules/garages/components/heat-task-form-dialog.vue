@@ -113,7 +113,7 @@ const handleDatePick = (date: Date) => {
   resetSelectedDays.value = true
 }
 
-const saveHeatRequest = () => {
+const saveHeatRequest = async () => {
   const id = route.params.garageId
 
   if (id == null || typeof id !== 'string') return
@@ -126,10 +126,10 @@ const saveHeatRequest = () => {
     )
     if (props.isEdit) {
       const payload: CustomHeatTaskDto = { id: props.selectedItemId, date: pickedDate.value }
-      GarageClient.editCustomHeatRequest(id, payload)
+      await GarageClient.editCustomHeatRequest(id, payload)
     } else {
       const payload: HeatRequestDto = { date: pickedDate.value }
-      GarageClient.saveCustomHeatRequest(id, payload)
+      await GarageClient.saveCustomHeatRequest(id, payload)
     }
   }
 
@@ -143,13 +143,13 @@ const saveHeatRequest = () => {
         garageId: Number(id),
         daysInWeekSelected: selectedDays
       }
-      GarageClient.editCyclicHeatRequest(id, payload)
+      await GarageClient.editCyclicHeatRequest(id, payload)
     } else {
       const payload: CreateCyclicHeatTaskDto = {
         time: inputTime.value + ':00',
         daysInWeekSelected: selectedDays
       }
-      GarageClient.saveCyclicHeatRequest(id, payload)
+      await GarageClient.saveCyclicHeatRequest(id, payload)
     }
   }
   show.value = false
