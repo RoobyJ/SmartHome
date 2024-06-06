@@ -37,8 +37,7 @@ public class StartHeatingTimeCalculator
 
   private static double CalculateOnHeatTime(float temp)
   {
-    // linear formula 
-    return ((Math.Log(temp) + 1) * 35) + 125;
+    return 10*(5*(1+5*Math.Pow(Math.E,(-0.02*temp)))-11)*0.37;
   }
 
   private static TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float temp)
