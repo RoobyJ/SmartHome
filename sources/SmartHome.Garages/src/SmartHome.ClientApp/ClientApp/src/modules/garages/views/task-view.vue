@@ -66,6 +66,7 @@ const taskType = TaskType;
 
 const loadItems = async () => {
     const id = route.params.garageId;
+    console.log('test');
 
     if (id == null || typeof id !== 'string') return;
 

@@ -184,12 +184,30 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpGet("garage/heater-status")]
+  [HttpGet("garage/heaterStatus")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<bool?>> GetGarageHeaterStatus(int garageId, CancellationToken cancellationToken)
   {
     var status = await garageService.GetGarageHeaterStatus(garageId, cancellationToken);
     return Ok(status);
+  }
+  
+  [HttpPatch("cyclicHeatTasks/{taskId:int}/status")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public async Task<ActionResult<bool>> ChangeStatusOfCyclicHeatTask(int taskId, CancellationToken cancellationToken)
+  {
+    var result = await heatTaskService.ChangeCyclicHeatTaskStatus(taskId, cancellationToken);
+    return Ok(result);
+  }
+  
+  [HttpPatch("heatTasks/{taskId:int}/status")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public async Task<ActionResult<bool>> ChangeStatusOfHeatTask(int taskId, CancellationToken cancellationToken)
+  {
+    var result = await heatTaskService.ChangeStatusOfHeatTask(taskId, cancellationToken);
+    return Ok(result);
   }
 }

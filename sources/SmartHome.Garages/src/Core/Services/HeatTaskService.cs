@@ -58,7 +58,7 @@ public class HeatTaskService(
 
   public async Task UpdateCyclicHeatTask(int garageId, UpdateCyclicHeatTaskDto task, CancellationToken ct)
   {
-    var cyclicHeatTask = await cyclicHeatTaskRepository.GetCyclicHeatTask(garageId, task.Id, ct);
+    var cyclicHeatTask = await cyclicHeatTaskRepository.GetCyclicHeatTask(task.Id, ct);
     await cyclicHeatTaskDayRepository.DeleteCyclicHeatTaskDays(cyclicHeatTask.CyclicHeatTaskDays, ct);
 
     var entity = new CyclicHeatTask
@@ -79,7 +79,29 @@ public class HeatTaskService(
 
   public async Task DeleteCyclicHeatTask(int garageId, int taskId, CancellationToken ct)
   {
-    var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(garageId, taskId, ct);
+    var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(taskId, ct);
     await cyclicHeatTaskRepository.DeleteCyclicHeatTask(task, ct);
+  }
+
+  public async Task<bool> ChangeCyclicHeatTaskStatus(int taskId, CancellationToken ct)
+  {
+    var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(taskId, ct);
+
+    task.Active = !task.Active;
+
+    await cyclicHeatTaskRepository.UpdateCyclicHeatTask(task, ct);
+    
+    return task.Active;
+  }
+
+  public  async Task<bool> ChangeStatusOfHeatTask(int taskId, CancellationToken ct)
+  {
+    var task = await heatTaskRepository.GetHeatTask(taskId, ct);
+
+    task.Active = !task.Active;
+
+    await heatTaskRepository.UpdateHeatTask(task, ct);
+
+    return task.Active;
   }
 }
