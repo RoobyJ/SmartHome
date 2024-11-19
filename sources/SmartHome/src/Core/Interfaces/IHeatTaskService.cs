@@ -18,4 +18,5 @@ public interface IHeatTaskService
   public Task DeleteCyclicHeatTask(int garageId, int requestId, CancellationToken ct);
   Task<bool> ChangeCyclicHeatTaskStatus(int taskId, CancellationToken ct);
   Task<bool> ChangeStatusOfHeatTask(int taskId, CancellationToken ct);
+  public Task SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken ct);
 }

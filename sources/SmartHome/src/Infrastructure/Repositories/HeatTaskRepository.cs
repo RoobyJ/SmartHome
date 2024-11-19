@@ -39,4 +39,11 @@ internal class HeatTaskRepository(SmartHomeDbContext dbContext) : IHeatTaskRepos
     dbContext.HeatTasks.Remove(heatTask);
     await dbContext.SaveChangesAsync(ct);
   }
+
+  public async Task SetHeatTaskActive(int id, bool active, CancellationToken ct = default)
+  {
+    var entity = await dbContext.HeatTasks.FirstAsync(i => i.Id == id, ct);
+    entity.Active = active;
+    await dbContext.SaveChangesAsync(ct);
+  }
 }

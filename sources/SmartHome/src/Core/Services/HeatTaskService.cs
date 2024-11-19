@@ -104,4 +104,16 @@ public class HeatTaskService(
 
     return task.Active;
   }
+  
+  public async Task SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken ct)
+  {
+    if (data.IsCyclic)
+    {
+      await cyclicHeatTaskRepository.SetHeatTaskActive(data.Id, data.Active, ct);
+    }
+    else
+    {
+      await heatTaskRepository.SetHeatTaskActive(data.Id, data.Active, ct);
+    }
+  }
 }

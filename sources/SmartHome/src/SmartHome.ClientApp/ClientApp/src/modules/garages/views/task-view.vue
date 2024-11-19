@@ -12,7 +12,7 @@
         <v-divider />
         <div class="pt-2 mx-2">
             <v-row>
-                <v-col cols="12" v-for="(item, index) in cyclicItems" :key="index">
+                <v-col cols="12" v-for="(item, index) in cyclicTasks" :key="index">
                     <heat-task-item
                         :heat-task="item"
                         @clicked-checkbox="
@@ -23,7 +23,7 @@
                         @updated="loadItems"
                     />
                 </v-col>
-                <v-col cols="12" v-for="(item, index) in customItems" :key="index">
+                <v-col cols="12" v-for="(item, index) in customTasks" :key="index">
                     <heat-task-item
                         :heat-task="item"
                         @clicked-checkbox="
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client';
 import HeatTaskItem from '../components/heat-task-item.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { type CustomHeatTaskDto, type CyclicHeatTaskDto } from '@/modules/core/services/api/api.models';
 import HeatTaskFormDialog from '../components/heat-task-form-dialog.vue';
@@ -63,6 +63,9 @@ const selectedTasksIds = ref<GenericTask[]>([]);
 const showNotification = ref(false);
 const selectedTime = ref('');
 const taskType = TaskType;
+
+const cyclicTasks = computed(() => cyclicItems.value);
+const customTasks = computed(() => customItems.value);
 
 const loadItems = async () => {
     const id = route.params.garageId;

@@ -44,4 +44,11 @@ internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicH
     dbContext.CyclicHeatTasks.Remove(entity);
     await dbContext.SaveChangesAsync(ct);
   }
+
+  public async Task SetHeatTaskActive(int id, bool active, CancellationToken ct = default)
+  {
+    var entity = await dbContext.CyclicHeatTasks.FirstAsync(i => i.Id == id, ct);
+    entity.Active = active;
+    await dbContext.SaveChangesAsync(ct);
+  }
 }

@@ -12,4 +12,5 @@ public interface IHeatTaskRepository
   Task UpdateHeatTask(HeatTask heatTask, CancellationToken ct);
   Task AddHeatTask(HeatTask heatTask, CancellationToken ct);
   Task DeleteHeatTask(int heatTaskId, int garageId, CancellationToken ct);
+  Task SetHeatTaskActive(int id, bool active, CancellationToken ct = default);
 }

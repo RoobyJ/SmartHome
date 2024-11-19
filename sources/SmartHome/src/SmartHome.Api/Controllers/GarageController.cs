@@ -191,4 +191,13 @@ public class GarageController(
     var status = await garageService.GetGarageHeaterStatus(garageId, cancellationToken);
     return Ok(status);
   }
+  
+  [HttpPatch("garage/heat-tasks/active")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public async Task<ActionResult<bool?>> SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken cancellationToken)
+  {
+    await heatTaskService.SetHeatTaskActive(data, cancellationToken);
+    return Ok();
+  }
 }
