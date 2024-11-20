@@ -38,3 +38,9 @@ export interface NewCyclicHeatTaskDto {
     time: string;
     daysInWeekSelected: DayInWeek[];
 }
+
+export interface SetHeatTaskActiveDto {
+    id: number;
+    active: boolean;
+    isCyclic: boolean;
+}

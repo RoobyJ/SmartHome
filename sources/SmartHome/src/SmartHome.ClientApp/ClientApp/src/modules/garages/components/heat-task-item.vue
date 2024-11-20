@@ -23,7 +23,7 @@
                 </div>
             </v-col>
             <v-col cols="2">
-                <v-switch v-model="isActive" hide-details @update:model-value="() => switchTaskStatus()" />
+                <v-switch v-model="isActive" hide-details @update:model-value="(val) => switchTaskStatus(val as boolean)" />
                 <heat-task-form-dialog
                     :selected-time="getTime"
                     :selected-day="getDate"
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CustomHeatTaskDto, CyclicHeatTaskDto } from '@/modules/core/services/api/api.models';
+import type { CustomHeatTaskDto, CyclicHeatTaskDto, SetHeatTaskActiveDto } from '@/modules/core/services/api/api.models';
 import HeatTaskFormDialog from './heat-task-form-dialog.vue';
 import { computed, onMounted, ref, type PropType } from 'vue';
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client';
@@ -90,9 +90,13 @@ const clickCheckbox = (val: boolean) => {
     emit('clicked-checkbox', val, props.heatTask.id);
 };
 
-const switchTaskStatus = () => {
-    if ('time' in props.heatTask) GarageClient.changeStatusOfCyclicHeatTask(props.heatTask.id);
-    if ('date' in props.heatTask) GarageClient.changeStatusOfHeatTask(props.heatTask.id);
+const switchTaskStatus = async (val: boolean) => {
+    const payload: SetHeatTaskActiveDto = {
+        id: props.heatTask.id,
+        active: val,
+        isCyclic: 'time' in props.heatTask
+    }
+    await GarageClient.changeStatusOfHeatTask(payload);
 };
 
 onMounted(() => {

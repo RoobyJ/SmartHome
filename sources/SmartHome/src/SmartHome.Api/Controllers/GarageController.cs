@@ -22,7 +22,7 @@ public class GarageController(
     return Ok(garages);
   }
 
-  [HttpGet("{id:int}/customHeatTasks")]
+  [HttpGet("{id:int}/custom-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<IEnumerable<HeatTaskDto>>> GetHeatTimeRequests(int id, CancellationToken ct)
@@ -42,7 +42,7 @@ public class GarageController(
     return Ok(heatTimeRequests.Select(i => i.HeatTaskToDto()).ToList());
   }
 
-  [HttpPost("{id:int}/customHeatTasks")]
+  [HttpPost("{id:int}/custom-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> SaveHeatTimeRequest(int id, CreateHeatTaskDto task, CancellationToken ct)
   {
@@ -55,7 +55,7 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpPut("{id:int}/customHeatTasks")]
+  [HttpPut("{id:int}/custom-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> UpdateHeatTimeRequest(int id, HeatTaskDto task, CancellationToken ct)
   {
@@ -68,7 +68,7 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpDelete("{id:int}/customHeatTasks")]
+  [HttpDelete("{id:int}/custom-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteHeatTimeRequest(int id, int requestId, CancellationToken ct)
   {
@@ -97,7 +97,7 @@ public class GarageController(
     return Ok(temperatures);
   }
 
-  [HttpGet("{id:int}/cyclicHeatTasks")]
+  [HttpGet("{id:int}/cyclic-geat-tasks")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<ICollection<CyclicHeatTaskDto>>> GetCyclicHeatTimes(int id, CancellationToken ct)
@@ -112,7 +112,7 @@ public class GarageController(
     return Ok(garageCyclicHeatTasks.Select(i => i.CyclicHeatTaskToDto()).ToList());
   }
 
-  [HttpPost("{id:int}/cyclicHeatTasks")]
+  [HttpPost("{id:int}/cyclic-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> CreateCyclicHeatTimeRequest(int id, CreateCyclicHeatTaskDto taskDto,
     CancellationToken ct)
@@ -132,7 +132,7 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpPut("{id:int}/cyclicHeatTasks")]
+  [HttpPut("{id:int}/cyclic-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> UpdateCyclicHeatTimeRequest(int id, UpdateCyclicHeatTaskDto requestDto,
     CancellationToken ct)
@@ -152,7 +152,7 @@ public class GarageController(
     return NoContent();
   }
 
-  [HttpDelete("{id:int}/cyclicHeatTasks")]
+  [HttpDelete("{id:int}/cyclic-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> DeleteCyclicHeatTimeRequest(int id, int requestId, CancellationToken ct)
   {
@@ -195,7 +195,7 @@ public class GarageController(
   [HttpPatch("garage/heat-tasks/active")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<bool?>> SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken cancellationToken)
+  public async Task<ActionResult> SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken cancellationToken)
   {
     await heatTaskService.SetHeatTaskActive(data, cancellationToken);
     return Ok();
