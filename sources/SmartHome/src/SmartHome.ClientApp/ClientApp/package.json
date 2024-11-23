@@ -2,8 +2,12 @@
   "name": "smart-home",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.16.0",
+    "npm": ">=8.19.4"
+},
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --force",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -55,5 +59,9 @@
     "vite-plugin-vuetify": "^1.0.0",
     "vitest": "^0.34.4",
     "vue-tsc": "^1.8.11"
-  }
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite.",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }

@@ -11,8 +11,7 @@
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "docs",
-      "applicationUrl": "https://localhost:3002;http://localhost:5116",
+      "applicationUrl": "https://localhost:3000;http://localhost:5116",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"

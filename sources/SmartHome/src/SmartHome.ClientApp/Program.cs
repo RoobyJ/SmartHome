@@ -11,6 +11,7 @@ if (!app.Environment.IsDevelopment())
   app.UseHsts();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 
 var enableHttpLogging = builder.Configuration["EnableHttpLogging"] == "True";
