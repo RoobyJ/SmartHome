@@ -1,4 +1,6 @@
-﻿using Core;
+using System;
+using Core;
+using Core.Helpers;
 using Core.Helpers;
 using Core.Interfaces;
 using Core.Services;
@@ -6,6 +8,8 @@ using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualBasic;
+using NLog;
 
 namespace SmartHome.Worker;
 
@@ -13,8 +17,25 @@ public abstract class Program
 {
   public static void Main(string[] args)
   {
-    var host = CreateHostBuilder(args).Build();
-    host.Run();
+    var logger = LogManager.Setup().GetCurrentClassLogger();
+    logger.Info("Application is starting...");
+    logger.Info("Current version: {Version}", Constants.Version);
+
+    try
+    {
+      var host = CreateHostBuilder(args).Build();
+      host.Run();
+    }
+    catch (Exception exception)
+    {
+      logger.Error(exception, "Stopped program because of exception");
+      throw;
+    }
+    finally
+    {
+      // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+      LogManager.Shutdown();
+    }
   }
 
   private static IHostBuilder CreateHostBuilder(string[] args)

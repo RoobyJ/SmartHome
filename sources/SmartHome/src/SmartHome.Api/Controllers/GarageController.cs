@@ -10,7 +10,8 @@ namespace SmartHome.Api.Controllers;
 public class GarageController(
   IGarageService garageService,
   IHeatTaskService heatTaskService,
-  IGarageClient garageClient)
+  IGarageClient garageClient,
+  ILogger<GarageController> logger)
   : ApiControllerBase
 {
   [HttpGet("garages")]
@@ -29,6 +30,7 @@ public class GarageController(
   {
     if (id < 1)
     {
+      logger.LogError("Such garage doesn't exists");
       throw new Exception("Such garage doesn't exists");
     }
 
