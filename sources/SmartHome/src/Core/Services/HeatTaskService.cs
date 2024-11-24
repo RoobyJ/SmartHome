@@ -18,7 +18,7 @@ public class HeatTaskService(
 {
   public async Task SaveHeatTimeTask(int id, CreateHeatTaskDto heatTask, CancellationToken ct)
   {
-    var heatTaskRequest = new HeatTask { GarageId = id, Date = heatTask.Date };
+    var heatTaskRequest = new HeatTask { GarageId = id, Date = heatTask.Date, Active = true};
     await heatTaskRepository.AddHeatTask(heatTaskRequest, ct);
   }
 
@@ -48,7 +48,7 @@ public class HeatTaskService(
 
   public async Task CreateCyclicHeatTask(int id, CreateCyclicHeatTaskDto task, CancellationToken ct)
   {
-    var cyclicHeatTaskEntity = new CyclicHeatTask { GarageId = id, Time = task.Time };
+    var cyclicHeatTaskEntity = new CyclicHeatTask { GarageId = id, Time = task.Time, Active = true};
 
     cyclicHeatTaskEntity.CyclicHeatTaskDays = task.DaysInWeekSelected.Select(i =>
       new CyclicHeatTaskDay { Day = (int)i, CyclicHeatTask = cyclicHeatTaskEntity }).ToList();
@@ -81,28 +81,6 @@ public class HeatTaskService(
   {
     var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(taskId, ct);
     await cyclicHeatTaskRepository.DeleteCyclicHeatTask(task, ct);
-  }
-
-  public async Task<bool> ChangeCyclicHeatTaskStatus(int taskId, CancellationToken ct)
-  {
-    var task = await cyclicHeatTaskRepository.GetCyclicHeatTask(taskId, ct);
-
-    task.Active = !task.Active;
-
-    await cyclicHeatTaskRepository.UpdateCyclicHeatTask(task, ct);
-    
-    return task.Active;
-  }
-
-  public  async Task<bool> ChangeStatusOfHeatTask(int taskId, CancellationToken ct)
-  {
-    var task = await heatTaskRepository.GetHeatTask(taskId, ct);
-
-    task.Active = !task.Active;
-
-    await heatTaskRepository.UpdateHeatTask(task, ct);
-
-    return task.Active;
   }
   
   public async Task SetHeatTaskActive(SetHeatTaskActiveDto data, CancellationToken ct)

@@ -172,7 +172,7 @@ export class GarageClient {
 
     /** Sets task status to the opposite */
     public static async changeStatusOfHeatTask(payload: SetHeatTaskActiveDto): Promise<void> {
-        const url = this.urlBase + `/heat-tasks/active`;
+        const url = this.urlBase + `/garage/heat-tasks/active`;
         const request = httpClient.patch(url, { json: payload }).json();
         const apiResponse = await createApiResponse(request);
 
