@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Core.Dtos;
 using Core.Entities;
 using Core.Helpers;
-using SmartHome.Core.Helpers;
-using SmartHome.Core.Models;
+using Core.Models;
 
 namespace UnitTests.HeatingServiceTests;
 
@@ -38,7 +37,7 @@ public class HeatingServiceTests
     var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest
     );
 
-    Assert.True(result.Equals(expectedResult));
+    Assert.True(result.ClosestDate.Equals(expectedResult));
   }
 
   [Fact]
@@ -54,6 +53,32 @@ public class HeatingServiceTests
   }
 
   [Fact]
+  public void Check_For_CyclicHeatTask_OnDifferentDayRequests()
+  {
+    // Arange
+    var task = new CyclicHeatTask
+    {
+      Id = 1,
+      GarageId = 1,
+      Time = new TimeSpan(12, 0, 0),
+      Active = true,
+      CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
+      {
+        new() { Id = 1, CyclicHeatTaskId = 1, Day = (int)DateTime.Now.DayOfWeek + 3 }
+      }
+    };
+
+    // Act
+    var result = task.GetClosestDateTimeFromCyclicHeatTask();
+
+    
+    // Assert
+    var currentDate = DateOnly.FromDateTime(new DateTime());
+    var assertVal = DateOnly.FromDateTime(result);
+    Assert.False(assertVal.Equals(currentDate));
+  }
+
+  [Fact]
   public void CheckStartHeatTime()
   {
     var temperatures =
@@ -63,7 +88,7 @@ public class HeatingServiceTests
     var expectedResult =
       new List<GarageHeatingTime> { new() { Id = 1, HeatTime = DateTime.Now.AddHours(4).AddMinutes(24) } };
 
-    var result = new StartHeatingTimeCalculator().CalculateForMultipleGarages(temperatures, heatTimes);
+    var result = StartHeatingTimeCalculator.CalculateForMultipleGarages(temperatures, heatTimes);
 
     if (!result[0].StartHeatTime.HasValue)
     {

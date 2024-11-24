@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Core.Entities;
+using Core.Models;
 
 namespace Core.Helpers;
 
 public abstract class HeatingServiceHelper
 {
-  public static DateTime? CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
+  public static CheckClosestDateResult CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
   {
     var todayDay = (int)DateTime.Today.DayOfWeek + 1;
 
@@ -19,10 +20,20 @@ public abstract class HeatingServiceHelper
       {
         if (customHeatRequest.Date.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
         {
-          return customHeatRequest.Date;
+          return new CheckClosestDateResult
+          {
+            IsCyclic = false,
+            ClosestDate = customHeatRequest.Date,
+            HeatTaskId = customHeatRequest.Id
+          };
         }
-
-        return DateTime.Now.Date + cyclicHeatTask.Time;
+        
+        return new CheckClosestDateResult
+        {
+          IsCyclic = true,
+          ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
+          HeatTaskId = cyclicHeatTask.Id
+        };
       }
     }
     else if (!customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day)
@@ -31,7 +42,12 @@ public abstract class HeatingServiceHelper
       // today
       if (DateTime.Now.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
       {
-        return DateTime.Now.Date + cyclicHeatTask.Time;
+        return new CheckClosestDateResult
+        {
+          IsCyclic = true,
+          ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
+          HeatTaskId = cyclicHeatTask.Id
+        };
       }
     }
     else if (customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day)
@@ -39,7 +55,12 @@ public abstract class HeatingServiceHelper
     {
       if (DateTime.Now.TimeOfDay.TotalSeconds < customHeatRequest.Date.TimeOfDay.TotalSeconds)
       {
-        return DateTime.Now.Date + customHeatRequest.Date.TimeOfDay;
+        return new CheckClosestDateResult
+        {
+          IsCyclic = false,
+          ClosestDate = customHeatRequest.Date,
+          HeatTaskId = customHeatRequest.Id
+        };
       }
     }
     else if (customHeatRequest.Date.Day.Equals(DateTime.Now.AddDays(1).Day) ||
@@ -50,19 +71,39 @@ public abstract class HeatingServiceHelper
           !(cyclicHeatTask.Time.TotalSeconds >
             DateTime.Now.TimeOfDay.TotalSeconds))
       {
-        return null;
+        return new CheckClosestDateResult
+        {
+          IsCyclic = false,
+          ClosestDate = null,
+          HeatTaskId = 0
+        };
       }
 
       if (customHeatRequest.Date.TimeOfDay.TotalSeconds >
           cyclicHeatTask.Time.TotalSeconds)
       {
-        return customHeatRequest.Date;
+        return new CheckClosestDateResult
+        {
+          IsCyclic = false,
+          ClosestDate = customHeatRequest.Date,
+          HeatTaskId = customHeatRequest.Id
+        };
       }
 
-      return DateTime.Now.Date + cyclicHeatTask.Time;
+      return new CheckClosestDateResult
+      {
+        IsCyclic = true,
+        ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
+        HeatTaskId = cyclicHeatTask.Id
+      };
     }
 
-    return null;
+    return new CheckClosestDateResult
+    {
+      IsCyclic = false,
+      ClosestDate = null,
+      HeatTaskId = 0
+    };
   }
 
   #region private methods
