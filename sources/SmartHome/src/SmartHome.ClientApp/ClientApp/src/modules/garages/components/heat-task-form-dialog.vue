@@ -132,7 +132,7 @@ const saveHeatRequest = async () => {
             const payload: CustomHeatTaskDto = {
                 id: props.selectedItemId,
                 date: pickedDate.value,
-                active: true,
+                isActive: true,
                 garageId: parseInt(id),
             };
             await GarageClient.editCustomHeatRequest(id, payload);
@@ -152,7 +152,7 @@ const saveHeatRequest = async () => {
                 id: props.selectedItemId,
                 time: inputTime.value + ':00',
                 garageId: Number(id),
-                active: active.value,
+                isActive: active.value,
                 daysInWeekSelected: selectedDays,
             };
             await GarageClient.editCyclicHeatRequest(id, payload);
