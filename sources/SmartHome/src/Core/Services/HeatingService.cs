@@ -163,6 +163,7 @@ public class HeatingService(
         logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
         await heatingLogRepository.AddHeatLog(
           new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
+        garagesHeatersStatuses.Remove(garageHeaterStatus);
         continue;
       }
 
@@ -174,6 +175,7 @@ public class HeatingService(
         logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
         await heatingLogRepository.AddHeatLog(
           new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
+        garagesHeatersStatuses.Remove(garageHeaterStatus);
       }
     }
   }

@@ -42,10 +42,8 @@
 <script setup lang="ts">
 import type { CustomHeatTaskDto, CyclicHeatTaskDto, SetHeatTaskActiveDto } from '@/modules/core/services/api/api.models';
 import HeatTaskFormDialog from './heat-task-form-dialog.vue';
-import { computed, onMounted, ref, type PropType } from 'vue';
+import { computed, ref, type PropType } from 'vue';
 import { GarageClient } from '@/modules/core/services/api-clients/garages-client';
-
-const isActive = ref(false);
 
 const daysInWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
@@ -54,6 +52,8 @@ const emit = defineEmits(['clicked-checkbox', 'updated']);
 const props = defineProps({
     heatTask: { type: Object as PropType<CustomHeatTaskDto | CyclicHeatTaskDto>, required: true },
 });
+
+const isActive = ref(props.heatTask.isActive ?? false);
 
 const isCyclic = computed(() => 'time' in props.heatTask);
 
@@ -98,10 +98,6 @@ const switchTaskStatus = async (val: boolean) => {
     }
     await GarageClient.changeStatusOfHeatTask(payload);
 };
-
-onMounted(() => {
-    isActive.value = props.heatTask.active;
-})
 </script>
 <style lang="scss">
 .heat-task-container {

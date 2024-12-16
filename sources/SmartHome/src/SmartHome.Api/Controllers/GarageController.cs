@@ -99,7 +99,7 @@ public class GarageController(
     return Ok(temperatures);
   }
 
-  [HttpGet("{id:int}/cyclic-geat-tasks")]
+  [HttpGet("{id:int}/cyclic-heat-tasks")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
   public async Task<ActionResult<ICollection<CyclicHeatTaskDto>>> GetCyclicHeatTimes(int id, CancellationToken ct)

@@ -10,13 +10,12 @@ export interface GarageDetailsDto {
 export interface HeatTaskBase {
     id: number;
     garageId: number;
-    active: boolean;
+    isActive: boolean;
 }
 
 export interface CyclicHeatTaskDto extends HeatTaskBase {
     time: string;
     daysInWeekSelected: number[];
-    active: boolean;
 }
 
 export interface CustomHeatTaskDto extends HeatTaskBase {
