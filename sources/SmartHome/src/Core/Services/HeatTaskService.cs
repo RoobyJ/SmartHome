@@ -60,7 +60,7 @@ public class HeatTaskService(
   {
     var cyclicHeatTask = await cyclicHeatTaskRepository.GetCyclicHeatTask(task.Id, ct);
     await cyclicHeatTaskDayRepository.DeleteCyclicHeatTaskDays(cyclicHeatTask.CyclicHeatTaskDays, ct);
-
+    cyclicHeatTaskRepository.ClearTrackedEntities();
     var entity = new CyclicHeatTask
     {
       Id = task.Id,

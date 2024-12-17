@@ -51,4 +51,9 @@ internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicH
     entity.Active = active;
     await dbContext.SaveChangesAsync(ct);
   }
+
+  public void ClearTrackedEntities()
+  {
+    dbContext.ChangeTracker.Clear();
+  }
 }

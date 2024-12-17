@@ -16,4 +16,5 @@ public interface ICyclicHeatTaskRepository
 
   Task DeleteCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default);
   Task SetHeatTaskActive(int id, bool active, CancellationToken ct = default);
+  void ClearTrackedEntities();
 }

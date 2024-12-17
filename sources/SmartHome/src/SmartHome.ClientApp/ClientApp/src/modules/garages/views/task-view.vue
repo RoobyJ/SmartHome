@@ -97,11 +97,7 @@ const deleteTasks = async () => {
     });
 
     showNotification.value = true;
-    cyclicItems.value = cyclicItems.value?.filter(i => selectedTasksIds.value.find(x => x.id !== i.id)) ?? [];
-    customItems.value = customItems.value?.filter(i => selectedTasksIds.value.find(x => x.id !== i.id)) ?? [];
-
     selectedTasksIds.value = [];
-
     await loadItems();
 };
 
