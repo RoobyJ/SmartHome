@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Dtos;
 using Core.Models;
 
@@ -12,13 +13,13 @@ public class StartHeatingTimeCalculator
   {
     List<GarageStartHeatTime> listOfGarageStartHeatTimes = new();
 
-    for (var i = 0; i < listOfGarageEndHeatTimes.Count; i++)
+    foreach (var garageEndHeatTime in listOfGarageEndHeatTimes)
     {
-      var heatTime = listOfGarageEndHeatTimes[i].HeatTime;
+      var heatTime = garageEndHeatTime.HeatTime;
       if (heatTime != null)
       {
-        var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay,
-          listOfGarageTemperatureDtos[i].Temperature);
+        var garageTemperatureDto = listOfGarageTemperatureDtos.FirstOrDefault(x => x.Id == garageEndHeatTime.Id);
+        var startHeatTime = TimeToStartHeating(heatTime.Value.TimeOfDay, garageTemperatureDto?.Temperature);
         if (startHeatTime == null)
         {
           continue;
@@ -29,10 +30,10 @@ public class StartHeatingTimeCalculator
           : heatTime.Value.Date + startHeatTime;
         listOfGarageStartHeatTimes.Add(new GarageStartHeatTime
         {
-          GarageId = i + 1,
+          GarageId = garageEndHeatTime.Id,
           StartHeatTime = startHeatingDate,
-          IsCyclic = listOfGarageEndHeatTimes[i].IsCyclic,
-          HeatTaskId = listOfGarageEndHeatTimes[i].HeatTaskId
+          IsCyclic = garageEndHeatTime.IsCyclic,
+          HeatTaskId = garageEndHeatTime.HeatTaskId
         });
       }
     }
@@ -45,14 +46,14 @@ public class StartHeatingTimeCalculator
     return 10 * (5 * (1 + 5 * Math.Pow(Math.E, (-0.02 * temp))) - 11) * 0.37;
   }
 
-  private static TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float temp)
+  private static TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float? temp)
   {
-    if (endHeatTime == null)
+    if (endHeatTime == null || temp == null)
     {
       return null;
     }
 
-    var offsetTimeSpan = TimeSpan.FromMinutes(CalculateOnHeatTime(temp));
+    var offsetTimeSpan = TimeSpan.FromMinutes(CalculateOnHeatTime(temp.Value));
     return endHeatTime.Value.Subtract(offsetTimeSpan);
   }
 }

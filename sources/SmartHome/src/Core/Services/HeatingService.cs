@@ -58,7 +58,7 @@ public class HeatingService(
 
   private async Task<List<GarageHeatingTime>> FindClosestHeatTime(List<Garage> garages, CancellationToken ct)
   {
-    List<GarageHeatingTime> garagesClosestHeatingTimes = new();
+    List<GarageHeatingTime> garagesClosestHeatingTimes = [];
     foreach (var garage in garages)
     {
       var customHeatRequests = await heatTaskRepository.GetActiveHeatTasks(garage.Id, ct);
@@ -125,16 +125,16 @@ public class HeatingService(
     List<GarageTemperatureDto> listOfGarageTemperatureDtos = [];
     List<OutsideTemperature> temperatures = [];
 
-    for (var i = 0; i < garages.Count; i++)
+    foreach (var garage in garages)
     {
-      var response = await garageClient.GetGarageTemperature(garages[i].Ip, ct);
+      var response = await garageClient.GetGarageTemperature(garage.Ip, ct);
       if (response == null)
       {
         continue;
       }
 
-      listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = i + 1, Temperature = response.Temperature });
-      var entity = new OutsideTemperature { Date = DateTime.Now, Temperature = response.Temperature, GarageId = i + 1 };
+      listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = garage.Id, Temperature = response.Temperature });
+      var entity = new OutsideTemperature { Date = DateTime.Now, Temperature = response.Temperature, GarageId = garage.Id };
       temperatures.Add(entity);
     }
 
