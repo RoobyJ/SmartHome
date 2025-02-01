@@ -19,7 +19,6 @@ public class HeatingService(
   IHeatTaskRepository heatTaskRepository,
   ICyclicHeatTaskRepository cyclicHeatTaskRepository,
   IOutsideTemperatureRepository outsideTemperatureRepository,
-  IHeatingLogRepository heatingLogRepository,
   IGarageClient garageClient)
   : IHeatingService
 {
@@ -32,20 +31,18 @@ public class HeatingService(
     {
       var garages = (await garageRepository.GetGarages(ct)).ToList();
 
-      await InitGarageHeatersStatuses(garages, ct);
-
 
       var closestHeatTimes = await FindClosestHeatTime(garages, ct);
 
 
-      CheckIfShouldBeOff(closestHeatTimes, garages, ct);
+      //(closestHeatTimes, garages, ct);
 
       var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
         StartHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
 
-      SetOnHeaters(listOfStartHeatTimes, garages, ct);
+      //SetOnHeaters(listOfStartHeatTimes, garages, ct);
     }
 #pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)
@@ -143,108 +140,86 @@ public class HeatingService(
     return listOfGarageTemperatureDtos;
   }
 
-  private async void CheckIfShouldBeOff(List<GarageHeatingTime> todayHeatTimes, List<Garage> garages,
-    CancellationToken ct)
-  {
-    foreach (var heatTime in todayHeatTimes)
-    {
-      var garage = garages.Find(i => i.Id == heatTime.Id);
-      var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == heatTime.Id);
-
-      if (garage == null || garageHeaterStatus == null)
-      {
-        throw new Exception("Garage or garage heater status not found");
-      }
-
-      if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
-      {
-        await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
-        garageHeaterStatus.HeatingStatus = false;
-        logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-        await heatingLogRepository.AddHeatLog(
-          new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
-        garagesHeatersStatuses.Remove(garageHeaterStatus);
-        continue;
-      }
-
-      if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime!.Value.TimeOfDay.TotalSeconds &&
-          garageHeaterStatus.HeatingStatus)
-      {
-        await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
-        garageHeaterStatus.HeatingStatus = false;
-        logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-        await heatingLogRepository.AddHeatLog(
-          new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
-        garagesHeatersStatuses.Remove(garageHeaterStatus);
-      }
-    }
-  }
-
-  private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, CancellationToken ct)
-  {
-    foreach (var garageStartHeatTime in startHeatTimes)
-    {
-      if (!garageStartHeatTime.StartHeatTime.HasValue)
-      {
-        continue;
-      }
-
-      if (!DateTime.Now.Date.Equals(garageStartHeatTime.StartHeatTime.Value.Date) ||
-          !(DateTime.Now.TimeOfDay.TotalSeconds > garageStartHeatTime.StartHeatTime.Value.TimeOfDay.TotalSeconds))
-      {
-        continue;
-      }
-
-      var ip = garages.Find(garage => garage.Id == garageStartHeatTime.GarageId)?.Ip;
-
-      if (String.IsNullOrEmpty(ip))
-      {
-        continue;
-      }
-
-      var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == garageStartHeatTime.GarageId);
-      if (garageHeaterStatus is not { HeatingStatus: false })
-      {
-        continue;
-      }
-
-      await garageClient.ChangeHeaterStatus("ON", ip, ct);
-
-      garageHeaterStatus!.HeatingStatus = true;
-      var text = garageStartHeatTime.IsCyclic ? "cyclic" : "";
-      logger.LogInformation(
-        $"Set heater ON in garage {garageStartHeatTime.GarageId} running at: {DateTimeOffset.Now}");
-      await heatingLogRepository.AddHeatLog(
-        new HeatLog
-        {
-          Date = DateTime.UtcNow,
-          Info =
-            $"Starting heating in garage {garageStartHeatTime.GarageId} with {text} heat task id: {garageStartHeatTime.HeatTaskId}"
-        }, ct);
-    }
-  }
-
-  private async Task InitGarageHeatersStatuses(List<Garage> garages, CancellationToken ct)
-  {
-    foreach (var garage in garages)
-    {
-      if (garagesHeatersStatuses.Exists(item => item.Id == garage.Id))
-      {
-        continue;
-      }
-
-      var response = await garageClient.GetHeaterStatus(garage.Ip, ct);
-
-      if (response != null)
-      {
-        garagesHeatersStatuses.Add(new GarageHeaterStatus { Id = garage.Id, HeatingStatus = response.HeatingStatus });
-      }
-      else
-      {
-        await heatingLogRepository.AddHeatLog(new HeatLog { Date = new DateTime(), Info = "No response" }, ct);
-      }
-    }
-  }
+  // private async void CheckIfShouldBeOff(List<GarageHeatingTime> todayHeatTimes, List<Garage> garages,
+  //   CancellationToken ct)
+  // {
+  //   foreach (var heatTime in todayHeatTimes)
+  //   {
+  //     var garage = garages.Find(i => i.Id == heatTime.Id);
+  //     var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == heatTime.Id);
+  //
+  //     if (garage == null || garageHeaterStatus == null)
+  //     {
+  //       throw new Exception("Garage or garage heater status not found");
+  //     }
+  //
+  //     if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
+  //     {
+  //       await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
+  //       garageHeaterStatus.HeatingStatus = false;
+  //       logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
+  //       await heatingLogRepository.AddHeatLog(
+  //         new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
+  //       garagesHeatersStatuses.Remove(garageHeaterStatus);
+  //       continue;
+  //     }
+  //
+  //     if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime!.Value.TimeOfDay.TotalSeconds &&
+  //         garageHeaterStatus.HeatingStatus)
+  //     {
+  //       await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
+  //       garageHeaterStatus.HeatingStatus = false;
+  //       logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
+  //       await heatingLogRepository.AddHeatLog(
+  //         new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
+  //       garagesHeatersStatuses.Remove(garageHeaterStatus);
+  //     }
+  //   }
+  // }
+  //
+  // private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, CancellationToken ct)
+  // {
+  //   foreach (var garageStartHeatTime in startHeatTimes)
+  //   {
+  //     if (!garageStartHeatTime.StartHeatTime.HasValue)
+  //     {
+  //       continue;
+  //     }
+  //
+  //     if (!DateTime.Now.Date.Equals(garageStartHeatTime.StartHeatTime.Value.Date) ||
+  //         !(DateTime.Now.TimeOfDay.TotalSeconds > garageStartHeatTime.StartHeatTime.Value.TimeOfDay.TotalSeconds))
+  //     {
+  //       continue;
+  //     }
+  //
+  //     var ip = garages.Find(garage => garage.Id == garageStartHeatTime.GarageId)?.Ip;
+  //
+  //     if (String.IsNullOrEmpty(ip))
+  //     {
+  //       continue;
+  //     }
+  //
+  //     var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == garageStartHeatTime.GarageId);
+  //     if (garageHeaterStatus is not { HeatingStatus: false })
+  //     {
+  //       continue;
+  //     }
+  //
+  //     await garageClient.ChangeHeaterStatus("ON", ip, ct);
+  //
+  //     garageHeaterStatus!.HeatingStatus = true;
+  //     var text = garageStartHeatTime.IsCyclic ? "cyclic" : "";
+  //     logger.LogInformation(
+  //       $"Set heater ON in garage {garageStartHeatTime.GarageId} running at: {DateTimeOffset.Now}");
+  //     await heatingLogRepository.AddHeatLog(
+  //       new HeatLog
+  //       {
+  //         Date = DateTime.UtcNow,
+  //         Info =
+  //           $"Starting heating in garage {garageStartHeatTime.GarageId} with {text} heat task id: {garageStartHeatTime.HeatTaskId}"
+  //       }, ct);
+  //   }
+  // }
 
   #endregion
 }

@@ -5,7 +5,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public sealed class CyclicHeatTask : IEntity
+public sealed class CyclicHeatTask
 {
   public int GarageId { get; set; }
 

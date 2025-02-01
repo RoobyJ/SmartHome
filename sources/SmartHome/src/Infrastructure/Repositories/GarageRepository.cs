@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
@@ -17,7 +19,19 @@ internal class GarageRepository(SmartHomeDbContext dbContext) : IGarageRepositor
 
   public async Task<ICollection<Garage>> GetGarages(CancellationToken ct)
   {
-    return await dbContext.Garages.ToListAsync(ct);
+    var currentDateTime = DateTime.Now;
+    ICollection<int> currentWeekDays = [(int)currentDateTime.DayOfWeek];
+    if (currentDateTime.DayOfWeek == DayOfWeek.Saturday)
+    {
+      currentWeekDays.Add(0);
+    }
+    else
+    {
+      currentWeekDays.Add((int)currentDateTime.DayOfWeek + 1);
+    }
+    // TODO: get just garages...
+    return await dbContext.Garages.Include(i => i.HeatTasks.Where(x => MinBy(x => currentDateTime - x.Date)))
+      .ToListAsync(ct);
   }
 
   public async Task AddGarage(Garage garage, CancellationToken ct)

@@ -3,7 +3,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public class HeatTask : IEntity
+public class HeatTask
 {
   public DateTime Date { get; set; }
 

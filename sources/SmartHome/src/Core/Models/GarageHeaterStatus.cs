@@ -1,7 +1,9 @@
-﻿namespace SmartHome.Core.Models;
+﻿using System;
+
+namespace Core.Models;
 
 public record GarageHeaterStatus
 {
-  public int Id { get; set; }
-  public bool HeatingStatus { get; set; }
+  public int GarageId { get; set; }
+  public DateTime EndTime { get; set; }
 }

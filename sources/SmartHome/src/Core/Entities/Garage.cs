@@ -3,7 +3,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public class Garage : IEntity
+public class Garage
 {
   public string Name { get; set; } = null!;
 

@@ -4,7 +4,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public class CyclicHeatTaskDay : IEntity
+public class CyclicHeatTaskDay
 {
   public int Day { get; set; }
 

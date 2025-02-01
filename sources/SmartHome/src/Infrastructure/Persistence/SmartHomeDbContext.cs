@@ -79,6 +79,8 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
       entity.HasKey(e => e.Id).HasName("Garage_pkey");
 
       entity.ToTable("Garage", "Garages");
+      entity.Property(e => e.Ip).HasMaxLength(15);
+      entity.Property(e => e.Name).HasMaxLength(256);
     });
 
     modelBuilder.Entity<HeatLog>(entity =>
