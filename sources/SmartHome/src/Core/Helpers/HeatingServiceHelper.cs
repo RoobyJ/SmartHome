@@ -7,18 +7,18 @@ namespace Core.Helpers;
 
 public abstract class HeatingServiceHelper
 {
-  public static CheckClosestDateResult CheckWhichIsCloser(CyclicHeatTask cyclicHeatTask, HeatTask customHeatRequest)
+  public static CheckClosestDateResult CheckWhichIsCloser(CyclicHeatTaskEntity cyclicHeatTaskEntity, HeatTaskEntity customHeatRequest)
   {
     var todayDay = (int)DateTime.Today.DayOfWeek + 1;
 
     if (customHeatRequest.Date.Date.Day.Equals(DateTime.Now.Day) &&
-        cyclicHeatTask.CyclicHeatTaskDays.FirstOrDefault(i => i.Day == todayDay) != null)
+        cyclicHeatTaskEntity.CyclicHeatTaskDays.FirstOrDefault(i => i.Day == todayDay) != null)
     {
       // Check for today comparison
       if (customHeatRequest.Date.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds &&
-          cyclicHeatTask.Time.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
+          cyclicHeatTaskEntity.Time.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds)
       {
-        if (customHeatRequest.Date.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
+        if (customHeatRequest.Date.TimeOfDay.TotalSeconds < cyclicHeatTaskEntity.Time.TotalSeconds)
         {
           return new CheckClosestDateResult
           {
@@ -31,8 +31,8 @@ public abstract class HeatingServiceHelper
         return new CheckClosestDateResult
         {
           IsCyclic = true,
-          ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
-          HeatTaskId = cyclicHeatTask.Id
+          ClosestDate = DateTime.Now.Date + cyclicHeatTaskEntity.Time,
+          HeatTaskId = cyclicHeatTaskEntity.Id
         };
       }
     }
@@ -40,13 +40,13 @@ public abstract class HeatingServiceHelper
             )
     {
       // today
-      if (DateTime.Now.TimeOfDay.TotalSeconds < cyclicHeatTask.Time.TotalSeconds)
+      if (DateTime.Now.TimeOfDay.TotalSeconds < cyclicHeatTaskEntity.Time.TotalSeconds)
       {
         return new CheckClosestDateResult
         {
           IsCyclic = true,
-          ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
-          HeatTaskId = cyclicHeatTask.Id
+          ClosestDate = DateTime.Now.Date + cyclicHeatTaskEntity.Time,
+          HeatTaskId = cyclicHeatTaskEntity.Id
         };
       }
     }
@@ -64,11 +64,11 @@ public abstract class HeatingServiceHelper
       }
     }
     else if (customHeatRequest.Date.Day.Equals(DateTime.Now.AddDays(1).Day) ||
-             CheckIfNextDayIsHeatTask(cyclicHeatTask, todayDay))
+             CheckIfNextDayIsHeatTask(cyclicHeatTaskEntity, todayDay))
     {
       // Check for tomorrow
       if (!(customHeatRequest.Date.TimeOfDay.TotalSeconds > DateTime.Now.TimeOfDay.TotalSeconds) ||
-          !(cyclicHeatTask.Time.TotalSeconds >
+          !(cyclicHeatTaskEntity.Time.TotalSeconds >
             DateTime.Now.TimeOfDay.TotalSeconds))
       {
         return new CheckClosestDateResult
@@ -80,7 +80,7 @@ public abstract class HeatingServiceHelper
       }
 
       if (customHeatRequest.Date.TimeOfDay.TotalSeconds >
-          cyclicHeatTask.Time.TotalSeconds)
+          cyclicHeatTaskEntity.Time.TotalSeconds)
       {
         return new CheckClosestDateResult
         {
@@ -93,8 +93,8 @@ public abstract class HeatingServiceHelper
       return new CheckClosestDateResult
       {
         IsCyclic = true,
-        ClosestDate = DateTime.Now.Date + cyclicHeatTask.Time,
-        HeatTaskId = cyclicHeatTask.Id
+        ClosestDate = DateTime.Now.Date + cyclicHeatTaskEntity.Time,
+        HeatTaskId = cyclicHeatTaskEntity.Id
       };
     }
 
@@ -108,9 +108,9 @@ public abstract class HeatingServiceHelper
 
   #region private methods
 
-  private static bool CheckIfNextDayIsHeatTask(CyclicHeatTask cyclicHeatTask, int todayDay)
+  private static bool CheckIfNextDayIsHeatTask(CyclicHeatTaskEntity cyclicHeatTaskEntity, int todayDay)
   {
-    return cyclicHeatTask.CyclicHeatTaskDays.FirstOrDefault(i =>
+    return cyclicHeatTaskEntity.CyclicHeatTaskDays.FirstOrDefault(i =>
       todayDay == 6 ? i.Day == 0 : i.Day == todayDay + 1) != null;
   }
 

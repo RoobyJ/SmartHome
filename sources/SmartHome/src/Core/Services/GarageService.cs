@@ -30,12 +30,12 @@ public class GarageService(
     return result;
   }
 
-  public async Task<ICollection<OutsideTemperature>> GetTemperatures(int id, int days, CancellationToken ct)
+  public async Task<ICollection<OutsideTemperatureEntity>> GetTemperatures(int id, int days, CancellationToken ct)
   {
     return await outsideTemperatureRepository.GetTemperatures(id, days, ct);
   }
 
-  public async Task<Garage?> GetGarageById(int id, CancellationToken ct)
+  public async Task<GarageEntity?> GetGarageById(int id, CancellationToken ct)
   {
     return await garageRepository.GetGarage(id, ct);
   }

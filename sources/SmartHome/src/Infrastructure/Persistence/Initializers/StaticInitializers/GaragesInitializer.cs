@@ -7,7 +7,7 @@ internal static class GaragesInitializer
 {
   public static ModelBuilder SeedGarages(this ModelBuilder builder)
   {
-    builder.Entity<Garage>().HasData(Garages.GarageRobert);
+    builder.Entity<GarageEntity>().HasData(Garages.GarageEntityRobert);
 
     return builder;
   }
@@ -16,7 +16,7 @@ internal static class GaragesInitializer
 
   private static class Garages
   {
-    public static Garage GarageRobert => new() { Id = 1, Name = "Garage Robert", Ip = "192.168.5.142" };
+    public static GarageEntity GarageEntityRobert => new() { Id = 1, Name = "Garage Robert", Ip = "192.168.5.142" };
   }
 
   #endregion

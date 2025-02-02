@@ -7,5 +7,5 @@ namespace Core.Common.Repositories;
 
 public interface ICyclicHeatTaskDayRepository
 {
-  Task DeleteCyclicHeatTaskDays(ICollection<CyclicHeatTaskDay> entities, CancellationToken ct);
+  Task DeleteCyclicHeatTaskDays(ICollection<CyclicHeatTaskDayEntity> entities, CancellationToken ct);
 }

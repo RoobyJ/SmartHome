@@ -12,13 +12,13 @@ namespace Infrastructure.Repositories;
 
 internal class OutsideTemperaturesRepository(SmartHomeDbContext dbContext) : IOutsideTemperatureRepository
 {
-  public async Task<ICollection<OutsideTemperature>> GetTemperatures(int garageId, int days, CancellationToken ct)
+  public async Task<ICollection<OutsideTemperatureEntity>> GetTemperatures(int garageId, int days, CancellationToken ct)
   {
     return await dbContext.OutsideTemperatures
       .Where(i => i.GarageId == garageId && i.Date.Ticks > new DateTime().AddDays(-days).Ticks).ToListAsync(ct);
   }
 
-  public async Task AddTemperatures(ICollection<OutsideTemperature> temperatures, CancellationToken ct)
+  public async Task AddTemperatures(ICollection<OutsideTemperatureEntity> temperatures, CancellationToken ct)
   {
     await dbContext.OutsideTemperatures.AddRangeAsync(temperatures, ct);
     await dbContext.SaveChangesAsync(ct);

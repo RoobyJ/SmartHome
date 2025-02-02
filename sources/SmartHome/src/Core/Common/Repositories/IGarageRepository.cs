@@ -7,7 +7,8 @@ namespace Core.Common.Repositories;
 
 public interface IGarageRepository
 {
-  Task<Garage?> GetGarage(int garageId, CancellationToken ct);
-  Task<ICollection<Garage>> GetGarages(CancellationToken ct);
-  Task AddGarage(Garage garage, CancellationToken cancellationToken);
+  Task<GarageEntity?> GetGarage(int garageId, CancellationToken ct);
+  Task<ICollection<GarageEntity>> GetGarages(CancellationToken ct);
+  Task AddGarage(GarageEntity garageEntity, CancellationToken cancellationToken);
+  Task<IEnumerable<string>> GetGaragesIpsByIds(IEnumerable<int> garages, CancellationToken ct);
 }

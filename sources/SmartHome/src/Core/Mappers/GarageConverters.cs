@@ -6,33 +6,33 @@ namespace Core.Mappers;
 
 public static class GarageConverters
 {
-  public static CyclicHeatTaskDto CyclicHeatTaskToDto(this CyclicHeatTask heatTask)
+  public static CyclicHeatTaskDto CyclicHeatTaskToDto(this CyclicHeatTaskEntity heatTaskEntity)
   {
     return new CyclicHeatTaskDto
     {
-      Id = heatTask.Id,
-      Time = heatTask.Time.ToString(),
-      DaysInWeekSelected = heatTask.CyclicHeatTaskDays.Select(i => i.Day).ToList(),
-      IsActive = heatTask.Active,
-      GarageId = heatTask.GarageId
+      Id = heatTaskEntity.Id,
+      Time = heatTaskEntity.Time.ToString(),
+      DaysInWeekSelected = heatTaskEntity.CyclicHeatTaskDays.Select(i => i.Day).ToList(),
+      IsActive = heatTaskEntity.Active,
+      GarageId = heatTaskEntity.GarageId
     };
   }
 
-  public static HeatTaskDto HeatTaskToDto(this HeatTask heatTask)
+  public static HeatTaskDto HeatTaskToDto(this HeatTaskEntity heatTaskEntity)
   {
     return new HeatTaskDto
     {
-      Id = heatTask.Id, GarageId = heatTask.GarageId, IsActive = heatTask.Active, Date = heatTask.Date,
+      Id = heatTaskEntity.Id, GarageId = heatTaskEntity.GarageId, IsActive = heatTaskEntity.Active, Date = heatTaskEntity.Date,
     };
   }
 
-  public static GarageDetailsDto GarageToGarageDetailsDto(this Garage garage,
+  public static GarageDetailsDto GarageToGarageDetailsDto(this GarageEntity garageEntity,
     GarageHeaterStatusDto? heaterStatusResponse, TemperatureDto? temperatureResponse)
   {
     return new GarageDetailsDto
     {
-      Id = garage.Id,
-      Name = garage.Name,
+      Id = garageEntity.Id,
+      Name = garageEntity.Name,
       HeaterStatus = heaterStatusResponse?.HeatingStatus,
       Temperature = temperatureResponse?.Temperature,
     };

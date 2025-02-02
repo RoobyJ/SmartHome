@@ -12,31 +12,24 @@ namespace Infrastructure.Repositories;
 
 internal class GarageRepository(SmartHomeDbContext dbContext) : IGarageRepository
 {
-  public async Task<Garage?> GetGarage(int garageId, CancellationToken ct)
+  public async Task<GarageEntity?> GetGarage(int garageId, CancellationToken ct)
   {
     return await dbContext.Garages.FirstOrDefaultAsync(i => i.Id == garageId, ct);
   }
 
-  public async Task<ICollection<Garage>> GetGarages(CancellationToken ct)
+  public async Task<ICollection<GarageEntity>> GetGarages(CancellationToken ct)
   {
-    var currentDateTime = DateTime.Now;
-    ICollection<int> currentWeekDays = [(int)currentDateTime.DayOfWeek];
-    if (currentDateTime.DayOfWeek == DayOfWeek.Saturday)
-    {
-      currentWeekDays.Add(0);
-    }
-    else
-    {
-      currentWeekDays.Add((int)currentDateTime.DayOfWeek + 1);
-    }
-    // TODO: get just garages...
-    return await dbContext.Garages.Include(i => i.HeatTasks.Where(x => MinBy(x => currentDateTime - x.Date)))
-      .ToListAsync(ct);
+    return await dbContext.Garages.ToListAsync(ct);
   }
 
-  public async Task AddGarage(Garage garage, CancellationToken ct)
+  public async Task AddGarage(GarageEntity garageEntity, CancellationToken ct)
   {
-    await dbContext.Garages.AddAsync(garage, ct);
+    await dbContext.Garages.AddAsync(garageEntity, ct);
     await dbContext.SaveChangesAsync(ct);
+  }
+
+  public async Task<IEnumerable<string>> GetGaragesIpsByIds(IEnumerable<int> garagesIds, CancellationToken ct)
+  {
+    return await dbContext.Garages.Where(i => garagesIds.Contains(i.Id)).Select(i => i.Ip).ToListAsync(ct);
   }
 }

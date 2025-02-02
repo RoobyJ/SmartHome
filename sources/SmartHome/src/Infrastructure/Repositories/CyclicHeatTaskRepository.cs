@@ -11,35 +11,35 @@ namespace Infrastructure.Repositories;
 
 internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicHeatTaskRepository
 {
-  public async Task<ICollection<CyclicHeatTask>> GetCyclicHeatTasks(int garageId, CancellationToken ct)
+  public async Task<ICollection<CyclicHeatTaskEntity>> GetCyclicHeatTasks(int garageId, CancellationToken ct)
   {
     return await dbContext.CyclicHeatTasks.Include(i => i.CyclicHeatTaskDays).Where(i => i.GarageId == garageId)
       .ToListAsync(ct);
   }
 
-  public async Task<CyclicHeatTask> GetCyclicHeatTask(int id, CancellationToken ct)
+  public async Task<CyclicHeatTaskEntity> GetCyclicHeatTask(int id, CancellationToken ct)
   {
     return await dbContext.CyclicHeatTasks.FirstAsync(i => i.Id == id, ct);
   }
 
-  public async Task<ICollection<CyclicHeatTask>> GetActiveCyclicHeatTasks(int garageId, CancellationToken ct)
+  public async Task<ICollection<CyclicHeatTaskEntity>> GetActiveCyclicHeatTasks(int garageId, CancellationToken ct)
   {
     return await dbContext.CyclicHeatTasks.Where(i => i.GarageId == garageId && i.Active).ToListAsync(ct);
   }
 
-  public async Task AddCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  public async Task AddCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default)
   {
     await dbContext.CyclicHeatTasks.AddAsync(entity, ct);
     await dbContext.SaveChangesAsync(ct);
   }
 
-  public async Task UpdateCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  public async Task UpdateCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default)
   {
     dbContext.CyclicHeatTasks.Update(entity);
     await dbContext.SaveChangesAsync(ct);
   }
 
-  public async Task DeleteCyclicHeatTask(CyclicHeatTask entity, CancellationToken ct = default)
+  public async Task DeleteCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default)
   {
     dbContext.CyclicHeatTasks.Remove(entity);
     await dbContext.SaveChangesAsync(ct);

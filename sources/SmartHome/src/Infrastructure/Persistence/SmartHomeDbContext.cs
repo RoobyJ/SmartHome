@@ -13,17 +13,17 @@ namespace Infrastructure.Persistence;
 public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> options) : DbContext(options), IUnitOfWork
 {
   private IDbContextTransaction? dbContextTransaction;
-  public virtual DbSet<CyclicHeatTask> CyclicHeatTasks { get; init; } = null!;
+  public virtual DbSet<CyclicHeatTaskEntity> CyclicHeatTasks { get; init; } = null!;
 
-  public virtual DbSet<CyclicHeatTaskDay> CyclicHeatTaskDays { get; init; } = null!;
+  public virtual DbSet<CyclicHeatTaskDayEntity> CyclicHeatTaskDays { get; init; } = null!;
 
-  public virtual DbSet<Garage> Garages { get; init; } = null!;
+  public virtual DbSet<GarageEntity> Garages { get; init; } = null!;
 
-  public virtual DbSet<HeatLog> HeatLogs { get; init; } = null!;
+  public virtual DbSet<HeatLogEntity> HeatLogs { get; init; } = null!;
 
-  public virtual DbSet<HeatTask> HeatTasks { get; init; } = null!;
+  public virtual DbSet<HeatTaskEntity> HeatTasks { get; init; } = null!;
 
-  public virtual DbSet<OutsideTemperature> OutsideTemperatures { get; init; } = null!;
+  public virtual DbSet<OutsideTemperatureEntity> OutsideTemperatures { get; init; } = null!;
 
 
   public async Task<IDisposable> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
@@ -45,7 +45,7 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
-    modelBuilder.Entity<CyclicHeatTask>(entity =>
+    modelBuilder.Entity<CyclicHeatTaskEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("CyclicHeatTask_pkey");
 
@@ -53,13 +53,13 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
       entity.HasIndex(e => e.GarageId, "IX_CyclicHeatTask_GarageId");
 
-      entity.HasOne(d => d.Garage).WithMany(p => p.CyclicHeatTasks)
+      entity.HasOne(d => d.GarageEntity).WithMany(p => p.CyclicHeatTasks)
         .HasForeignKey(d => d.GarageId)
         .OnDelete(DeleteBehavior.ClientSetNull)
         .HasConstraintName("GarageId");
     });
 
-    modelBuilder.Entity<CyclicHeatTaskDay>(entity =>
+    modelBuilder.Entity<CyclicHeatTaskDayEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("CyclicHeatTaskDaysInWeek_pkey");
 
@@ -69,12 +69,12 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
       entity.HasIndex(e => e.Day, "IX_CyclicHeatTaskDaysInWeek_DayId");
 
-      entity.HasOne(d => d.CyclicHeatTask).WithMany(p => p.CyclicHeatTaskDays)
+      entity.HasOne(d => d.CyclicHeatTaskEntity).WithMany(p => p.CyclicHeatTaskDays)
         .HasForeignKey(d => d.CyclicHeatTaskId)
         .HasConstraintName("CyclicHeatTaskId");
     });
 
-    modelBuilder.Entity<Garage>(entity =>
+    modelBuilder.Entity<GarageEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("Garage_pkey");
 
@@ -83,14 +83,14 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
       entity.Property(e => e.Name).HasMaxLength(256);
     });
 
-    modelBuilder.Entity<HeatLog>(entity =>
+    modelBuilder.Entity<HeatLogEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("HeatLog_pkey");
 
       entity.ToTable("HeatLog", "Garages");
     });
 
-    modelBuilder.Entity<HeatTask>(entity =>
+    modelBuilder.Entity<HeatTaskEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("HeatTask_pkey");
 
@@ -98,13 +98,13 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
       entity.HasIndex(e => e.GarageId, "IX_HeatTask_GarageId");
 
-      entity.HasOne(d => d.Garage).WithMany(p => p.HeatTasks)
+      entity.HasOne(d => d.GarageEntity).WithMany(p => p.HeatTasks)
         .HasForeignKey(d => d.GarageId)
         .OnDelete(DeleteBehavior.ClientSetNull)
         .HasConstraintName("GarageId");
     });
 
-    modelBuilder.Entity<OutsideTemperature>(entity =>
+    modelBuilder.Entity<OutsideTemperatureEntity>(entity =>
     {
       entity.HasKey(e => e.Id).HasName("OutsideTemperature_pkey");
 
@@ -112,7 +112,7 @@ public partial class SmartHomeDbContext(DbContextOptions<SmartHomeDbContext> opt
 
       entity.HasIndex(e => e.GarageId, "IX_OutsideTemperature_GarageId");
 
-      entity.HasOne(d => d.Garage).WithMany(p => p.OutsideTemperatures)
+      entity.HasOne(d => d.GarageEntity).WithMany(p => p.OutsideTemperatures)
         .HasForeignKey(d => d.GarageId)
         .OnDelete(DeleteBehavior.ClientSetNull)
         .HasConstraintName("GarageId");

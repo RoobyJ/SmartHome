@@ -11,8 +11,8 @@ public class TestingDataWhichIsCloser
 {
   public DateTime ExampleBase { get; init; }
   public DateTime ExpectedResult { get; set; }
-  public HeatTask CustomHeatTask { get; init; }
-  public CyclicHeatTask CyclicHeatTask { get; set; }
+  public HeatTaskEntity CustomHeatTaskEntity { get; init; }
+  public CyclicHeatTaskEntity CyclicHeatTaskEntity { get; set; }
 }
 
 public class HeatingServiceTests
@@ -22,18 +22,18 @@ public class HeatingServiceTests
   {
     var exampleBase = DateTime.Now;
     var expectedResult = exampleBase.AddHours(1);
-    var cyclicHeatTask = new CyclicHeatTask
+    var cyclicHeatTask = new CyclicHeatTaskEntity
     {
       Id = 1,
       Time = DateTime.Now.AddHours(1).TimeOfDay,
       GarageId = 1,
-      CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
+      CyclicHeatTaskDays = new List<CyclicHeatTaskDayEntity>
       {
         new() { Id = 1, CyclicHeatTaskId = 1, Day = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, Day = 1 }
       }
     };
 
-    var customHeatRequest = new HeatTask { Id = 1, Date = expectedResult, GarageId = 1 };
+    var customHeatRequest = new HeatTaskEntity { Id = 1, Date = expectedResult, GarageId = 1 };
     var result = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest
     );
 
@@ -46,7 +46,7 @@ public class HeatingServiceTests
     var testingData = GetTestingDataForFindingWhichIsCloser(1, 26);
 
 
-    var result = HeatingServiceHelper.CheckWhichIsCloser(testingData.CyclicHeatTask, testingData.CustomHeatTask
+    var result = HeatingServiceHelper.CheckWhichIsCloser(testingData.CyclicHeatTaskEntity, testingData.CustomHeatTaskEntity
     );
 
     Assert.False(result.Equals(testingData.ExpectedResult));
@@ -56,13 +56,13 @@ public class HeatingServiceTests
   public void Check_For_CyclicHeatTask_OnDifferentDayRequests()
   {
     // Arange
-    var task = new CyclicHeatTask
+    var task = new CyclicHeatTaskEntity
     {
       Id = 1,
       GarageId = 1,
       Time = new TimeSpan(12, 0, 0),
       Active = true,
-      CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
+      CyclicHeatTaskDays = new List<CyclicHeatTaskDayEntity>
       {
         new() { Id = 1, CyclicHeatTaskId = 1, Day = (int)DateTime.Now.DayOfWeek + 3 }
       }
@@ -111,14 +111,14 @@ public class HeatingServiceTests
     {
       ExampleBase = DateTime.Now,
       ExpectedResult = DateTime.Now.AddHours(extraHoursExpected),
-      CustomHeatTask =
-        new HeatTask { Id = 1, Date = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
-      CyclicHeatTask = new CyclicHeatTask
+      CustomHeatTaskEntity =
+        new HeatTaskEntity { Id = 1, Date = DateTime.Now.AddHours(extraHoursExpected), GarageId = 1 },
+      CyclicHeatTaskEntity = new CyclicHeatTaskEntity
       {
         Id = 1,
         Time = DateTime.Now.AddHours(extraHoursCyclic).TimeOfDay,
         GarageId = 1,
-        CyclicHeatTaskDays = new List<CyclicHeatTaskDay>
+        CyclicHeatTaskDays = new List<CyclicHeatTaskDayEntity>
         {
           new() { Id = 1, CyclicHeatTaskId = 1, Day = 0 }, new() { Id = 1, CyclicHeatTaskId = 1, Day = 1 }
         }

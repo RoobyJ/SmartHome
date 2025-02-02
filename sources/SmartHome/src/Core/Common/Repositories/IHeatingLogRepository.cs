@@ -7,7 +7,7 @@ namespace Core.Common.Repositories;
 
 public interface IHeatingLogRepository
 {
-  Task<ICollection<HeatLog>> GetHeatLogs(CancellationToken ct);
+  Task<ICollection<HeatLogEntity>> GetHeatLogs(CancellationToken ct);
 
-  Task AddHeatLog(HeatLog heatLog, CancellationToken ct);
+  Task AddHeatLog(HeatLogEntity heatLogEntity, CancellationToken ct);
 }
