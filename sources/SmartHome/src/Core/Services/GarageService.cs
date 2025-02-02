@@ -24,7 +24,7 @@ public class GarageService(
     {
       var heaterStatus = await garageClient.GetHeaterStatus(garage.Ip, ct);
       var temperature = await garageClient.GetGarageTemperature(garage.Ip, ct);
-      result.Add(GarageConverters.GarageToGarageDetailsDto(garage, heaterStatus, temperature));
+      result.Add(garage.GarageToGarageDetailsDto(heaterStatus, temperature));
     }
 
     return result;

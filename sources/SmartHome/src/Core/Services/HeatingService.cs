@@ -8,6 +8,7 @@ using Core.Dtos;
 using Core.Entities;
 using Core.Helpers;
 using Core.Interfaces;
+using Core.Mappers;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SmartHome.Core.Models;
@@ -37,15 +38,12 @@ public class HeatingService(
 
       var closestHeatTimes = await FindClosestHeatTime(garages, ct);
 
-
-      //(closestHeatTimes, garages, ct);
-
       var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
         StartHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
 
-      //SetOnHeaters(listOfStartHeatTimes, garages, ct);
+      this.SetOnHeaters(listOfStartHeatTimes, garages, ct);
     }
 #pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)
@@ -75,75 +73,52 @@ public class HeatingService(
     }
   }
 
-  private async Task<List<GarageHeatingTime>> FindClosestHeatTime(List<GarageEntity> garages, CancellationToken ct)
+  private async Task<List<HeatTask>> FindClosestHeatTime(List<GarageEntity> garages, CancellationToken ct)
   {
-    List<GarageHeatingTime> garagesClosestHeatingTimes = [];
+    List<HeatTask> garagesClosestHeatTasks = [];
     foreach (var garage in garages)
     {
+      HeatTask? closestHeatTask = null;
       var customHeatRequest = heatTaskRepository.GetClosestActiveHeatTaskForGarageId(garage.Id);
 
       if (customHeatRequest == null)
       {
         logger.LogInformation($"No custom heat requests found for garage  {garage.Name} with id: {garage.Id}.");
       }
+      else
+      {
+        closestHeatTask = customHeatRequest.ToHeatTask();
+      }
+
 
       var cyclicHeatTasks = await cyclicHeatTaskRepository.GetActiveCyclicHeatTasks(garage.Id, ct);
 
+      if (cyclicHeatTasks.Count == 0)
+      {
+        logger.LogInformation($"No cyclic heat requests found for garage  {garage.Name} with id: {garage.Id}.");
+      }
+
       var closestCyclicHeatTask = this.GetClosestCyclicHeatTask(cyclicHeatTasks);
+
+      if (closestHeatTask == null)
+      {
+        closestHeatTask = closestCyclicHeatTask;
+      }
+
       if (closestCyclicHeatTask != null && customHeatRequest != null)
       {
-        if (customHeatRequest.Date - dateTimeProvider.Now <
-            closestCyclicHeatTask.StartTime - dateTimeProvider.Now)
+        if (customHeatRequest.Date - dateTimeProvider.Now >
+            closestCyclicHeatTask.EndTime - dateTimeProvider.Now)
         {
-          
-        }
-  
-      }
-      
-      DateTime? closestDateTime = null;
-      var isCyclic = false;
-      var heatTaskId = 0;
-
-      foreach (var cyclicHeatTask in cyclicHeatTasks)
-      {
-        DateTime? result;
-
-        if (customHeatRequest != null)
-        {
-          var checkResult = HeatingServiceHelper.CheckWhichIsCloser(cyclicHeatTask, customHeatRequest);
-          result = checkResult.ClosestDate;
-          isCyclic = checkResult.IsCyclic;
-          heatTaskId = checkResult.HeatTaskId;
-        }
-        else
-        {
-          result = cyclicHeatTask.GetClosestDateTimeFromCyclicHeatTask();
-          isCyclic = true;
-          heatTaskId = cyclicHeatTask.Id;
-        }
-
-        if (closestDateTime == null)
-        {
-          closestDateTime = result;
-          continue;
-        }
-
-        if (result.HasValue && closestDateTime.Value.Second > result.Value.Second)
-        {
-          closestDateTime = result;
+          closestHeatTask = closestCyclicHeatTask;
         }
       }
 
-      if (closestDateTime != null)
-      {
-        garagesClosestHeatingTimes.Add(new GarageHeatingTime
-        {
-          Id = garage.Id, HeatTime = closestDateTime, HeatTaskId = heatTaskId, IsCyclic = isCyclic
-        });
-      }
+      if (closestHeatTask == null) continue;
+      garagesClosestHeatTasks.Add(closestHeatTask);
     }
 
-    return garagesClosestHeatingTimes;
+    return garagesClosestHeatTasks;
   }
 
   private HeatTask? GetClosestCyclicHeatTask(IEnumerable<CyclicHeatTaskEntity> cyclicHeatTasks)
@@ -156,20 +131,17 @@ public class HeatingService(
       {
         if (closestHeatTask == null)
         {
-          closestHeatTask = new HeatTask
-          {
-            Id = item.Id, StartTime = DateTimeHelpers.GetDateTimeFromWeekDayNumberAndTime(dayNumber.Day, item.Time)
-          };
+          closestHeatTask =
+            item.ToHeatTask(DateTimeHelpers.GetDateTimeFromWeekDayNumberAndTime(dayNumber.Day, item.Time));
           continue;
         }
 
         if (DateTimeHelpers.GetDateTimeFromWeekDayNumberAndTime(dayNumber.Day, item.Time) - currentDateTime <
-            closestHeatTask.StartTime - currentDateTime)
+            closestHeatTask.EndTime - currentDateTime)
         {
-          closestHeatTask = new HeatTask
-          {
-            Id = item.Id, StartTime = DateTimeHelpers.GetDateTimeFromWeekDayNumberAndTime(dayNumber.Day, item.Time)
-          };
+          closestHeatTask =
+            item.ToHeatTask(DateTimeHelpers.GetDateTimeFromWeekDayNumberAndTime(dayNumber.Day, item.Time));
+          ;
         }
       }
     }
@@ -239,49 +211,46 @@ public class HeatingService(
   //   }
   // }
   //
-  // private async void SetOnHeaters(List<GarageStartHeatTime> startHeatTimes, List<Garage> garages, CancellationToken ct)
-  // {
-  //   foreach (var garageStartHeatTime in startHeatTimes)
-  //   {
-  //     if (!garageStartHeatTime.StartHeatTime.HasValue)
-  //     {
-  //       continue;
-  //     }
-  //
-  //     if (!DateTime.Now.Date.Equals(garageStartHeatTime.StartHeatTime.Value.Date) ||
-  //         !(DateTime.Now.TimeOfDay.TotalSeconds > garageStartHeatTime.StartHeatTime.Value.TimeOfDay.TotalSeconds))
-  //     {
-  //       continue;
-  //     }
-  //
-  //     var ip = garages.Find(garage => garage.Id == garageStartHeatTime.GarageId)?.Ip;
-  //
-  //     if (String.IsNullOrEmpty(ip))
-  //     {
-  //       continue;
-  //     }
-  //
-  //     var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == garageStartHeatTime.GarageId);
-  //     if (garageHeaterStatus is not { HeatingStatus: false })
-  //     {
-  //       continue;
-  //     }
-  //
-  //     await garageClient.ChangeHeaterStatus("ON", ip, ct);
-  //
-  //     garageHeaterStatus!.HeatingStatus = true;
-  //     var text = garageStartHeatTime.IsCyclic ? "cyclic" : "";
-  //     logger.LogInformation(
-  //       $"Set heater ON in garage {garageStartHeatTime.GarageId} running at: {DateTimeOffset.Now}");
-  //     await heatingLogRepository.AddHeatLog(
-  //       new HeatLog
-  //       {
-  //         Date = DateTime.UtcNow,
-  //         Info =
-  //           $"Starting heating in garage {garageStartHeatTime.GarageId} with {text} heat task id: {garageStartHeatTime.HeatTaskId}"
-  //       }, ct);
-  //   }
-  // }
+  private async void SetOnHeaters(List<HeatTask> startHeatTimes, List<GarageEntity> garages, CancellationToken ct)
+  {
+    foreach (var garageStartHeatTime in startHeatTimes)
+    {
+      if (!garageStartHeatTime.StartTime.HasValue) continue;
+      
+      if (!DateTime.Now.Date.Equals(garageStartHeatTime.StartTime.Value.Date) ||
+          !(DateTime.Now.TimeOfDay.TotalSeconds > garageStartHeatTime.StartTime.Value.TimeOfDay.TotalSeconds))
+      {
+        continue;
+      }
+  
+      var ip = garages.Find(garage => garage.Id == garageStartHeatTime.GarageId)?.Ip;
+  
+      if (String.IsNullOrEmpty(ip))
+      {
+        continue;
+      }
+  
+      var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == garageStartHeatTime.GarageId);
+      if (garageHeaterStatus is not { HeatingStatus: false })
+      {
+        continue;
+      }
+  
+      await garageClient.ChangeHeaterStatus("ON", ip, ct);
+  
+      garageHeaterStatus!.HeatingStatus = true;
+      var text = garageStartHeatTime.IsCyclic ? "cyclic" : "";
+      logger.LogInformation(
+        $"Set heater ON in garage {garageStartHeatTime.GarageId} running at: {DateTimeOffset.Now}");
+      await heatingLogRepository.AddHeatLog(
+        new HeatLog
+        {
+          Date = DateTime.UtcNow,
+          Info =
+            $"Starting heating in garage {garageStartHeatTime.GarageId} with {text} heat task id: {garageStartHeatTime.HeatTaskId}"
+        }, ct);
+    }
+  }
 
   #endregion
 }
