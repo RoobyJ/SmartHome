@@ -84,24 +84,24 @@ public class HeatingServiceTests
     var temperatures =
       new List<GarageTemperatureDto> { new() { Id = 1, Temperature = 20 } };
     var heatTimes =
-      new List<GarageHeatingTime> { new() { Id = 1, HeatTime = DateTime.Now.AddHours(5) } };
+      new List<HeatTask> { new() { HeatTaskId = 1, EndTime = DateTime.Now.AddHours(5) } };
     var expectedResult =
-      new List<GarageHeatingTime> { new() { Id = 1, HeatTime = DateTime.Now.AddHours(4).AddMinutes(24) } };
+      new List<HeatTask> { new() { HeatTaskId = 1, StartTime = DateTime.Now.AddHours(4).AddMinutes(24) } };
 
     var result = StartHeatingTimeCalculator.CalculateForMultipleGarages(temperatures, heatTimes);
 
-    if (!result[0].StartHeatTime.HasValue)
+    if (!result[0].StartTime.HasValue)
     {
       Assert.Fail("No startHeat time");
     }
 
-    if (!expectedResult[0].HeatTime.HasValue)
+    if (!expectedResult[0].StartTime.HasValue)
     {
       Assert.Fail("No expected time");
     }
 
-    Assert.True(Math.Abs(result[0].StartHeatTime.Value.TimeOfDay.TotalMinutes -
-                         expectedResult[0].HeatTime.Value.TimeOfDay.TotalMinutes) < 10);
+    Assert.True(Math.Abs(result[0].StartTime.Value.TimeOfDay.TotalMinutes -
+                         expectedResult[0].StartTime.Value.TimeOfDay.TotalMinutes) < 10);
   }
 
   private static TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic,
