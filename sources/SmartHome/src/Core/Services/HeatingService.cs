@@ -26,7 +26,7 @@ public class HeatingService(
   IDateTimeProvider dateTimeProvider)
   : IHeatingService
 {
-  private readonly List<HeatTask> garagesHeatTasks = [];
+  private List<HeatTask> garagesHeatTasks = [];
 
   public async Task ExecuteAsync(CancellationToken ct)
   {
@@ -36,13 +36,13 @@ public class HeatingService(
       await this.CheckGaragesHeatersStatuses(ct);
       var garages = (await garageRepository.GetGarages(ct)).ToList();
 
-
-      var closestHeatTimes = await FindClosestHeatTime(garages, ct);
+      this.garagesHeatTasks = await FindClosestHeatTime(garages, ct);
 
       var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
-        StartHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures, closestHeatTimes);
+        StartHeatingTimeCalculator.CalculateForMultipleGarages(listOfGarageTemperatures,
+          this.garagesHeatTasks.Where(i => !i.IsCurrentlyHeating).ToList());
 
       this.SetOnHeaters(listOfStartHeatTimes, garages, ct);
     }
@@ -60,11 +60,10 @@ public class HeatingService(
     var garageHeatersIdsToTurnOff = new List<int>();
     foreach (var item in this.garagesHeatTasks)
     {
-      if (item.EndTime <= DateTimeOffset.Now)
-      {
-        garageHeatersIdsToTurnOff.Add(item.GarageId);
-        item.IsCurrentlyHeating = false;
-      }
+      if (item.EndTime > DateTime.Now) continue;
+
+      garageHeatersIdsToTurnOff.Add(item.GarageId);
+      item.IsCurrentlyHeating = false;
     }
 
     foreach (var garageId in garageHeatersIdsToTurnOff)
@@ -122,7 +121,8 @@ public class HeatingService(
         }
       }
 
-      if (closestHeatTask == null) continue;
+      if (closestHeatTask == null || (garagesHeatTasks.Find(i =>
+            i.HeatTaskId == closestHeatTask.HeatTaskId && i.IsCyclic == closestHeatTask.IsCyclic)) != null) continue;
       garagesClosestHeatTasks.Add(closestHeatTask);
     }
 
@@ -182,43 +182,6 @@ public class HeatingService(
     return listOfGarageTemperatureDtos;
   }
 
-  // private async void CheckIfShouldBeOff(List<GarageHeatingTime> todayHeatTimes, List<Garage> garages,
-  //   CancellationToken ct)
-  // {
-  //   foreach (var heatTime in todayHeatTimes)
-  //   {
-  //     var garage = garages.Find(i => i.Id == heatTime.Id);
-  //     var garageHeaterStatus = garagesHeatersStatuses.Find(i => i.Id == heatTime.Id);
-  //
-  //     if (garage == null || garageHeaterStatus == null)
-  //     {
-  //       throw new Exception("Garage or garage heater status not found");
-  //     }
-  //
-  //     if (!heatTime.HeatTime.HasValue && garageHeaterStatus.HeatingStatus)
-  //     {
-  //       await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
-  //       garageHeaterStatus.HeatingStatus = false;
-  //       logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-  //       await heatingLogRepository.AddHeatLog(
-  //         new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
-  //       garagesHeatersStatuses.Remove(garageHeaterStatus);
-  //       continue;
-  //     }
-  //
-  //     if (DateTime.Now.TimeOfDay.TotalSeconds > heatTime.HeatTime!.Value.TimeOfDay.TotalSeconds &&
-  //         garageHeaterStatus.HeatingStatus)
-  //     {
-  //       await garageClient.ChangeHeaterStatus("OFF", garage.Ip, ct);
-  //       garageHeaterStatus.HeatingStatus = false;
-  //       logger.LogInformation($"Set heater OFF in garage {garage.Id} running at: {DateTimeOffset.Now}");
-  //       await heatingLogRepository.AddHeatLog(
-  //         new HeatLog { Date = DateTime.UtcNow, Info = $"Ended heating garage {garage.Id}" }, ct);
-  //       garagesHeatersStatuses.Remove(garageHeaterStatus);
-  //     }
-  //   }
-  // }
-  //
   private async void SetOnHeaters(List<HeatTask> startHeatTimes, List<GarageEntity> garages, CancellationToken ct)
   {
     foreach (var garageStartHeatTime in startHeatTimes)

@@ -29,7 +29,7 @@ public class HeatTaskService(
 
   public async Task UpdateHeatTask(int garageId, HeatTaskDto task, CancellationToken ct)
   {
-    var heatTask = await heatTaskRepository.GetHeatTask(garageId, ct);
+    var heatTask = await heatTaskRepository.GetHeatTask(task.Id, ct);
 
     if (heatTask == null)
     {

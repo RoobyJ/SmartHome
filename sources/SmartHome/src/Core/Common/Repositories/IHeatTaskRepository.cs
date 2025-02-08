@@ -7,7 +7,7 @@ namespace Core.Common.Repositories;
 
 public interface IHeatTaskRepository
 {
-  Task<HeatTaskEntity> GetHeatTask(int garageId, CancellationToken ct);
+  Task<HeatTaskEntity> GetHeatTask(int taskId, CancellationToken ct);
   Task<ICollection<HeatTaskEntity>> GetHeatTasks(int garageId, CancellationToken ct);
   Task<ICollection<HeatTaskEntity>> GetActiveHeatTaskForGarageIdFromFuture(int garageId, CancellationToken ct);
   Task UpdateHeatTask(HeatTaskEntity heatTaskEntity, CancellationToken ct);
