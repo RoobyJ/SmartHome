@@ -19,7 +19,7 @@ internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicH
 
   public async Task<CyclicHeatTaskEntity> GetCyclicHeatTask(int id, CancellationToken ct)
   {
-    return await dbContext.CyclicHeatTasks.FirstAsync(i => i.Id == id, ct);
+    return await dbContext.CyclicHeatTasks.Include(i => i.CyclicHeatTaskDays).FirstAsync(i => i.Id == id, ct);
   }
 
   public async Task<ICollection<CyclicHeatTaskEntity>> GetActiveCyclicHeatTasks(int garageId, CancellationToken ct)
