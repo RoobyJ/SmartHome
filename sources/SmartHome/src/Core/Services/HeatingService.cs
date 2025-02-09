@@ -26,18 +26,21 @@ public class HeatingService(
   IDateTimeProvider dateTimeProvider)
   : IHeatingService
 {
-  private List<HeatTask> garagesHeatTasks = [];
+  private HashSet<HeatTask> garagesHeatTasks = [];
 
   public async Task ExecuteAsync(CancellationToken ct)
   {
-    logger.LogInformation($"{nameof(HeatingService)} running at: {DateTimeOffset.Now}");
+    logger.LogInformation(
+      $"{nameof(HeatingService)} running at: {DateTimeOffset.Now}. With actual heat-tasks: {garagesHeatTasks.Count}");
     try
     {
       await this.CheckGaragesHeatersStatuses(ct);
       var garages = (await garageRepository.GetGarages(ct)).ToList();
 
-      this.garagesHeatTasks = await FindClosestHeatTime(garages, ct);
+      var newClosestHeatTasks = await FindClosestHeatTime(garages, ct);
 
+      newClosestHeatTasks.ForEach(i => garagesHeatTasks.Add(i));
+      
       var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
 
       var listOfStartHeatTimes =
@@ -66,6 +69,8 @@ public class HeatingService(
       item.IsCurrentlyHeating = false;
     }
 
+    if (garageHeatersIdsToTurnOff.Count == 0) return;
+    
     foreach (var garageId in garageHeatersIdsToTurnOff)
     {
       this.garagesHeatTasks.Remove(this.garagesHeatTasks.First(x => x.GarageId == garageId));
@@ -107,10 +112,7 @@ public class HeatingService(
 
       var closestCyclicHeatTask = this.GetClosestCyclicHeatTask(cyclicHeatTasks);
 
-      if (closestHeatTask == null)
-      {
-        closestHeatTask = closestCyclicHeatTask;
-      }
+      closestHeatTask ??= closestCyclicHeatTask;
 
       if (closestCyclicHeatTask != null && customHeatRequest != null)
       {
@@ -120,8 +122,7 @@ public class HeatingService(
           closestHeatTask = closestCyclicHeatTask;
         }
       }
-
-      if (closestHeatTask == null || (garagesHeatTasks.Find(i =>
+      if (closestHeatTask == null || (garagesHeatTasks.ToList().Find(i =>
             i.HeatTaskId == closestHeatTask.HeatTaskId && i.IsCyclic == closestHeatTask.IsCyclic)) != null) continue;
       garagesClosestHeatTasks.Add(closestHeatTask);
     }
@@ -199,12 +200,9 @@ public class HeatingService(
       if (String.IsNullOrEmpty(ip)) continue;
 
 
-      var garageHeaterStatus = garagesHeatTasks.Find(i => i.GarageId == garageStartHeatTime.GarageId);
-      if (garageHeaterStatus is { IsCurrentlyHeating: true })
-      {
-        continue;
-      }
-
+      var garageHeaterStatus = garagesHeatTasks.ToList().Find(i => i.GarageId == garageStartHeatTime.GarageId);
+      if (garageHeaterStatus is { IsCurrentlyHeating: true }) continue;
+      
       await garageClient.ChangeHeaterStatus("ON", ip, ct);
 
       garageHeaterStatus!.IsCurrentlyHeating = true;
