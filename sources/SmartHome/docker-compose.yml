@@ -1,6 +1,11 @@
-﻿services:
+﻿name: local-smarthome
+services:
   smarthome.api:
     image: smarthome.api
     build:
       context: .
-      dockerfile: src/SmartHome.API/Dockerfile
+      dockerfile: Dockerfile.API
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID=test;Password=test123;Host=host.docker.internal;Port=5432;Database=SmartHome;
