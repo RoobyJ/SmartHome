@@ -57,7 +57,6 @@ public class HeatingService(
   }
 
   #region private
-
   private async Task CheckGaragesHeatersStatuses(CancellationToken ct)
   {
     var garageHeatersIdsToTurnOff = new List<int>();
