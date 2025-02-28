@@ -1,30 +1,79 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿# syntax=docker.io/docker/dockerfile:1.7-labs
+# https://stackoverflow.com/a/78110854/24537942
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
 USER $APP_UID
 WORKDIR /app
+
 EXPOSE 8080
-EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
-
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y \
-        nodejs \
-    && rm -rf /var/lib/apt/lists/*
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-net
 
 WORKDIR /src
-COPY ["src/SmartHome.ClientApp/SmartHome.ClientApp.csproj", "src/SmartHome.ClientApp/"]
-RUN dotnet restore "src/SmartHome.ClientApp/SmartHome.ClientApp.csproj"
-COPY . .
-WORKDIR "/src/src/SmartHome.ClientApp"
-RUN dotnet build "SmartHome.ClientApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "SmartHome.ClientApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# copy required project files
+COPY ["Directory.Packages.props", "."]
+COPY ["src/SmartHome.ClientApp/*.csproj", "src/SmartHome.ClientApp/"]
+
+# and restore dependencies
+RUN dotnet restore "src/SmartHome.ClientApp/SmartHome.ClientApp.csproj" -r linux-x64
+
+# copy the rest of the files
+COPY --exclude=src/SmartHome.ClientApp/ClientApp/** . .
+
+# build the project
+WORKDIR "/src/SmartHome.ClientApp"
+RUN dotnet build -c Release -o /app/build -r linux-x64
+
+# publish the project
+FROM build-net AS publish
+
+ARG BACKEND_APP_VERSION=1.0.0
+ARG BACKEND_APP_VERSION_SUFFIX=
+
+RUN dotnet publish \
+    -c Release \
+    -o /app/publish \
+    -r linux-x64 \
+    /p:UseAppHost=false \
+    /p:SpaRunPublishVite=false \
+    /p:VersionPrefix=${BACKEND_APP_VERSION} \
+    /p:VersionSuffix=${BACKEND_APP_VERSION_SUFFIX}
+
+FROM node:20-alpine as build-node
+
+WORKDIR /ClientApp
+
+COPY ["src/SmartHome.ClientApp/ClientApp/package.json", "."]
+COPY ["src/SmartHome.ClientApp/ClientApp/package-lock.json", "."]
+
+RUN npm ci
+
+COPY ["src/SmartHome.ClientApp/ClientApp/", "."]
+
+ARG FRONTEND_APP_VERSION=vNext
+ARG FRONTEND_USE_DEV_MODE_IN_CORE_LIB=false
+
+RUN printf "VITE_APP_NAME=SmartHome\n" >> .env.production.local && \
+    printf "VITE_APP_VERSION=${FRONTEND_APP_VERSION}\n" >> .env.production.local && \
+    printf "VITE_APP_USE_DEV_MODE_IN_CORE_LIB=${FRONTEND_USE_DEV_MODE_IN_CORE_LIB}\n" >> .env.production.local
+
+# npm run build (vite build) will load the .env.production.local file
+RUN npm run build
 
 FROM base AS final
+
+# make sure that the Polish timezone is set in system
+USER root
+ENV TZ=Europe/Warsaw
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+USER $APP_UID
+
+# create final image
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SmartHome.Client.dll"]
+COPY --from=build-node /ClientApp/dist ./wwwroot
+
+# run the application
+ENTRYPOINT ["dotnet", "SmartHome.ClientApp.dll"]
