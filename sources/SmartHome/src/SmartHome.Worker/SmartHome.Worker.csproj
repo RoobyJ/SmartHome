@@ -20,4 +20,10 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
     <PackageReference Include="NLog.Web.AspNetCore"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
+  </ItemGroup>
 </Project>

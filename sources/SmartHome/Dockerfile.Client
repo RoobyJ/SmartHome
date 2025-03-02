@@ -1,5 +1,4 @@
-﻿# syntax=docker.io/docker/dockerfile:1.7-labs
-# https://stackoverflow.com/a/78110854/24537942
+﻿# https://stackoverflow.com/a/78110854/24537942
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 
@@ -14,10 +13,12 @@ WORKDIR /src
 
 # copy required project files
 COPY ["Directory.Packages.props", "."]
-COPY ["src/SmartHome.ClientApp/*.csproj", "src/SmartHome.ClientApp/"]
+COPY ["src/SmartHome.ClientApp/SmartHome.ClientApp.csproj", "src/SmartHome.ClientApp/"]
 
 # and restore dependencies
 RUN dotnet restore "src/SmartHome.ClientApp/SmartHome.ClientApp.csproj" -r linux-x64
+
+COPY . .
 
 # build the project
 WORKDIR "src/SmartHome.ClientApp"
@@ -50,11 +51,9 @@ RUN npm ci
 COPY ["src/SmartHome.ClientApp/ClientApp/", "."]
 
 ARG FRONTEND_APP_VERSION=vNext
-ARG FRONTEND_USE_DEV_MODE_IN_CORE_LIB=false
 
 RUN printf "VITE_APP_NAME=SmartHome\n" >> .env.production.local && \
-    printf "VITE_APP_VERSION=${FRONTEND_APP_VERSION}\n" >> .env.production.local && \
-    printf "VITE_APP_USE_DEV_MODE_IN_CORE_LIB=${FRONTEND_USE_DEV_MODE_IN_CORE_LIB}\n" >> .env.production.local
+    printf "VITE_APP_VERSION=${FRONTEND_APP_VERSION}\n" >> .env.production.local
 
 # npm run build (vite build) will load the .env.production.local file
 RUN npm run build
@@ -73,4 +72,4 @@ COPY --from=publish /app/publish .
 COPY --from=build-node /ClientApp/dist ./wwwroot
 
 # run the application
-ENTRYPOINT ["dotnet", "SmartHome.ClientApp.dll"]
+ENTRYPOINT ["dotnet", "SmartHome.Client.dll"]
