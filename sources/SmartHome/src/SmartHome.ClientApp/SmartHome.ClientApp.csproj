@@ -18,8 +18,8 @@
     <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaRunPublishVite>true</SpaRunPublishVite>
-    <PackageId>SmartHome.Client</PackageId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PackageId>SmartHome.ClientApp</PackageId>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
