@@ -11,14 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 
-var oidcProxyConfig = builder.Configuration
-  .GetSection("OidcProxy")
-  .Get<OidcProxyConfig>();
-
-if (oidcProxyConfig == null)
-{
-  throw new Exception("Missing BFF configuration");
-}
+builder.Services.AddReverseProxy()
+  .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var hostingOptions = builder.Configuration
   .GetSection("HostingOptions")
@@ -60,7 +54,6 @@ if (!string.IsNullOrWhiteSpace(hostingOptions.PathBase))
 }
 
 app.UseRouting();
-app.UseOidcProxy();
 
 // serve static files as a fallback, so if route has not matched any configured reverse proxy path
 // then emit static files (SPA app) and fallback to index.html
