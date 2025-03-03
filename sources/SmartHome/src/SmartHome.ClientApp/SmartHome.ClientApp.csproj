@@ -23,8 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CryptographyHelper" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy"/>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities"/>
+    <PackageReference Include="OidcProxy.Net.OpenIdConnect"/>
   </ItemGroup>
 
   <ItemGroup>

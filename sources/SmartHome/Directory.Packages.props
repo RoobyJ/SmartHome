@@ -4,6 +4,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="CryptographyHelper" Version="2.0.0" />
     <PackageVersion Include="Ardalis.ApiEndpoints" Version="4.0.1" />
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageVersion Include="Ardalis.HttpClientTestExtensions" Version="3.0.0" />
@@ -59,6 +60,7 @@
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.0" />
+    <PackageVersion Include="OidcProxy.Net.OpenIdConnect" Version="5.0.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Npgsql" Version="8.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
