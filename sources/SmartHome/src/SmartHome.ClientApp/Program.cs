@@ -10,7 +10,7 @@ using Constants = SmartHome.Client.Constants;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
-
+builder.Configuration.AddEnvironmentVariables(); 
 builder.Services.AddReverseProxy()
   .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -59,5 +59,6 @@ app.UseRouting();
 // then emit static files (SPA app) and fallback to index.html
 app.UseStaticFiles();
 app.MapFallbackToFile("index.html");
+app.MapReverseProxy();
 
 app.Run();

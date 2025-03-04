@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.API
     ports:
       - "8080:8080"
+    networks:
+      - host-docker-internal-net
     environment:
       - ConnectionStrings__DefaultConnection=User ID=test;Password=test123;Host=host.docker.internal;Port=5432;Database=SmartHome;
   smarthome.client:
