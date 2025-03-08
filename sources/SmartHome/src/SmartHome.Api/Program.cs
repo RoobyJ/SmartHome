@@ -18,6 +18,11 @@ try
   var migrateOnStartUp = builder.Configuration.GetValue<Boolean>("MigrateOnStartUp");
 // Add services to the container.
 
+  builder.WebHost.ConfigureKestrel(options =>
+  {
+    options.ListenAnyIP(8081);
+  });
+
   builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
   builder.Services.AddEndpointsApiExplorer();
