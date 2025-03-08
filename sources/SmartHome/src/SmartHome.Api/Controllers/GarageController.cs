@@ -14,6 +14,15 @@ public class GarageController(
   ILogger<GarageController> logger)
   : ApiControllerBase
 {
+  
+  [HttpGet("test")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public ActionResult<ICollection<GarageDetailsDto>> GetTest(CancellationToken cancellationToken)
+  {
+    return Ok("test");
+  }
+  
   [HttpGet("garages")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]

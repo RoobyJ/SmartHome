@@ -14,23 +14,11 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddReverseProxy()
   .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
-var hostingOptions = builder.Configuration
-  .GetSection("HostingOptions")
-  .Get<HostingOptions>();
-
-if (hostingOptions == null)
-{
-  throw new Exception("Missing HostingOptions configuration");
-}
-
 var dataProtectionOptions = builder.Configuration
   .GetSection("DataProtectionOptions")
   .Get<DataProtectionOptions?>();
 
-builder.Services
-  .ConfigureDataProtection(dataProtectionOptions)
-  .ConfigureForwardedHeaders(hostingOptions)
-  .ConfigureHttpLogging(hostingOptions);
+builder.Services.ConfigureDataProtection(dataProtectionOptions);
 
 var app = builder.Build();
 
@@ -46,11 +34,6 @@ var enableHttpLogging = builder.Configuration["EnableHttpLogging"] == "True";
 if (enableHttpLogging)
 {
   app.UseHttpLogging();
-}
-
-if (!string.IsNullOrWhiteSpace(hostingOptions.PathBase))
-{
-  app.UsePathBase(hostingOptions.PathBase);
 }
 
 app.UseRouting();
