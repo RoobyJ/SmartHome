@@ -14,6 +14,15 @@ public class GarageController(
   ILogger<GarageController> logger)
   : ApiControllerBase
 {
+  
+  [HttpGet("test")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [Produces("application/json")]
+  public ActionResult<ICollection<GarageDetailsDto>> GetTest(CancellationToken cancellationToken)
+  {
+    return Ok("test");
+  }
+  
   [HttpGet("garages")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
@@ -86,7 +95,7 @@ public class GarageController(
   [HttpGet("{id:int}/temperatures")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [Produces("application/json")]
-  public async Task<ActionResult<List<OutsideTemperature>>> GetTemperatures(int id, [FromQuery] int days,
+  public async Task<ActionResult<List<OutsideTemperatureEntity>>> GetTemperatures(int id, [FromQuery] int days,
     CancellationToken ct)
   {
     if (id < 1)

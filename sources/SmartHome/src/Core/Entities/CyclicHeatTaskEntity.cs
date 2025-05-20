@@ -5,7 +5,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public sealed class CyclicHeatTask : IEntity
+public sealed class CyclicHeatTaskEntity
 {
   public int GarageId { get; set; }
 
@@ -13,9 +13,9 @@ public sealed class CyclicHeatTask : IEntity
 
   public bool Active { get; set; }
 
-  public ICollection<CyclicHeatTaskDay> CyclicHeatTaskDays { get; set; } = new List<CyclicHeatTaskDay>();
+  public ICollection<CyclicHeatTaskDayEntity> CyclicHeatTaskDays { get; set; } = new List<CyclicHeatTaskDayEntity>();
 
-  public Garage Garage { get; set; } = null!;
+  public GarageEntity GarageEntity { get; set; } = null!;
   public int Id { get; set; }
 
   public DateTime GetClosestDateTimeFromCyclicHeatTask()

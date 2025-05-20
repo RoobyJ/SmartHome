@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
@@ -18,17 +18,23 @@
     <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaRunPublishVite>true</SpaRunPublishVite>
-    <PackageId>SmartHome.Client</PackageId>
+    <PackageId>SmartHome.ClientApp</PackageId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CryptographyHelper" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy"/>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities"/>
+    <PackageReference Include="OidcProxy.Net.OpenIdConnect"/>
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files and don't show them in the solution tree -->
     <Content Remove="$(SpaRoot)**"/>
+    <Content Include="..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
     <None Remove="$(SpaRoot)**"/>
   </ItemGroup>
 

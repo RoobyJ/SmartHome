@@ -3,7 +3,7 @@ using SmartHome.Core.Common;
 
 namespace Core.Entities;
 
-public class OutsideTemperature : IEntity
+public sealed class OutsideTemperatureEntity
 {
   public DateTime Date { get; set; }
 
@@ -11,6 +11,6 @@ public class OutsideTemperature : IEntity
 
   public int GarageId { get; set; }
 
-  public virtual Garage Garage { get; set; } = null!;
+  public GarageEntity GarageEntity { get; set; } = null!;
   public int Id { get; set; }
 }

@@ -9,7 +9,7 @@ namespace Infrastructure.Repositories;
 
 internal class CyclicHeatTaskDayRepository(SmartHomeDbContext dbContext) : ICyclicHeatTaskDayRepository
 {
-  public async Task DeleteCyclicHeatTaskDays(ICollection<CyclicHeatTaskDay> entities, CancellationToken ct)
+  public async Task DeleteCyclicHeatTaskDays(ICollection<CyclicHeatTaskDayEntity> entities, CancellationToken ct)
   {
     foreach (var entity in entities)
     {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
+using Core.Interfaces;
+using Core.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +18,7 @@ public static class InfrastructureExtensions
   {
     services.AddDbContext(configuration);
     services.AddRepositories();
+    services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
   }
 
   public static async Task MigrateDatabase(this IApplicationBuilder app)

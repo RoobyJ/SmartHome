@@ -7,6 +7,6 @@ namespace Core.Common.Repositories;
 
 public interface IOutsideTemperatureRepository
 {
-  Task<ICollection<OutsideTemperature>> GetTemperatures(int garageId, int days, CancellationToken ct);
-  Task AddTemperatures(ICollection<OutsideTemperature> temperatures, CancellationToken ct);
+  Task<ICollection<OutsideTemperatureEntity>> GetTemperatures(int garageId, int days, CancellationToken ct);
+  Task AddTemperatures(ICollection<OutsideTemperatureEntity> temperatures, CancellationToken ct);
 }
