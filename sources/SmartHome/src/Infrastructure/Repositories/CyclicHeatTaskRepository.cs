@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +24,10 @@ internal class CyclicHeatTaskRepository(SmartHomeDbContext dbContext) : ICyclicH
 
   public async Task<ICollection<CyclicHeatTaskEntity>> GetActiveCyclicHeatTasks(int garageId, CancellationToken ct)
   {
-    return await dbContext.CyclicHeatTasks.Where(i => i.GarageId == garageId && i.Active).ToListAsync(ct);
+    return await dbContext.CyclicHeatTasks
+      .Include(i => i.CyclicHeatTaskDays)
+      .Where(i => i.GarageId == garageId && i.Active)
+      .ToListAsync(ct);
   }
 
   public async Task AddCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default)

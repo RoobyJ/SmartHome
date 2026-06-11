@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartHome.Core.Common;
@@ -18,19 +18,24 @@ public sealed class CyclicHeatTaskEntity
   public GarageEntity GarageEntity { get; set; } = null!;
   public int Id { get; set; }
 
-  public DateTime GetClosestDateTimeFromCyclicHeatTask()
+  public DateTime GetClosestDateTimeFromCyclicHeatTask(DateTime? now = null)
   {
-    var currentDay = new DateOnly();
+    var reference = now ?? DateTime.Now;
+    var currentDayOfWeek = (int)reference.DayOfWeek;
     var listOfHeatDays = this.CyclicHeatTaskDays.Select(i => i.Day).ToList();
-    int? closestDay = null;
+
+    DateTime? closest = null;
     foreach (var heatDay in listOfHeatDays)
     {
-      closestDay ??= heatDay;
-      if (heatDay - (int)currentDay.DayOfWeek < closestDay - (int)currentDay.DayOfWeek) closestDay = heatDay;
+      var daysUntilTarget = heatDay - currentDayOfWeek;
+      if (daysUntilTarget < 0) daysUntilTarget += 7;
+
+      var candidate = reference.Date.AddDays(daysUntilTarget) + this.Time;
+      if (candidate <= reference) candidate = candidate.AddDays(7);
+
+      if (closest == null || candidate < closest) closest = candidate;
     }
 
-    var daysCountDifference = closestDay!.Value - (int)currentDay.DayOfWeek;
-    var date = currentDay.AddDays(daysCountDifference);
-    return date.ToDateTime(TimeOnly.FromTimeSpan(this.Time));
+    return closest ?? reference;
   }
 }

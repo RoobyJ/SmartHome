@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,10 +17,9 @@ internal class HeatTaskRepository(SmartHomeDbContext dbContext) : IHeatTaskRepos
     return await dbContext.HeatTasks.Where(i => i.GarageId == garageId).ToListAsync(ct);
   }
 
-  public async Task<ICollection<HeatTaskEntity>> GetActiveHeatTaskForGarageIdFromFuture(int garageId, CancellationToken ct)
+  public async Task<ICollection<HeatTaskEntity>> GetActiveHeatTaskForGarageIdFromFuture(int garageId, DateTime now, CancellationToken ct)
   {
-    var currentDateTime = DateTime.Now;
-    return await dbContext.HeatTasks.Where(i => i.Date > currentDateTime && i.GarageId == garageId && i.Active).ToListAsync(ct);
+    return await dbContext.HeatTasks.Where(i => i.Date > now && i.GarageId == garageId && i.Active).ToListAsync(ct);
   }
 
   public async Task<HeatTaskEntity> GetHeatTask(int taskId, CancellationToken ct)

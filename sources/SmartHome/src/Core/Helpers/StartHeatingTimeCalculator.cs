@@ -8,6 +8,17 @@ namespace Core.Helpers;
 
 public class StartHeatingTimeCalculator
 {
+  public static DateTime? CalculateStartTime(DateTime endHeatTime, float? temperature)
+  {
+    var startHeatTime = TimeToStartHeating(endHeatTime.TimeOfDay, temperature);
+    if (startHeatTime == null) return null;
+
+    var startHeatingDate = endHeatTime.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds
+      ? endHeatTime.AddDays(-1) + startHeatTime
+      : endHeatTime.Date + startHeatTime;
+    return startHeatingDate;
+  }
+
   public static List<HeatTask> CalculateForMultipleGarages(
     List<GarageTemperatureDto> listOfGarageTemperatureDtos,
     List<HeatTask> listOfGarageEndHeatTasks)
@@ -16,15 +27,10 @@ public class StartHeatingTimeCalculator
 
     foreach (var garageEndHeatTime in listOfGarageEndHeatTasks)
     {
-      var endHeatTime = garageEndHeatTime.EndTime;
-
       var garageTemperatureDto = listOfGarageTemperatureDtos.FirstOrDefault(x => x.Id == garageEndHeatTime.GarageId);
-      var startHeatTime = TimeToStartHeating(endHeatTime.TimeOfDay, garageTemperatureDto?.Temperature);
-      if (startHeatTime == null) continue;
+      var startHeatingDate = CalculateStartTime(garageEndHeatTime.EndTime, garageTemperatureDto?.Temperature);
+      if (startHeatingDate == null) continue;
 
-      var startHeatingDate = endHeatTime.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds
-        ? endHeatTime.AddDays(-1) + startHeatTime
-        : endHeatTime.Date + startHeatTime;
       garageEndHeatTime.StartTime = startHeatingDate;
       listOfGarageStartHeatTimes.Add(garageEndHeatTime);
     }
