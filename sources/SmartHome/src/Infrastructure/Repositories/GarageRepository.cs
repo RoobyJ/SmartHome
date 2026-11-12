@@ -27,9 +27,4 @@ internal class GarageRepository(SmartHomeDbContext dbContext) : IGarageRepositor
     await dbContext.Garages.AddAsync(garageEntity, ct);
     await dbContext.SaveChangesAsync(ct);
   }
-
-  public async Task<IEnumerable<string>> GetGaragesIpsByIds(IEnumerable<int> garagesIds, CancellationToken ct)
-  {
-    return await dbContext.Garages.Where(i => garagesIds.Contains(i.Id)).Select(i => i.Ip).ToListAsync(ct);
-  }
 }

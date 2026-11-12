@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace SmartHome.Worker;
@@ -13,7 +14,7 @@ namespace SmartHome.Worker;
 /// </summary>
 public class Worker(
   ILoggerAdapter<Worker> logger,
-  IHeatingService heatingService,
+  IServiceScopeFactory scopeFactory,
   WorkerSettings settings)
   : BackgroundService
 {
@@ -26,6 +27,8 @@ public class Worker(
       var timer = new PeriodicTimer(TimeSpan.FromSeconds(settings.DelaySeconds));
       while (await timer.WaitForNextTickAsync(ct))
       {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var heatingService = scope.ServiceProvider.GetRequiredService<IHeatingService>();
         await heatingService.ExecuteAsync(ct);
       }
     }
