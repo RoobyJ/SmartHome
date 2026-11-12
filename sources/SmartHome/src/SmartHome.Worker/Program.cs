@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Core;
 using Core.Helpers;
 using Core.Interfaces;
@@ -42,7 +42,10 @@ public abstract class Program
       .ConfigureServices((hostContext, services) =>
       {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
-        services.AddSingleton<IHeatingService, HeatingService>();
+        // Scoped: a fresh HeatingService, repositories and DbContext per tick (see Worker),
+        // so task edits made in the UI are picked up. Cross-tick state lives in HeatingState.
+        services.AddScoped<IHeatingService, HeatingService>();
+        services.AddSingleton<HeatingState>();
         services.AddTransient<StartHeatingTimeCalculator>();
         services.AddCore();
 

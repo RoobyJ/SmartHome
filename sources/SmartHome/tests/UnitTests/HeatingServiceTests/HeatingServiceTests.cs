@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Common.Repositories;
@@ -33,18 +33,9 @@ public class HeatingServiceTests
   private readonly Mock<IGarageClient> garageClientMock = new();
   private readonly Mock<IDateTimeProvider> dateTimeProviderMock = new();
 
-  public HeatingServiceTests()
-  {
-    ResetStaticTracker();
-  }
+  private readonly HeatingState state = new();
 
-  private static void ResetStaticTracker()
-  {
-    var field = typeof(HeatingService).GetField("garageHeatingState",
-      BindingFlags.Static | BindingFlags.NonPublic);
-    var dictionary = field?.GetValue(null) as System.Collections.IDictionary;
-    dictionary?.Clear();
-  }
+  private static readonly DateTime Now = new(2026, 6, 11, 12, 0, 0);
 
   private HeatingService CreateService()
   {
@@ -56,7 +47,56 @@ public class HeatingServiceTests
       outsideTemperatureRepositoryMock.Object,
       heatingLogRepositoryMock.Object,
       garageClientMock.Object,
-      dateTimeProviderMock.Object);
+      dateTimeProviderMock.Object,
+      state);
+  }
+
+  private static GarageEntity Garage(int id) => new() { Id = id, Name = $"Garage {id}", Ip = $"192.168.1.{id}" };
+
+  /// <summary>Sets up garages with a temperature, heater status and no tasks by default.</summary>
+  private void SetupGarages(DateTime now, bool heaterOn, float? temperature, params GarageEntity[] garages)
+  {
+    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
+    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync(garages);
+    foreach (var garage in garages)
+    {
+      SetTemperature(garage, temperature);
+      SetHeaterStatus(garage, heaterOn);
+      heatTaskRepositoryMock
+        .Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync([]);
+      cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
+        .ReturnsAsync([]);
+    }
+  }
+
+  private void SetTemperature(GarageEntity garage, float? temperature)
+  {
+    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
+      .ReturnsAsync(temperature == null ? null : new TemperatureDto { Temperature = temperature.Value });
+  }
+
+  private void SetHeaterStatus(GarageEntity garage, bool? on)
+  {
+    garageClientMock.Setup(c => c.GetHeaterStatus(garage.Ip, It.IsAny<CancellationToken>()))
+      .ReturnsAsync(on == null ? null : new GarageHeaterStatusDto { HeatingStatus = on.Value });
+  }
+
+  private void SetCustomTask(GarageEntity garage, DateTime end)
+  {
+    heatTaskRepositoryMock
+      .Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+      .ReturnsAsync([new HeatTaskEntity { Id = 1, GarageId = garage.Id, Date = end, Active = true }]);
+  }
+
+  private void VerifySent(GarageEntity garage, string status, Times times)
+  {
+    garageClientMock.Verify(c => c.ChangeHeaterStatus(status, garage.Ip, It.IsAny<CancellationToken>()), times);
+  }
+
+  private void VerifyNoErrors()
+  {
+    loggerMock.Verify(l => l.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.Never);
   }
 
   [Fact]
@@ -149,156 +189,247 @@ public class HeatingServiceTests
   [Fact]
   public async Task ExecuteAsync_CustomHeatTaskActive_TurnsHeaterOn()
   {
-    // Arrange
-    var now = new DateTime(2026, 6, 11, 12, 0, 0);
-    var garage = new GarageEntity { Id = 1, Name = "Garage 1", Ip = "192.168.1.10" };
-    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
-    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync([garage]);
-    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new TemperatureDto { Temperature = 20 });
-    heatTaskRepositoryMock.Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([new HeatTaskEntity { Id = 1, GarageId = garage.Id, Date = now.AddMinutes(30), Active = true }]);
-    cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetCustomTask(garage, Now.AddMinutes(30));
 
-    var service = CreateService();
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    // Act
-    await service.ExecuteAsync(CancellationToken.None);
-
-    // Assert
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("ON", garage.Ip, It.IsAny<CancellationToken>()), Times.Once);
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("OFF", garage.Ip, It.IsAny<CancellationToken>()), Times.Never);
+    VerifySent(garage, "ON", Times.Once());
+    VerifySent(garage, "OFF", Times.Never());
+    VerifyNoErrors();
   }
 
   [Fact]
   public async Task ExecuteAsync_NoActiveTask_TurnsHeaterOff()
   {
-    // Arrange
-    var now = new DateTime(2026, 6, 11, 12, 0, 0);
-    var garage = new GarageEntity { Id = 1, Name = "Garage 1", Ip = "192.168.1.10" };
-    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
-    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync([garage]);
-    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new TemperatureDto { Temperature = 20 });
-    heatTaskRepositoryMock.Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
-    cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: true, temperature: 20, garage);
 
-    var dictionary = typeof(HeatingService).GetField("garageHeatingState",
-      BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null) as
-      System.Collections.Concurrent.ConcurrentDictionary<int, bool>;
-    dictionary!.TryAdd(garage.Id, true);
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    var service = CreateService();
-
-    // Act
-    await service.ExecuteAsync(CancellationToken.None);
-
-    // Assert
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("OFF", garage.Ip, It.IsAny<CancellationToken>()), Times.Once);
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("ON", garage.Ip, It.IsAny<CancellationToken>()), Times.Never);
+    VerifySent(garage, "OFF", Times.Once());
+    VerifySent(garage, "ON", Times.Never());
+    VerifyNoErrors();
   }
 
   [Fact]
   public async Task ExecuteAsync_CyclicHeatTaskTodayActive_TurnsHeaterOn()
   {
-    // Arrange
-    var now = new DateTime(2026, 6, 11, 12, 0, 0);
-    var garage = new GarageEntity { Id = 1, Name = "Garage 1", Ip = "192.168.1.10" };
-    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
-    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync([garage]);
-    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new TemperatureDto { Temperature = 20 });
-    heatTaskRepositoryMock.Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
     cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
       .ReturnsAsync([
         new CyclicHeatTaskEntity
         {
           Id = 1,
           GarageId = garage.Id,
-          Time = now.AddMinutes(30).TimeOfDay,
+          Time = Now.AddMinutes(30).TimeOfDay,
           Active = true,
-          CyclicHeatTaskDays = [new CyclicHeatTaskDayEntity { Day = (int)now.DayOfWeek }]
+          CyclicHeatTaskDays = [new CyclicHeatTaskDayEntity { Day = (int)Now.DayOfWeek }]
         }
       ]);
 
-    var service = CreateService();
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    // Act
-    await service.ExecuteAsync(CancellationToken.None);
-
-    // Assert
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("ON", garage.Ip, It.IsAny<CancellationToken>()), Times.Once);
+    VerifySent(garage, "ON", Times.Once());
+    VerifyNoErrors();
   }
 
   [Fact]
   public async Task ExecuteAsync_CyclicHeatTaskAlreadyPassed_TurnsHeaterOff()
   {
-    // Arrange
-    var now = new DateTime(2026, 6, 11, 12, 0, 0);
-    var garage = new GarageEntity { Id = 1, Name = "Garage 1", Ip = "192.168.1.10" };
-    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
-    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync([garage]);
-    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new TemperatureDto { Temperature = 20 });
-    heatTaskRepositoryMock.Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: true, temperature: 20, garage);
     cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
       .ReturnsAsync([
         new CyclicHeatTaskEntity
         {
           Id = 1,
           GarageId = garage.Id,
-          Time = now.AddHours(-1).TimeOfDay,
+          Time = Now.AddHours(-1).TimeOfDay,
           Active = true,
-          CyclicHeatTaskDays = [new CyclicHeatTaskDayEntity { Day = (int)now.DayOfWeek }]
+          CyclicHeatTaskDays = [new CyclicHeatTaskDayEntity { Day = (int)Now.DayOfWeek }]
         }
       ]);
 
-    var dictionary = typeof(HeatingService).GetField("garageHeatingState",
-      BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null) as
-      System.Collections.Concurrent.ConcurrentDictionary<int, bool>;
-    dictionary!.TryAdd(garage.Id, true);
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    var service = CreateService();
-
-    // Act
-    await service.ExecuteAsync(CancellationToken.None);
-
-    // Assert
-    garageClientMock.Verify(c => c.ChangeHeaterStatus("OFF", garage.Ip, It.IsAny<CancellationToken>()), Times.Once);
+    VerifySent(garage, "OFF", Times.Once());
+    VerifyNoErrors();
   }
 
   [Fact]
   public async Task ExecuteAsync_StateAlreadyMatches_DoesNotCallClient()
   {
-    // Arrange
-    var now = new DateTime(2026, 6, 11, 12, 0, 0);
-    var garage = new GarageEntity { Id = 1, Name = "Garage 1", Ip = "192.168.1.10" };
-    dateTimeProviderMock.Setup(d => d.Now).Returns(now);
-    garageRepositoryMock.Setup(r => r.GetGarages(It.IsAny<CancellationToken>())).ReturnsAsync([garage]);
-    garageClientMock.Setup(c => c.GetGarageTemperature(garage.Ip, It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new TemperatureDto { Temperature = 20 });
-    heatTaskRepositoryMock.Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, It.IsAny<CancellationToken>()))
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    garageClientMock.Verify(c => c.ChangeHeaterStatus(It.IsAny<string>(), garage.Ip, It.IsAny<CancellationToken>()),
+      Times.Never);
+    VerifyNoErrors();
+  }
+
+  // Finding #1: one garage's failing temperature read must not block another garage.
+  [Fact]
+  public async Task ExecuteAsync_OtherGarageTemperatureReadThrows_StillTurnsHeaterOff()
+  {
+    var broken = Garage(1);
+    var heating = Garage(2);
+    SetupGarages(Now, heaterOn: true, temperature: 20, broken, heating);
+    garageClientMock.Setup(c => c.GetGarageTemperature(broken.Ip, It.IsAny<CancellationToken>()))
+      .ThrowsAsync(new HttpRequestException("No route to host"));
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(heating, "OFF", Times.Once());
+  }
+
+  // Finding #1: a DB error when saving temperatures must not block switching.
+  [Fact]
+  public async Task ExecuteAsync_SavingTemperaturesThrows_StillTurnsHeaterOff()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: true, temperature: 20, garage);
+    outsideTemperatureRepositoryMock
+      .Setup(r => r.AddTemperatures(It.IsAny<List<OutsideTemperatureEntity>>(), It.IsAny<CancellationToken>()))
+      .ThrowsAsync(new InvalidOperationException("db down"));
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Once());
+  }
+
+  // Finding #2: a heater found ON on the device (UI toggle, worker restart) with no task is switched OFF,
+  // even though this process never switched it ON.
+  [Fact]
+  public async Task ExecuteAsync_HeaterOnOnDeviceWithFreshState_TurnsHeaterOff()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: true, temperature: null, garage);
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Once());
+  }
+
+  // Finding #2: a controller that rebooted with the relay OFF mid-window gets ON re-sent.
+  [Fact]
+  public async Task ExecuteAsync_DeviceLostOnStateMidWindow_ResendsOn()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetCustomTask(garage, Now.AddMinutes(30));
+    state.LastCommanded[garage.Id] = true;
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "ON", Times.Once());
+  }
+
+  // Finding #2: if the device status cannot be read, the desired state is still enforced.
+  [Fact]
+  public async Task ExecuteAsync_HeaterStatusUnreadable_SendsDesiredStateAnyway()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetHeaterStatus(garage, null);
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Once());
+  }
+
+  // Finding #4: once a window has started, a missing reading does not switch the heater OFF before the end time.
+  [Fact]
+  public async Task ExecuteAsync_TemperatureMissingMidWindow_KeepsHeaterOn()
+  {
+    var garage = Garage(1);
+    var end = Now.AddMinutes(30);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetCustomTask(garage, end);
+    await CreateService().ExecuteAsync(CancellationToken.None);
+    VerifySent(garage, "ON", Times.Once());
+
+    dateTimeProviderMock.Setup(d => d.Now).Returns(Now.AddSeconds(30));
+    SetTemperature(garage, null);
+    SetHeaterStatus(garage, true);
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Never());
+  }
+
+  // Finding #4: a temperature rise that moves the computed start later does not switch the heater OFF.
+  [Fact]
+  public async Task ExecuteAsync_TemperatureRisesMidWindow_KeepsHeaterOn()
+  {
+    var garage = Garage(1);
+    var end = Now.AddMinutes(35); // 20 C -> ~40 min lead, so the window has started; 60 C -> ~6 min
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetCustomTask(garage, end);
+    await CreateService().ExecuteAsync(CancellationToken.None);
+    VerifySent(garage, "ON", Times.Once());
+
+    dateTimeProviderMock.Setup(d => d.Now).Returns(Now.AddSeconds(30));
+    SetTemperature(garage, 60);
+    SetHeaterStatus(garage, true);
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Never());
+  }
+
+  // Finding #4: the latch ends with the window.
+  [Fact]
+  public async Task ExecuteAsync_LatchedWindowEnded_TurnsHeaterOff()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: false, temperature: 20, garage);
+    SetCustomTask(garage, Now.AddMinutes(30));
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    dateTimeProviderMock.Setup(d => d.Now).Returns(Now.AddMinutes(31));
+    heatTaskRepositoryMock
+      .Setup(r => r.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
       .ReturnsAsync([]);
-    cyclicHeatTaskRepositoryMock.Setup(r => r.GetActiveCyclicHeatTasks(garage.Id, It.IsAny<CancellationToken>()))
-      .ReturnsAsync([]);
+    SetHeaterStatus(garage, true);
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    var dictionary = typeof(HeatingService).GetField("garageHeatingState",
-      BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null) as
-      System.Collections.Concurrent.ConcurrentDictionary<int, bool>;
-    dictionary!.TryAdd(garage.Id, false);
+    VerifySent(garage, "OFF", Times.Once());
+  }
 
-    var service = CreateService();
+  // Finding #5: a failing PATCH for one garage does not skip later garages.
+  [Fact]
+  public async Task ExecuteAsync_FirstGaragePatchThrows_SecondGarageStillSwitched()
+  {
+    var broken = Garage(1);
+    var other = Garage(2);
+    SetupGarages(Now, heaterOn: true, temperature: 20, broken, other);
+    garageClientMock.Setup(c => c.ChangeHeaterStatus(It.IsAny<string>(), broken.Ip, It.IsAny<CancellationToken>()))
+      .ThrowsAsync(new TaskCanceledException());
 
-    // Act
-    await service.ExecuteAsync(CancellationToken.None);
+    await CreateService().ExecuteAsync(CancellationToken.None);
 
-    // Assert
-    garageClientMock.Verify(c => c.ChangeHeaterStatus(It.IsAny<string>(), garage.Ip, It.IsAny<CancellationToken>()), Times.Never);
+    VerifySent(other, "OFF", Times.Once());
+  }
+
+  // Finding #6: a rejected command (client throws) is not recorded as applied, and is retried next tick.
+  [Fact]
+  public async Task ExecuteAsync_CommandRejected_NotLoggedAndRetried()
+  {
+    var garage = Garage(1);
+    SetupGarages(Now, heaterOn: true, temperature: 20, garage);
+    garageClientMock.Setup(c => c.ChangeHeaterStatus("OFF", garage.Ip, It.IsAny<CancellationToken>()))
+      .ThrowsAsync(new HttpRequestException("500 Internal Server Error"));
+
+    await CreateService().ExecuteAsync(CancellationToken.None);
+    await CreateService().ExecuteAsync(CancellationToken.None);
+
+    VerifySent(garage, "OFF", Times.Exactly(2));
+    heatingLogRepositoryMock.Verify(r => r.AddHeatLog(It.IsAny<HeatLogEntity>(), It.IsAny<CancellationToken>()),
+      Times.Never);
+    Assert.False(state.LastCommanded.ContainsKey(garage.Id));
   }
 
   private static TestingDataWhichIsCloser GetTestingDataForFindingWhichIsCloser(int extraHoursCyclic,

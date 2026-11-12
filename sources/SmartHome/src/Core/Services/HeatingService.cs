@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -23,46 +22,84 @@ public class HeatingService(
   IOutsideTemperatureRepository outsideTemperatureRepository,
   IHeatingLogRepository heatingLogRepository,
   IGarageClient garageClient,
-  IDateTimeProvider dateTimeProvider)
+  IDateTimeProvider dateTimeProvider,
+  HeatingState state)
   : IHeatingService
 {
-  private static readonly ConcurrentDictionary<int, bool> garageHeatingState = new();
-
   public async Task ExecuteAsync(CancellationToken ct)
   {
     var now = dateTimeProvider.Now;
-    logger.LogInformation(
-      $"{nameof(HeatingService)} running at: {now}. Currently heating garages: {garageHeatingState.Count(i => i.Value)}");
+    logger.LogInformation($"{nameof(HeatingService)} running at: {now}");
+
+    List<GarageEntity> garages;
     try
     {
-      var garages = (await garageRepository.GetGarages(ct)).ToList();
-      var listOfGarageTemperatures = await GetListOfGarageTemperatures(garages, ct);
-
-      foreach (var garage in garages)
-      {
-        var desiredState = await GetDesiredHeatingState(garage, listOfGarageTemperatures, ct);
-        await ApplyHeatingState(garage, desiredState, ct);
-      }
+      garages = (await garageRepository.GetGarages(ct)).ToList();
     }
 #pragma warning disable CA1031 // Do not catch general exception types
     catch (Exception ex)
     {
-      logger.LogError(ex, $"{nameof(HeatingService)}.{nameof(ExecuteAsync)} threw an exception.");
+      logger.LogError(ex, $"{nameof(HeatingService)}.{nameof(ExecuteAsync)} could not load garages.");
+      return;
     }
+
+    state.PruneLatches(now);
+    List<OutsideTemperatureEntity> temperatures = [];
+
+    // Each garage is handled independently: a failure in one garage (unreachable controller,
+    // rejected command, DB error) must never stop another garage from being switched ON or OFF.
+    foreach (var garage in garages)
+    {
+      try
+      {
+        var temperature = await ReadTemperature(garage, now, temperatures, ct);
+        var desiredState = await GetDesiredHeatingState(garage, temperature, now, ct);
+        await ApplyHeatingState(garage, desiredState, ct);
+      }
+      catch (OperationCanceledException) when (ct.IsCancellationRequested)
+      {
+        throw;
+      }
+      catch (Exception ex)
+      {
+        logger.LogError(ex, $"{nameof(HeatingService)} failed for garage {garage.Name} (id: {garage.Id}).");
+      }
+    }
+
+    try
+    {
+      if (temperatures.Count > 0) await outsideTemperatureRepository.AddTemperatures(temperatures, ct);
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, $"{nameof(HeatingService)} could not save temperatures.");
+    }
+#pragma warning restore CA1031
   }
 
   #region private
 
-  private async Task<bool> GetDesiredHeatingState(GarageEntity garage, List<GarageTemperatureDto> temperatures,
+  private async Task<float?> ReadTemperature(GarageEntity garage, DateTime now,
+    List<OutsideTemperatureEntity> temperatures, CancellationToken ct)
+  {
+    var response = await garageClient.GetGarageTemperature(garage.Ip, ct);
+    if (response == null)
+    {
+      logger.LogInformation($"Could not read temperature for garage {garage.Name} (id: {garage.Id}).");
+      return null;
+    }
+
+    temperatures.Add(new OutsideTemperatureEntity { Date = now, Temperature = response.Temperature, GarageId = garage.Id });
+    return response.Temperature;
+  }
+
+  private async Task<bool> GetDesiredHeatingState(GarageEntity garage, float? temperature, DateTime now,
     CancellationToken ct)
   {
-    var now = dateTimeProvider.Now;
-    var temperature = temperatures.FirstOrDefault(i => i.Id == garage.Id)?.Temperature;
-
     var customHeatTasks = await heatTaskRepository.GetActiveHeatTaskForGarageIdFromFuture(garage.Id, now, ct);
     foreach (var customHeatTask in customHeatTasks)
     {
-      if (IsTaskActiveNow(customHeatTask.Date, temperature, now)) return true;
+      if (IsOccurrenceActive(garage.Id, customHeatTask.Date, temperature, now)) return true;
     }
 
     var cyclicHeatTasks = await cyclicHeatTaskRepository.GetActiveCyclicHeatTasks(garage.Id, ct);
@@ -71,24 +108,32 @@ public class HeatingService(
       foreach (var day in cyclicHeatTask.CyclicHeatTaskDays)
       {
         var endTime = GetNextOccurrence(now, day.Day, cyclicHeatTask.Time);
-        if (endTime == null) continue;
-
-        if (IsTaskActiveNow(endTime.Value, temperature, now)) return true;
+        if (IsOccurrenceActive(garage.Id, endTime, temperature, now)) return true;
       }
     }
 
     return false;
   }
 
-  private static bool IsTaskActiveNow(DateTime endTime, float? temperature, DateTime now)
+  /// <summary>
+  ///   An occurrence is active from its computed start time until its end time.
+  ///   Once started it is latched, so it keeps heating until the end time regardless of later
+  ///   temperature changes or missing readings. The latch is keyed by the end time, so a task that is
+  ///   deleted, deactivated or moved no longer matches and stops heating.
+  /// </summary>
+  private bool IsOccurrenceActive(int garageId, DateTime endTime, float? temperature, DateTime now)
   {
-    var startTime = StartHeatingTimeCalculator.CalculateStartTime(endTime, temperature);
-    if (startTime == null) return false;
+    if (endTime <= now) return false;
+    if (state.IsLatched(garageId, endTime)) return true;
 
-    return now >= startTime.Value && now < endTime;
+    var startTime = StartHeatingTimeCalculator.CalculateStartTime(endTime, temperature);
+    if (startTime == null || now < startTime.Value) return false;
+
+    state.Latch(garageId, endTime);
+    return true;
   }
 
-  private static DateTime? GetNextOccurrence(DateTime now, int dayOfWeek, TimeSpan time)
+  private static DateTime GetNextOccurrence(DateTime now, int dayOfWeek, TimeSpan time)
   {
     var currentDayOfWeek = (int)now.DayOfWeek;
     var daysUntilTarget = dayOfWeek - currentDayOfWeek;
@@ -100,15 +145,29 @@ public class HeatingService(
     return candidate;
   }
 
+  /// <summary>
+  ///   Compares the desired state with the heater's actual state read from the device,
+  ///   so heaters switched outside this process (UI, restart, controller reboot) are reconciled.
+  ///   If the actual state cannot be read, the desired command is sent anyway (it is idempotent).
+  /// </summary>
   private async Task ApplyHeatingState(GarageEntity garage, bool desiredOn, CancellationToken ct)
   {
-    garageHeatingState.TryGetValue(garage.Id, out var currentlyOn);
-    if (desiredOn == currentlyOn) return;
+    var actual = await garageClient.GetHeaterStatus(garage.Ip, ct);
+    if (actual != null && actual.HeatingStatus == desiredOn)
+    {
+      state.LastCommanded[garage.Id] = desiredOn;
+      return;
+    }
 
     var status = desiredOn ? "ON" : "OFF";
     await garageClient.ChangeHeaterStatus(status, garage.Ip, ct);
 
-    garageHeatingState[garage.Id] = desiredOn;
+    var isChange = actual != null
+                   || !state.LastCommanded.TryGetValue(garage.Id, out var lastCommanded)
+                   || lastCommanded != desiredOn;
+    state.LastCommanded[garage.Id] = desiredOn;
+    if (!isChange) return;
+
     logger.LogInformation($"Set heater {status} in garage {garage.Name} (id: {garage.Id}) at {dateTimeProvider.Now}");
     await heatingLogRepository.AddHeatLog(
       new HeatLogEntity
@@ -116,32 +175,6 @@ public class HeatingService(
         Date = DateTime.UtcNow,
         Info = $"Set heater {status} in garage {garage.Name} (id: {garage.Id})"
       }, ct);
-  }
-
-  private async Task<List<GarageTemperatureDto>> GetListOfGarageTemperatures(IReadOnlyList<GarageEntity> garages,
-    CancellationToken ct)
-  {
-    List<GarageTemperatureDto> listOfGarageTemperatureDtos = [];
-    List<OutsideTemperatureEntity> temperatures = [];
-
-    foreach (var garage in garages)
-    {
-      var response = await garageClient.GetGarageTemperature(garage.Ip, ct);
-      if (response == null)
-      {
-        logger.LogInformation($"Could not read temperature for garage {garage.Name} (id: {garage.Id}).");
-        continue;
-      }
-
-      listOfGarageTemperatureDtos.Add(new GarageTemperatureDto { Id = garage.Id, Temperature = response.Temperature });
-      var entity =
-        new OutsideTemperatureEntity { Date = dateTimeProvider.Now, Temperature = response.Temperature, GarageId = garage.Id };
-      temperatures.Add(entity);
-    }
-
-    await outsideTemperatureRepository.AddTemperatures(temperatures, ct);
-
-    return listOfGarageTemperatureDtos;
   }
 
   #endregion
