@@ -9,7 +9,8 @@ public interface ICyclicHeatTaskRepository
 {
   Task<ICollection<CyclicHeatTaskEntity>> GetCyclicHeatTasks(int garageId, CancellationToken ct);
   Task<CyclicHeatTaskEntity> GetCyclicHeatTask(int taskId, CancellationToken ct);
-  Task<ICollection<CyclicHeatTaskEntity>> GetActiveCyclicHeatTasks(int garageId, CancellationToken ct);
+  /// <summary>Active cyclic tasks of all garages, with their days.</summary>
+  Task<ICollection<CyclicHeatTaskEntity>> GetActiveCyclicHeatTasks(CancellationToken ct);
   Task AddCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default);
 
   Task UpdateCyclicHeatTask(CyclicHeatTaskEntity entity, CancellationToken ct = default);

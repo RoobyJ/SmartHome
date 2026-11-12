@@ -1,56 +1,43 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Dtos;
-using Core.Models;
+﻿using System;
 
 namespace Core.Helpers;
 
-public class StartHeatingTimeCalculator
+public static class StartHeatingTimeCalculator
 {
-  public static DateTime? CalculateStartTime(DateTime endHeatTime, float? temperature)
-  {
-    var startHeatTime = TimeToStartHeating(endHeatTime.TimeOfDay, temperature);
-    if (startHeatTime == null) return null;
+  /// <summary>Upper bound on pre-heating; the formula gives about 3 h at -40 C.</summary>
+  public static readonly TimeSpan MaxLeadTime = TimeSpan.FromHours(4);
 
-    var startHeatingDate = endHeatTime.TimeOfDay.TotalSeconds < startHeatTime.Value.TotalSeconds
-      ? endHeatTime.AddDays(-1) + startHeatTime
-      : endHeatTime.Date + startHeatTime;
-    return startHeatingDate;
+  /// <summary>Plausible garage temperature range. Readings outside it are sensor faults
+  /// (DS18B20 reports 85 C on power-on and -127 C when disconnected).</summary>
+  public const float MinPlausibleTemperature = -40;
+
+  public const float MaxPlausibleTemperature = 60;
+
+  public static bool IsPlausible(float temperature)
+  {
+    return temperature is >= MinPlausibleTemperature and <= MaxPlausibleTemperature;
   }
 
-  public static List<HeatTask> CalculateForMultipleGarages(
-    List<GarageTemperatureDto> listOfGarageTemperatureDtos,
-    List<HeatTask> listOfGarageEndHeatTasks)
+  /// <summary>
+  ///   Returns when heating must start to finish at <paramref name="endHeatTime" />,
+  ///   or null when the temperature is unknown or not a number.
+  ///   The lead time is clamped to [0, <see cref="MaxLeadTime" />].
+  /// </summary>
+  public static DateTime? CalculateStartTime(DateTime endHeatTime, float? temperature)
   {
-    var listOfGarageStartHeatTimes = new List<HeatTask>();
+    if (temperature == null || !float.IsFinite(temperature.Value)) return null;
 
-    foreach (var garageEndHeatTime in listOfGarageEndHeatTasks)
-    {
-      var garageTemperatureDto = listOfGarageTemperatureDtos.FirstOrDefault(x => x.Id == garageEndHeatTime.GarageId);
-      var startHeatingDate = CalculateStartTime(garageEndHeatTime.EndTime, garageTemperatureDto?.Temperature);
-      if (startHeatingDate == null) continue;
-
-      garageEndHeatTime.StartTime = startHeatingDate;
-      listOfGarageStartHeatTimes.Add(garageEndHeatTime);
-    }
-
-    return listOfGarageStartHeatTimes;
+    var leadMinutes = Math.Clamp(CalculateOnHeatTime(temperature.Value), 0, MaxLeadTime.TotalMinutes);
+    return endHeatTime - TimeSpan.FromMinutes(leadMinutes);
   }
 
   #region private methods
+
+  /// <summary>Pre-heating time in minutes for a given temperature. Negative above about 71 C.</summary>
   private static double CalculateOnHeatTime(float temp)
   {
-    // TODO: check if this function can return negative values
-    return 10 * (5 * (1 + 5 * Math.Pow(Math.E, (-0.02 * temp))) - 11) * 0.37;
+    return 10 * (5 * (1 + 5 * Math.Pow(Math.E, -0.02 * temp)) - 11) * 0.37;
   }
 
-  private static TimeSpan? TimeToStartHeating(TimeSpan? endHeatTime, float? temp)
-  {
-    if (endHeatTime == null || temp == null) return null;
-
-    var offsetTimeSpan = TimeSpan.FromMinutes(CalculateOnHeatTime(temp.Value));
-    return endHeatTime.Value.Subtract(offsetTimeSpan);
-  }
   #endregion
 }

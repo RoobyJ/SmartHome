@@ -1,6 +1,5 @@
 ﻿using System;
 using Core;
-using Core.Helpers;
 using Core.Interfaces;
 using Core.Services;
 using Infrastructure;
@@ -46,7 +45,6 @@ public abstract class Program
         // so task edits made in the UI are picked up. Cross-tick state lives in HeatingState.
         services.AddScoped<IHeatingService, HeatingService>();
         services.AddSingleton<HeatingState>();
-        services.AddTransient<StartHeatingTimeCalculator>();
         services.AddCore();
 
         var workerSettings = new WorkerSettings();
